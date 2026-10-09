@@ -190,3 +190,66 @@ whole corpus. That is a batch figure, not a single-document figure: it includes
 holding rendered page buffers for many documents in one process. Per-document
 memory has not been measured separately, so a claim about the product's footprint
 on one open document cannot be made from this number.
+
+## 15. Two-column front matter is over-merged and misordered on page one
+
+Found by running a real file end to end (`scripts/evidence_parse.py`), not by any
+of the M0 metrics. On `pdf_b_two_column` page 0 the corpus records **21 blocks** —
+title, author, abstract, then the left column, then the right column — and the
+pipeline emits **7 paragraphs**, in this order:
+
+| pipeline position | what it actually is |
+| --- | --- |
+| 0 | the tail of the abstract |
+| 1 | a left-column run, several source blocks merged |
+| 2 | the title |
+| 3 | the author line with the head of the abstract absorbed into it |
+| 4-6 | the right column, in runs |
+
+The correct order starts with the title. So the title is third, the abstract is
+split in two and its halves are separated by a whole column, and distinct headings
+and paragraphs have been absorbed into a few long runs.
+
+**Neither M0 reading-order measure catches this**, and that is the more important
+finding:
+
+* The word-LCS measure (`scripts/measure_reading_order.py`) scores this document's
+  two-column pages at 0.9733. LCS finds the longest common subsequence, so
+  displacing a *short* block is nearly free: dropping the 8-word title and keeping
+  the 200-word abstract costs about 1% of the score. A metric that barely notices
+  the title is in the wrong place cannot be used to claim reading order is correct.
+* The adjacent-pair measure (0.9591 pooled) counts pairs, and two misplaced blocks
+  out of twenty-one is about 4%.
+
+Block order is what the reader is built on: the source pane highlights a block and
+the translation pane follows it. Over-merged runs mean one anchor covers text that
+should be several anchors, and the abstract halves cannot be paired with their
+translations. This is recorded as a defect, not a tuning target.
+
+## 16. Tables are not extracted, so table cells are offered for translation
+
+There is no table or figure extraction anywhere in the pipeline. A wide table
+becomes a run of ordinary paragraphs, one per cell: in the same evidence run
+`Docs`, `Coverage`, `Order acc.`, `8`, `99.1%` each became a translatable
+paragraph. Sending a numeric cell to a translation service is wasted spend, and a
+translated percentage is a wrong number in a research table.
+
+This also swamps block-type measurement: of 207 matched corpus blocks, 131 are
+cells of one wide table. They are excluded from the classifier's score and
+reported separately, because no classifier can label a table cell when nothing
+detects the table.
+
+A figure caption *is* extracted (it is ordinary text), and captions are
+translatable, so captions are not affected by this gap.
+
+## 17. Block-type measurement covers only 13 of 207 matched blocks
+
+The classifier's 13/13 result is real but thin, and the reason matters. Of 207
+matched blocks: 131 are the wide table's cells (section 16), 33 have been merged
+into a longer paragraph by section 15, and 30 are pairs where the block and the
+paragraph are simply different content, which is a defect of the matcher used to
+score it. Scoring any of those would attribute someone else's defect to the
+classifier, so they are excluded and counted. The conclusion the number supports is
+"no known misclassification on the blocks that can be scored", not "the classifier
+is correct on real papers".
+

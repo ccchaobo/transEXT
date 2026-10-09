@@ -243,6 +243,30 @@ class TestFormulas:
     def test_a_long_mathematical_paragraph_is_not_treated_as_a_formula(self) -> None:
         assert is_formula_like("x = 1 " * 200) is False
 
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "born-digital",
+            "n/a",
+            "state-of-the-art",
+            "docx",
+            "end-to-end",
+            "(see Figure 2)",
+            "pp. 55-67",
+        ],
+    )
+    def test_a_word_with_punctuation_is_not_a_formula(self, text: str) -> None:
+        # A block typed as a formula is not translated, so a false positive here silently
+        # drops a real word.  Counting the hyphen and the slash as operators typed
+        # "born-digital" and "n/a" as formulas.
+        assert is_formula_like(text) is False
+
+    def test_a_subscript_expression_is_a_formula(self) -> None:
+        assert is_formula_like("x_i") is True
+
+    def test_a_comparison_operator_is_a_formula(self) -> None:
+        assert is_formula_like("a ≤ b") is True
+
 
 class TestBodyFontSize:
     def test_the_commonest_size_wins_over_outliers(self) -> None:

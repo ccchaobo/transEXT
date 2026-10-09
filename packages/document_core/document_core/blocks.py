@@ -81,8 +81,14 @@ _YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
 #: Quoted title inside a citation, e.g. `"A representation of…"`.
 _QUOTED_TITLE_RE = re.compile(r"[“\"][^”\"]{6,}[”\"]")
 
-_FORMULA_SYMBOLS = set("=+−-±×÷∑∏∫√≤≥≈≠∈∉⊂⊆∪∩→←↔∂∇^_{}[]()|<>/")
+#: Real mathematical operators.  Deliberately EXCLUDES the hyphen, slash, underscore,
+#: brackets and angle brackets: those occur constantly in ordinary prose, and counting
+#: them made "born-digital" and "n/a" into formulas, which silently keeps a real word out
+#: of the translation.
+_MATH_OPERATORS = set("=+−±×÷∑∏∫√≤≥≈≠∈∉⊂⊆∪∩→←↔∂∇^")
 _FORMULA_WORDS_RE = re.compile(r"\b(sin|cos|tan|log|exp|lim|max|min|arg|det|Pr|Var|E)\b")
+#: A subscript or superscript, as in "x_i" or "w^2".
+_SUBSUP_RE = re.compile(r"[A-Za-z]\s*[_^]\s*[\w{]")
 
 _ABSTRACT_RE = re.compile(
     r"^\s*(abstract|summary|摘要)\b[\s:—–\-]*", re.IGNORECASE
@@ -169,9 +175,10 @@ def is_reference_like(text: str) -> bool:
 def is_formula_like(text: str) -> bool:
     """Whether a block is mathematical notation rather than prose.
 
-    Judged by symbol density: a sentence that mentions one equals sign is not a formula,
-    while ``F1. 3.1``-style equation labels and expressions are.  Letters are counted
-    because a formula is mostly symbols and variable names, not words.
+    Requires a real mathematical operator, not merely punctuation that also appears in
+    prose.  An earlier version counted hyphens, slashes and brackets as symbols, which
+    typed ``born-digital`` and ``n/a`` as formulas — and a block typed as a formula is not
+    translated, so that silently drops a real word from the document.
     """
     stripped = _normalise(text)
     if not stripped:
@@ -179,24 +186,18 @@ def is_formula_like(text: str) -> bool:
     if len(stripped) > 400:
         return False
 
-    letters = sum(1 for ch in stripped if ch.isalpha())
-    symbols = sum(1 for ch in stripped if ch in _FORMULA_SYMBOLS)
-    digits = sum(1 for ch in stripped if ch.isdigit())
-    if not letters and not symbols:
-        return False
-
-    # Words of two or more letters are prose; a formula does not have many.
     words = re.findall(r"[A-Za-z]{2,}", stripped)
     if len(words) >= 8:
         return False
 
-    # A short block with an operator and few real words.
-    if symbols >= 1 and len(words) <= 3:
+    operators = sum(1 for ch in stripped if ch in _MATH_OPERATORS)
+    if operators >= 1:
         return True
-    # Dense symbol use with a function name, e.g. `f(x) = sum_i w_i x_i`.
-    if symbols >= 3 and len(words) <= 6 and (digits or symbols) and len(stripped) < 120:
+    # A subscript or superscript with very few words is notation even without a top-level
+    # operator, e.g. a lone "x_i".
+    if _SUBSUP_RE.search(stripped) and len(words) <= 3:
         return True
-    if _FORMULA_WORDS_RE.search(stripped) and symbols >= 1:
+    if _FORMULA_WORDS_RE.search(stripped) and operators >= 1:
         return True
     return False
 
