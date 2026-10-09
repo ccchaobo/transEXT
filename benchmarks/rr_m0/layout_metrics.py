@@ -243,13 +243,27 @@ def match_blocks_to_paragraphs(
             longer, shorter = max(len(reference), len(text)), min(
                 len(reference), len(text)
             )
+            contained = False
             if longer and shorter < min_length_ratio * longer:
-                continue
+                # The length guard stops a short block claiming a much longer
+                # paragraph.  It must not stop a block that the pipeline legitimately
+                # *absorbed*: when a heading or an author line is merged into the
+                # paragraph that follows it, the paragraph contains the block's text
+                # verbatim and is much longer, so the guard would reject the only
+                # paragraph that can answer for the block.  Measured on
+                # ``pdf_a_single_column``, 32 of 36 unmatched blocks were contained in
+                # a paragraph: the text was present and correctly placed, and the guard
+                # alone was reporting it as missing.
+                contained = shorter > 0 and (
+                    reference in text or text in reference
+                )
+                if not contained:
+                    continue
             hyp_counts = Counter(text)
             shared = sum((ref_counts & hyp_counts).values())
             denominator = max(len(reference), len(text))
             similarity = shared / denominator if denominator else 0.0
-            if similarity >= min_similarity:
+            if contained or similarity >= min_similarity:
                 candidates.append((similarity, bi, pi))
     # Highest similarity first, so the best pairing is claimed before a weaker
     # alternative can take the paragraph.
