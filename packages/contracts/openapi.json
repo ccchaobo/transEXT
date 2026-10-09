@@ -1,0 +1,2562 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Research Reader API",
+    "version": "0.1.0",
+    "description": "Local-first bilingual research-paper reader.\n\nThis document is generated from the wire contract (ADR 0006).  At M0 it describes the component schemas and the error taxonomy; the path objects are added in M1 by the FastAPI application, which derives them from the same models.  Its absence of paths is a statement about what is implemented, not an omission."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8765",
+      "description": "Default loopback binding. The service does not listen on a public interface by default."
+    }
+  ],
+  "components": {
+    "schemas": {
+      "AnnotationCreate": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Revision Id"
+          },
+          "block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Id"
+          },
+          "page_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Index"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bbox"
+          },
+          "selected_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Selected Text"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Colour"
+          },
+          "kind": {
+            "default": "note",
+            "enum": [
+              "note",
+              "highlight",
+              "question"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id"
+        ],
+        "title": "AnnotationCreate",
+        "type": "object"
+      },
+      "AnnotationPatch": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Colour"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "note",
+                  "highlight",
+                  "question"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Kind"
+          },
+          "block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Id"
+          },
+          "page_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Index"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bbox"
+          }
+        },
+        "title": "AnnotationPatch",
+        "type": "object"
+      },
+      "AnnotationWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Revision Id"
+          },
+          "block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Id"
+          },
+          "page_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Index"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bbox"
+          },
+          "selected_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Selected Text"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Colour"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "needs_relocation": {
+            "default": false,
+            "title": "Needs Relocation",
+            "type": "boolean"
+          },
+          "relocation_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Relocation Note"
+          }
+        },
+        "required": [
+          "id",
+          "document_id",
+          "note",
+          "kind",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AnnotationWire",
+        "type": "object"
+      },
+      "AssetWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "page_index": {
+            "title": "Page Index",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bbox"
+          },
+          "caption_block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Caption Block Id"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Width"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Height"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "page_index",
+          "url"
+        ],
+        "title": "AssetWire",
+        "type": "object"
+      },
+      "JobStatus": {
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "partially_succeeded",
+          "failed",
+          "cancelled"
+        ],
+        "title": "JobStatus",
+        "type": "string"
+      },
+      "AttemptWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "attempt_number": {
+            "title": "Attempt Number",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus"
+          },
+          "lease_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lease Holder"
+          },
+          "lease_expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Lease Expires At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Finished At"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Message"
+          }
+        },
+        "required": [
+          "id",
+          "attempt_number",
+          "status"
+        ],
+        "title": "AttemptWire",
+        "type": "object"
+      },
+      "BlockTextPatch": {
+        "description": "Correct OCR text for a block (spec 5.3).",
+        "properties": {
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "base_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optimistic concurrency on the block's OCR revision",
+            "title": "Base Revision"
+          },
+          "invalidate_translations": {
+            "default": true,
+            "title": "Invalidate Translations",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "BlockTextPatch",
+        "type": "object"
+      },
+      "ConfidenceWire": {
+        "properties": {
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Score"
+          },
+          "level": {
+            "default": "unknown",
+            "enum": [
+              "high",
+              "medium",
+              "low",
+              "unknown"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source"
+          }
+        },
+        "title": "ConfidenceWire",
+        "type": "object"
+      },
+      "SpanWire": {
+        "description": "A source region in the frozen coordinate contract (spec 8).",
+        "properties": {
+          "page_index": {
+            "minimum": 0,
+            "title": "Page Index",
+            "type": "integer"
+          },
+          "bbox": {
+            "description": "Display-normalised [x0, y0, x1, y1], origin top-left of the displayed page, each value in 0..1",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "type": "array"
+          },
+          "raw_bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 4,
+                "minItems": 4,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Bounding box in the source coordinate space",
+            "title": "Raw Bbox"
+          },
+          "raw_space": {
+            "default": "raw_pdf",
+            "title": "Raw Space",
+            "type": "string"
+          },
+          "polygon": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Polygon"
+          },
+          "text_start": {
+            "default": 0,
+            "title": "Text Start",
+            "type": "integer"
+          },
+          "text_end": {
+            "default": 0,
+            "title": "Text End",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page_index",
+          "bbox"
+        ],
+        "title": "SpanWire",
+        "type": "object"
+      },
+      "BlockWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "page_index": {
+            "title": "Page Index",
+            "type": "integer"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "type": {
+            "enum": [
+              "title",
+              "author",
+              "affiliation",
+              "abstract",
+              "heading",
+              "paragraph",
+              "list_item",
+              "caption",
+              "table",
+              "table_cell",
+              "formula",
+              "figure",
+              "reference",
+              "footnote",
+              "header",
+              "footer",
+              "page_number",
+              "unknown"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "raw_text": {
+            "title": "Raw Text",
+            "type": "string"
+          },
+          "translatable": {
+            "title": "Translatable",
+            "type": "boolean"
+          },
+          "is_body": {
+            "title": "Is Body",
+            "type": "boolean"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/ConfidenceWire"
+          },
+          "spans": {
+            "items": {
+              "$ref": "#/components/schemas/SpanWire"
+            },
+            "title": "Spans",
+            "type": "array"
+          },
+          "pages": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Pages",
+            "type": "array"
+          },
+          "section_path": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Section Path",
+            "type": "array"
+          },
+          "section_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Section Id"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Level"
+          },
+          "cross_page": {
+            "default": false,
+            "title": "Cross Page",
+            "type": "boolean"
+          },
+          "human_edited": {
+            "default": false,
+            "title": "Human Edited",
+            "type": "boolean"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Table"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Metadata",
+            "type": "object"
+          },
+          "translation_status": {
+            "default": "none",
+            "enum": [
+              "none",
+              "pending",
+              "ok",
+              "failed",
+              "stale"
+            ],
+            "title": "Translation Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "page_index",
+          "order",
+          "type",
+          "text",
+          "raw_text",
+          "translatable",
+          "is_body",
+          "confidence",
+          "spans",
+          "pages"
+        ],
+        "title": "BlockWire",
+        "type": "object"
+      },
+      "DocumentFormat": {
+        "enum": [
+          "pdf",
+          "png",
+          "jpeg",
+          "docx"
+        ],
+        "title": "DocumentFormat",
+        "type": "string"
+      },
+      "IssueWire": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "page_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Index"
+          },
+          "block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Id"
+          },
+          "details": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Details",
+            "type": "object"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "message"
+        ],
+        "title": "IssueWire",
+        "type": "object"
+      },
+      "ParseRevisionWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "parser": {
+            "title": "Parser",
+            "type": "string"
+          },
+          "parser_version": {
+            "title": "Parser Version",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Parameters",
+            "type": "object"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Stats",
+            "type": "object"
+          },
+          "is_active": {
+            "default": false,
+            "title": "Is Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "parser",
+          "parser_version",
+          "status",
+          "created_at"
+        ],
+        "title": "ParseRevisionWire",
+        "type": "object"
+      },
+      "ProcessingMode": {
+        "description": "Where work happens, shown to the user before anything is sent out.",
+        "enum": [
+          "local",
+          "external",
+          "mixed"
+        ],
+        "title": "ProcessingMode",
+        "type": "string"
+      },
+      "StageStatus": {
+        "enum": [
+          "pending",
+          "running",
+          "succeeded",
+          "failed",
+          "skipped"
+        ],
+        "title": "StageStatus",
+        "type": "string"
+      },
+      "DocumentDetail": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "format": {
+            "$ref": "#/components/schemas/DocumentFormat"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "page_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Count"
+          },
+          "imported_at": {
+            "format": "date-time",
+            "title": "Imported At",
+            "type": "string"
+          },
+          "processing_mode": {
+            "$ref": "#/components/schemas/ProcessingMode"
+          },
+          "active_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Active Revision Id"
+          },
+          "parse_status": {
+            "$ref": "#/components/schemas/StageStatus"
+          },
+          "translate_status": {
+            "$ref": "#/components/schemas/StageStatus"
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "warning_count": {
+            "default": 0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "error_count": {
+            "default": 0,
+            "title": "Error Count",
+            "type": "integer"
+          },
+          "last_opened_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Last Opened At"
+          },
+          "labels": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "revisions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ParseRevisionWire"
+            },
+            "title": "Revisions",
+            "type": "array"
+          },
+          "issues": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/IssueWire"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "translations_summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Translations Summary",
+            "type": "object"
+          },
+          "capabilities": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "default": {},
+            "title": "Capabilities",
+            "type": "object"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "format",
+          "size_bytes",
+          "sha256",
+          "imported_at",
+          "processing_mode",
+          "parse_status",
+          "translate_status",
+          "progress",
+          "source_url"
+        ],
+        "title": "DocumentDetail",
+        "type": "object"
+      },
+      "DocumentSummary": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "format": {
+            "$ref": "#/components/schemas/DocumentFormat"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "page_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Count"
+          },
+          "imported_at": {
+            "format": "date-time",
+            "title": "Imported At",
+            "type": "string"
+          },
+          "processing_mode": {
+            "$ref": "#/components/schemas/ProcessingMode"
+          },
+          "active_revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Active Revision Id"
+          },
+          "parse_status": {
+            "$ref": "#/components/schemas/StageStatus"
+          },
+          "translate_status": {
+            "$ref": "#/components/schemas/StageStatus"
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "warning_count": {
+            "default": 0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "error_count": {
+            "default": 0,
+            "title": "Error Count",
+            "type": "integer"
+          },
+          "last_opened_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Last Opened At"
+          },
+          "labels": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "format",
+          "size_bytes",
+          "sha256",
+          "imported_at",
+          "processing_mode",
+          "parse_status",
+          "translate_status",
+          "progress"
+        ],
+        "title": "DocumentSummary",
+        "type": "object"
+      },
+      "DocumentList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "DocumentList",
+        "type": "object"
+      },
+      "ErrorCode": {
+        "description": "Business error codes, deliberately separate from HTTP status.",
+        "enum": [
+          "invalid_request",
+          "unsupported_format",
+          "legacy_doc_unsupported",
+          "file_too_large",
+          "too_many_pages",
+          "empty_file",
+          "corrupt_file",
+          "encrypted_file",
+          "decompression_bomb",
+          "duplicate_document",
+          "ocr_unavailable",
+          "converter_unavailable",
+          "translation_not_configured",
+          "parse_failed",
+          "ocr_failed",
+          "conversion_failed",
+          "validation_failed",
+          "translation_failed",
+          "placeholder_loss",
+          "external_timeout",
+          "external_rate_limited",
+          "external_auth_failed",
+          "external_insufficient_balance",
+          "external_unavailable",
+          "external_unknown_result",
+          "not_found",
+          "conflict",
+          "stale_revision",
+          "budget_exceeded",
+          "cancelled",
+          "internal_error"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "scope": {
+            "description": "What the error applies to: request, document, job, block, ...",
+            "title": "Scope",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Request Id"
+          },
+          "details": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Details",
+            "type": "object"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "scope"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ExportRequest": {
+        "properties": {
+          "target_language": {
+            "default": "zh",
+            "title": "Target Language",
+            "type": "string"
+          },
+          "include_source": {
+            "default": true,
+            "title": "Include Source",
+            "type": "boolean"
+          },
+          "include_annotations": {
+            "default": true,
+            "title": "Include Annotations",
+            "type": "boolean"
+          },
+          "include_glossary": {
+            "default": true,
+            "title": "Include Glossary",
+            "type": "boolean"
+          },
+          "page_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Range"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Revision Id"
+          },
+          "translation_revision": {
+            "default": "prefer_human",
+            "enum": [
+              "prefer_human",
+              "machine_only",
+              "human_only"
+            ],
+            "title": "Translation Revision",
+            "type": "string"
+          }
+        },
+        "title": "ExportRequest",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "database": {
+            "title": "Database",
+            "type": "string"
+          },
+          "worker": {
+            "title": "Worker",
+            "type": "string"
+          },
+          "capabilities": {
+            "additionalProperties": true,
+            "title": "Capabilities",
+            "type": "object"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "database",
+          "worker",
+          "capabilities"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "JobEventWire": {
+        "description": "One increment on the job event stream (spec 9.1: resumable).",
+        "properties": {
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "job_created",
+              "stage_started",
+              "stage_finished",
+              "unit_done",
+              "unit_failed",
+              "progress",
+              "job_finished",
+              "job_failed",
+              "job_cancelled",
+              "log"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Stage"
+          },
+          "data": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "required": [
+          "seq",
+          "job_id",
+          "at",
+          "kind"
+        ],
+        "title": "JobEventWire",
+        "type": "object"
+      },
+      "JobProgressWire": {
+        "properties": {
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "total_units": {
+            "default": 0,
+            "title": "Total Units",
+            "type": "integer"
+          },
+          "done_units": {
+            "default": 0,
+            "title": "Done Units",
+            "type": "integer"
+          },
+          "failed_units": {
+            "default": 0,
+            "title": "Failed Units",
+            "type": "integer"
+          },
+          "skipped_units": {
+            "default": 0,
+            "title": "Skipped Units",
+            "type": "integer"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Message"
+          }
+        },
+        "required": [
+          "stage"
+        ],
+        "title": "JobProgressWire",
+        "type": "object"
+      },
+      "JobType": {
+        "enum": [
+          "parse",
+          "ocr",
+          "translate",
+          "export",
+          "convert"
+        ],
+        "title": "JobType",
+        "type": "string"
+      },
+      "JobWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/JobType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Document Id"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Stage"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobProgressWire"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "percent": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percent",
+            "type": "number"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Finished At"
+          },
+          "attempt_count": {
+            "default": 0,
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "current_attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Current Attempt Id"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Idempotency Key"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Message"
+          },
+          "usage": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Usage",
+            "type": "object"
+          },
+          "cost_estimate": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Cost Estimate",
+            "type": "object"
+          },
+          "cancellable": {
+            "default": true,
+            "title": "Cancellable",
+            "type": "boolean"
+          },
+          "retryable": {
+            "default": false,
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "failures": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Failures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "created_at"
+        ],
+        "title": "JobWire",
+        "type": "object"
+      },
+      "PageWire": {
+        "properties": {
+          "index": {
+            "description": "0-based internal page index",
+            "minimum": 0,
+            "title": "Index",
+            "type": "integer"
+          },
+          "page_number": {
+            "description": "1-based page number shown in the UI",
+            "minimum": 1,
+            "title": "Page Number",
+            "type": "integer"
+          },
+          "printed_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Printed Label"
+          },
+          "width_pt": {
+            "exclusiveMinimum": 0,
+            "title": "Width Pt",
+            "type": "number"
+          },
+          "height_pt": {
+            "exclusiveMinimum": 0,
+            "title": "Height Pt",
+            "type": "number"
+          },
+          "rotation": {
+            "default": 0,
+            "description": "Page /Rotate. Only quarter turns are representable; arbitrary skew is an AffineTransform, not a rotation (ADR 0008).",
+            "enum": [
+              0,
+              90,
+              180,
+              270
+            ],
+            "title": "Rotation",
+            "type": "integer"
+          },
+          "display_width": {
+            "exclusiveMinimum": 0,
+            "title": "Display Width",
+            "type": "number"
+          },
+          "display_height": {
+            "exclusiveMinimum": 0,
+            "title": "Display Height",
+            "type": "number"
+          },
+          "source_kind": {
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Preview Url"
+          },
+          "thumbnail_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Thumbnail Url"
+          },
+          "text_chars": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Text Chars",
+            "type": "integer"
+          },
+          "ocr_applied": {
+            "title": "Ocr Applied",
+            "type": "boolean"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "index",
+          "page_number",
+          "width_pt",
+          "height_pt",
+          "display_width",
+          "display_height",
+          "source_kind",
+          "ocr_applied"
+        ],
+        "title": "PageWire",
+        "type": "object"
+      },
+      "ReadingState": {
+        "description": "Where the reader was in a document.\n\nThe document is identified by the request path, not by a field here, so this\npayload cannot disagree with the URL it was sent to.",
+        "properties": {
+          "page_index": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Page Index",
+            "type": "integer"
+          },
+          "block_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Id"
+          },
+          "view_mode": {
+            "default": "side_by_side",
+            "enum": [
+              "side_by_side",
+              "source_only",
+              "target_only",
+              "stacked"
+            ],
+            "title": "View Mode",
+            "type": "string"
+          },
+          "zoom": {
+            "default": 1.0,
+            "exclusiveMinimum": 0.0,
+            "maximum": 8.0,
+            "title": "Zoom",
+            "type": "number"
+          },
+          "link_scrolling": {
+            "default": true,
+            "title": "Link Scrolling",
+            "type": "boolean"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Revision Id"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Updated At"
+          }
+        },
+        "title": "ReadingState",
+        "type": "object"
+      },
+      "TermCreate": {
+        "properties": {
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "scope": {
+            "default": "document",
+            "enum": [
+              "global",
+              "document"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Document Id"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "mandatory": {
+            "default": false,
+            "title": "Mandatory",
+            "type": "boolean"
+          },
+          "case_sensitive": {
+            "default": false,
+            "title": "Case Sensitive",
+            "type": "boolean"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "title": "TermCreate",
+        "type": "object"
+      },
+      "TermPatch": {
+        "properties": {
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Priority"
+          },
+          "mandatory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Mandatory"
+          },
+          "case_sensitive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Case Sensitive"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Base Version"
+          }
+        },
+        "title": "TermPatch",
+        "type": "object"
+      },
+      "TermWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Domain"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Document Id"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "mandatory": {
+            "default": false,
+            "title": "Mandatory",
+            "type": "boolean"
+          },
+          "case_sensitive": {
+            "default": false,
+            "title": "Case Sensitive",
+            "type": "boolean"
+          },
+          "version": {
+            "default": 1,
+            "title": "Version",
+            "type": "integer"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "target",
+          "scope",
+          "updated_at"
+        ],
+        "title": "TermWire",
+        "type": "object"
+      },
+      "TranslationRequest": {
+        "description": "Request translation for pages, blocks or the whole document.",
+        "properties": {
+          "scope": {
+            "default": "pages",
+            "enum": [
+              "document",
+              "pages",
+              "blocks"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "page_indices": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page Indices"
+          },
+          "block_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Block Ids"
+          },
+          "target_language": {
+            "default": "zh",
+            "title": "Target Language",
+            "type": "string"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "glossary_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Glossary Ids"
+          },
+          "force": {
+            "default": false,
+            "description": "Re-translate even when a current cached result exists",
+            "title": "Force",
+            "type": "boolean"
+          },
+          "budget_limit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Maximum estimated spend for this job, in provider units",
+            "title": "Budget Limit"
+          },
+          "max_concurrency": {
+            "anyOf": [
+              {
+                "maximum": 16,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max Concurrency"
+          },
+          "preserve_human_edits": {
+            "default": true,
+            "title": "Preserve Human Edits",
+            "type": "boolean"
+          }
+        },
+        "title": "TranslationRequest",
+        "type": "object"
+      },
+      "TranslationRevisionRequest": {
+        "properties": {
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "base_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optimistic concurrency: reject if the current version differs",
+            "title": "Base Version"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TranslationRevisionRequest",
+        "type": "object"
+      },
+      "TranslationWire": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "block_id": {
+            "title": "Block Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "target_language": {
+            "title": "Target Language",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "failed",
+              "partial"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "machine",
+              "human",
+              "imported"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "stale": {
+            "default": false,
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Code"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "usage": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Usage",
+            "type": "object"
+          },
+          "issues": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/IssueWire"
+            },
+            "title": "Issues",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "block_id",
+          "text",
+          "language",
+          "target_language",
+          "provider",
+          "version",
+          "status",
+          "origin",
+          "created_at"
+        ],
+        "title": "TranslationWire",
+        "type": "object"
+      }
+    },
+    "responses": {
+      "BusinessError": {
+        "description": "A business error, with a machine-readable code.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "loopbackSession": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Session-Token",
+        "description": "A token minted at start-up and required on every mutating request. It protects against a browser page on another origin reaching the loopback service. Provider API keys are never sent to the client."
+      }
+    }
+  },
+  "paths": {},
+  "x-implementation-status": {
+    "milestone": "M0",
+    "implemented": [
+      "the component schemas below, enforced by tests",
+      "the error taxonomy and its HTTP status mapping"
+    ],
+    "not_yet_implemented": [
+      "all path objects (M1)",
+      "authentication enforcement (M1)"
+    ]
+  }
+}

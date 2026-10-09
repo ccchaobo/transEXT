@@ -1,0 +1,182 @@
+{
+ "name": "docx_paper_g_sections",
+ "source_format": "docx",
+ "source_kind": "docx",
+ "title": "A Short Note on Section Trees",
+ "authors": "O. Author",
+ "layout": "flow",
+ "text_blocks": [
+  {
+   "type": "title",
+   "text": "A Short Note on Section Trees",
+   "order": 0
+  },
+  {
+   "type": "author",
+   "text": "O. Author",
+   "order": 1
+  },
+  {
+   "type": "abstract",
+   "text": "A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels deep.",
+   "order": 2
+  },
+  {
+   "type": "heading",
+   "text": "1. Introduction",
+   "order": 3,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens and measurably reduces term drift across a long document.",
+   "order": 4
+  },
+  {
+   "type": "heading",
+   "text": "1.1 Background",
+   "order": 5,
+   "level": 2
+  },
+  {
+   "type": "paragraph",
+   "text": "The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any section.",
+   "order": 6
+  },
+  {
+   "type": "heading",
+   "text": "1.1.1 Terminology",
+   "order": 7,
+   "level": 3
+  },
+  {
+   "type": "paragraph",
+   "text": "We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region belongs to exactly one block.",
+   "order": 8
+  },
+  {
+   "type": "heading",
+   "text": "1.2 Scope",
+   "order": 9,
+   "level": 2
+  },
+  {
+   "type": "paragraph",
+   "text": "The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere.",
+   "order": 10
+  },
+  {
+   "type": "heading",
+   "text": "2. Method",
+   "order": 11,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two signals can disagree, in which case numbering wins because it is explicit.",
+   "order": 12
+  },
+  {
+   "type": "heading",
+   "text": "4. Results",
+   "order": 13,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+   "order": 14
+  },
+  {
+   "type": "heading",
+   "text": "4.1 Ablation",
+   "order": 15,
+   "level": 2
+  },
+  {
+   "type": "paragraph",
+   "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+   "order": 16
+  },
+  {
+   "type": "paragraph",
+   "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+   "order": 17
+  },
+  {
+   "type": "heading",
+   "text": "5. Discussion and Limitations",
+   "order": 18,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+   "order": 19
+  },
+  {
+   "type": "paragraph",
+   "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+   "order": 20
+  },
+  {
+   "type": "heading",
+   "text": "6. Conclusion",
+   "order": 21,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+   "order": 22
+  },
+  {
+   "type": "heading",
+   "text": "Acknowledgements",
+   "order": 23,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+   "order": 24
+  },
+  {
+   "type": "heading",
+   "text": "References",
+   "order": 25,
+   "level": 1
+  },
+  {
+   "type": "reference",
+   "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+   "order": 26
+  },
+  {
+   "type": "reference",
+   "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+   "order": 27
+  },
+  {
+   "type": "reference",
+   "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+   "order": 28
+  },
+  {
+   "type": "reference",
+   "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+   "order": 29
+  },
+  {
+   "type": "reference",
+   "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+   "order": 30
+  }
+ ],
+ "paragraph_count": 31,
+ "table_count": 0,
+ "image_count": 0,
+ "formula_count": 0,
+ "footnote_count": 0,
+ "notes": "Deep heading nesting in DOCX form."
+}

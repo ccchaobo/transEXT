@@ -1,0 +1,1331 @@
+{
+ "documents": [
+  {
+   "document": "mixed_f_hybrid",
+   "layout": "double_column",
+   "pages": 2,
+   "text_pages": [
+    1
+   ],
+   "scanned_pages": [
+    0
+   ],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": false,
+     "scanned": true,
+     "recorded_chars": 5065,
+     "produced_chars": 0,
+     "coverage": null
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 3147,
+     "produced_chars": 3196,
+     "coverage": 0.9968
+    }
+   ],
+   "paragraphs": 24,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 42,
+   "blocks_body": 40,
+   "coverage_body": 0.9968,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 3147,
+   "coverage_all": 0.9476,
+   "matched_blocks": 22,
+   "unmatched_blocks": 18,
+   "order_accuracy": 0.9524,
+   "order_correct": 20,
+   "order_total": 21,
+   "region": {
+    "considered": 22,
+    "correct": 20,
+    "accuracy": 0.9090909090909091,
+    "wrong_page": [],
+    "wrong_region": [
+     [
+      [
+       24,
+       1
+      ],
+      "0.000",
+      "Table 1. Coverage and order accuracy by input class."
+     ],
+     [
+      [
+       48,
+       1
+      ],
+      "0.000",
+      "Removing band segmentation reduces order accuracy on pages c"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 21,
+     "type": "heading",
+     "text": "4. Results"
+    },
+    {
+     "index": 25,
+     "type": "table_cell",
+     "text": "Input class"
+    },
+    {
+     "index": 46,
+     "type": "caption",
+     "text": "Figure 1. Error rate as a function of page rotation. Markers"
+    },
+    {
+     "index": 47,
+     "type": "heading",
+     "text": "4.1 Ablation"
+    },
+    {
+     "index": 49,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm c"
+    },
+    {
+     "index": 50,
+     "type": "heading",
+     "text": "5. Discussion and Limitations"
+    },
+    {
+     "index": 51,
+     "type": "paragraph",
+     "text": "Three limitations deserve emphasis. First, our evaluation us"
+    },
+    {
+     "index": 52,
+     "type": "paragraph",
+     "text": "We also note that a page-level fallback is not equivalent to"
+    }
+   ]
+  },
+  {
+   "document": "pdf_a_single_column",
+   "layout": "single_column",
+   "pages": 3,
+   "text_pages": [
+    0,
+    1,
+    2
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 4268,
+     "produced_chars": 4268,
+     "coverage": 1.0
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 2719,
+     "produced_chars": 2768,
+     "coverage": 1.0
+    },
+    {
+     "page": 2,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 867,
+     "produced_chars": 867,
+     "coverage": 0.9885
+    }
+   ],
+   "paragraphs": 29,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "blocks_total": 61,
+   "blocks_body": 59,
+   "coverage_body": 0.9987,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 7856,
+   "coverage_all": 0.9782,
+   "matched_blocks": 25,
+   "unmatched_blocks": 34,
+   "order_accuracy": 0.875,
+   "order_correct": 21,
+   "order_total": 24,
+   "region": {
+    "considered": 25,
+    "correct": 20,
+    "accuracy": 0.8,
+    "wrong_page": [
+     [
+      [
+       4,
+       0
+      ],
+      0,
+      1
+     ],
+     [
+      [
+       13,
+       0
+      ],
+      0,
+      2
+     ],
+     [
+      [
+       14,
+       0
+      ],
+      0,
+      1
+     ],
+     [
+      [
+       45,
+       1
+      ],
+      1,
+      2
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       56,
+       2
+      ],
+      "0.492",
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evalua"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "A. Author, B. Author, and C. Author"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—We describe a reproducible pipeline for extracting "
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "2. Related Work"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "Layout analysis for research articles has a long history. Ru"
+    },
+    {
+     "index": 9,
+     "type": "heading",
+     "text": "2.1 Translation of scientific text"
+    }
+   ]
+  },
+  {
+   "document": "pdf_b_two_column",
+   "layout": "double_column",
+   "pages": 2,
+   "text_pages": [
+    0,
+    1
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 5065,
+     "produced_chars": 5064,
+     "coverage": 1.0
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 3147,
+     "produced_chars": 3196,
+     "coverage": 0.9968
+    }
+   ],
+   "paragraphs": 57,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 63,
+   "blocks_body": 61,
+   "coverage_body": 0.9988,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 8209,
+   "coverage_all": 0.9792,
+   "matched_blocks": 43,
+   "unmatched_blocks": 18,
+   "order_accuracy": 0.7857,
+   "order_correct": 33,
+   "order_total": 42,
+   "region": {
+    "considered": 43,
+    "correct": 30,
+    "accuracy": 0.6976744186046512,
+    "wrong_page": [
+     [
+      [
+       24,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       46,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       50,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       51,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       52,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       55,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       56,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       60,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       61,
+       1
+      ],
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       5,
+       0
+      ],
+      "0.000",
+      "Our contributions are threefold. First, we describe a reprod"
+     ],
+     [
+      [
+       6,
+       0
+      ],
+      "0.000",
+      "The remainder of the paper is organised as follows. Section "
+     ],
+     [
+      [
+       8,
+       0
+      ],
+      "0.000",
+      "Layout analysis for two-column articles has a long history. "
+     ],
+     [
+      [
+       48,
+       1
+      ],
+      "0.000",
+      "Removing band segmentation reduces order accuracy on pages c"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—Two-column layouts remain the dominant format in th"
+    },
+    {
+     "index": 10,
+     "type": "paragraph",
+     "text": "Scientific translation differs from general translation in w"
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "A second difference is citation structure. Reference markers"
+    },
+    {
+     "index": 13,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. "
+    },
+    {
+     "index": 15,
+     "type": "paragraph",
+     "text": "Let $x_i$ denote the feature vector for token i and let $y_i"
+    },
+    {
+     "index": 17,
+     "type": "paragraph",
+     "text": "Parameters are estimated by maximising the conditional likel"
+    },
+    {
+     "index": 18,
+     "type": "heading",
+     "text": "3.1 Data and annotation"
+    },
+    {
+     "index": 20,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely"
+    }
+   ]
+  },
+  {
+   "document": "pdf_c_formula_footnote",
+   "layout": "single_column",
+   "pages": 3,
+   "text_pages": [
+    0,
+    1,
+    2
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 4472,
+     "produced_chars": 4472,
+     "coverage": 1.0
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 3279,
+     "produced_chars": 3279,
+     "coverage": 1.0
+    },
+    {
+     "page": 2,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 683,
+     "produced_chars": 683,
+     "coverage": 0.9854
+    }
+   ],
+   "paragraphs": 38,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "blocks_total": 62,
+   "blocks_body": 61,
+   "coverage_body": 0.9988,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 8428,
+   "coverage_all": 0.9929,
+   "matched_blocks": 33,
+   "unmatched_blocks": 28,
+   "order_accuracy": 0.875,
+   "order_correct": 28,
+   "order_total": 32,
+   "region": {
+    "considered": 33,
+    "correct": 25,
+    "accuracy": 0.7575757575757576,
+    "wrong_page": [
+     [
+      [
+       4,
+       0
+      ],
+      0,
+      1
+     ],
+     [
+      [
+       53,
+       1
+      ],
+      1,
+      2
+     ],
+     [
+      [
+       60,
+       2
+      ],
+      2,
+      1
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       15,
+       0
+      ],
+      "0.000",
+      "Reading order is recovered in three steps. Pages are first s"
+     ],
+     [
+      [
+       18,
+       1
+      ],
+      "0.348",
+      "Parameters are estimated by maximising the conditional likel"
+     ],
+     [
+      [
+       55,
+       1
+      ],
+      "0.000",
+      "The authors thank the anonymous reviewers for detailed comme"
+     ],
+     [
+      [
+       57,
+       2
+      ],
+      "0.492",
+      "[1] A. Author and B. Author, “A representative baseline for "
+     ],
+     [
+      [
+       58,
+       2
+      ],
+      "0.492",
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evalua"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "F. Analyst, G. Engineer, and H. Statistician"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—Long paragraphs, footnotes and equations stress the"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "2. Formal Setting"
+    },
+    {
+     "index": 10,
+     "type": "paragraph",
+     "text": "Equation (2) normalises the score over all labellings. In pr"
+    },
+    {
+     "index": 11,
+     "type": "footnote",
+     "text": "1 Supported by synthetic grant SYN-2021-004."
+    }
+   ]
+  },
+  {
+   "document": "pdf_d_mixed_language",
+   "layout": "single_column",
+   "pages": 2,
+   "text_pages": [
+    0,
+    1
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 3824,
+     "produced_chars": 3968,
+     "coverage": 1.0
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 2759,
+     "produced_chars": 2615,
+     "coverage": 0.9442
+    }
+   ],
+   "paragraphs": 29,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 57,
+   "blocks_body": 56,
+   "coverage_body": 0.9985,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 6584,
+   "coverage_all": 0.9905,
+   "matched_blocks": 25,
+   "unmatched_blocks": 31,
+   "order_accuracy": 0.9167,
+   "order_correct": 22,
+   "order_total": 24,
+   "region": {
+    "considered": 25,
+    "correct": 22,
+    "accuracy": 0.88,
+    "wrong_page": [],
+    "wrong_region": [
+     [
+      [
+       12,
+       0
+      ],
+      "0.000",
+      "Reading order is recovered in three steps. Pages are first s"
+     ],
+     [
+      [
+       47,
+       1
+      ],
+      "0.000",
+      "We presented a structure-aware pipeline for bilingual readin"
+     ],
+     [
+      [
+       52,
+       1
+      ],
+      "0.492",
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evalua"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "I. Writer and J. Reader"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—Mixed-language documents occur when authors supply "
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. 引言 Introduction"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "中英文混排文档在阅读顺序恢复时会遇到额外的困难: 字符宽度不一致, 标点符号属于不同书写系统, 而且断行位置常常落在中文"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "We measured character coverage separately for the two script"
+    },
+    {
+     "index": 6,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 9,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    }
+   ]
+  },
+  {
+   "document": "pdf_e_hyphenation",
+   "layout": "single_column",
+   "pages": 2,
+   "text_pages": [
+    0,
+    1
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 3286,
+     "produced_chars": 3278,
+     "coverage": 0.9976
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 2661,
+     "produced_chars": 2710,
+     "coverage": 0.9962
+    }
+   ],
+   "paragraphs": 23,
+   "furniture": 4,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 55,
+   "blocks_body": 53,
+   "coverage_body": 0.9976,
+   "coverage_body_missing_chars": 14,
+   "coverage_body_reference_chars": 5948,
+   "coverage_all": 0.9701,
+   "matched_blocks": 20,
+   "unmatched_blocks": 33,
+   "order_accuracy": 0.8947,
+   "order_correct": 17,
+   "order_total": 19,
+   "region": {
+    "considered": 20,
+    "correct": 16,
+    "accuracy": 0.8,
+    "wrong_page": [
+     [
+      [
+       9,
+       0
+      ],
+      0,
+      1
+     ],
+     [
+      [
+       43,
+       1
+      ],
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       40,
+       1
+      ],
+      "0.000",
+      "Removing band segmentation reduces order accuracy on pages c"
+     ],
+     [
+      [
+       51,
+       1
+      ],
+      "0.492",
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evalua"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "K. Linguist and L. Engineer"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—Hyphenation is the most common source of silent cor"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "A state-of-the-art system that relies on a well-known heuris"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "The distinction matters because a wrong join is invisible: '"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "We evaluate on a hand-checked set of 200 wrapped compounds d"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "3. Method"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. "
+    }
+   ]
+  },
+  {
+   "document": "pdf_f_two_column_wide_table",
+   "layout": "double_column",
+   "pages": 2,
+   "text_pages": [
+    0,
+    1
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 4698,
+     "produced_chars": 4696,
+     "coverage": 0.9998
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 2661,
+     "produced_chars": 2710,
+     "coverage": 0.9962
+    }
+   ],
+   "paragraphs": 65,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 66,
+   "blocks_body": 64,
+   "coverage_body": 0.9986,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 7356,
+   "coverage_all": 0.977,
+   "matched_blocks": 47,
+   "unmatched_blocks": 17,
+   "order_accuracy": 0.7826,
+   "order_correct": 36,
+   "order_total": 46,
+   "region": {
+    "considered": 47,
+    "correct": 34,
+    "accuracy": 0.723404255319149,
+    "wrong_page": [
+     [
+      [
+       49,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       53,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       54,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       57,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       59,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       62,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       64,
+       1
+      ],
+      1,
+      0
+     ],
+     [
+      [
+       65,
+       1
+      ],
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       10,
+       0
+      ],
+      "0.043",
+      "Let $x_i$ denote the feature vector for token i and let $y_i"
+     ],
+     [
+      [
+       17,
+       0
+      ],
+      "0.000",
+      "A full-width table or figure forces the column flow to resta"
+     ],
+     [
+      [
+       45,
+       0
+      ],
+      "0.000",
+      "Rotation is handled in the display layer: the stored region "
+     ],
+     [
+      [
+       51,
+       1
+      ],
+      "0.000",
+      "Removing band segmentation reduces order accuracy on pages c"
+     ],
+     [
+      [
+       63,
+       1
+      ],
+      "0.000",
+      "[3] F. Analyst, “A survey of annotation protocols,” arXiv:21"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. "
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Parameters are estimated by maximising the conditional likel"
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+    },
+    {
+     "index": 15,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely"
+    },
+    {
+     "index": 26,
+     "type": "table_cell",
+     "text": "1204"
+    },
+    {
+     "index": 29,
+     "type": "table_cell",
+     "text": "0.7%"
+    }
+   ]
+  },
+  {
+   "document": "pdf_g_deep_sections",
+   "layout": "single_column",
+   "pages": 2,
+   "text_pages": [
+    0,
+    1
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 2948,
+     "produced_chars": 2948,
+     "coverage": 1.0
+    },
+    {
+     "page": 1,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 867,
+     "produced_chars": 867,
+     "coverage": 0.9885
+    }
+   ],
+   "paragraphs": 8,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 31,
+   "blocks_body": 31,
+   "coverage_body": 0.9974,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 3816,
+   "coverage_all": 0.9974,
+   "matched_blocks": 5,
+   "unmatched_blocks": 26,
+   "order_accuracy": 0.75,
+   "order_correct": 3,
+   "order_total": 4,
+   "region": {
+    "considered": 5,
+    "correct": 1,
+    "accuracy": 0.2,
+    "wrong_page": [
+     [
+      [
+       16,
+       0
+      ],
+      0,
+      1
+     ],
+     [
+      [
+       22,
+       0
+      ],
+      0,
+      1
+     ]
+    ],
+    "wrong_region": [
+     [
+      [
+       19,
+       0
+      ],
+      "0.000",
+      "Three limitations deserve emphasis. First, our evaluation us"
+     ],
+     [
+      [
+       27,
+       1
+      ],
+      "0.492",
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evalua"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "O. Author"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—A short paper used to exercise the heading tree and"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Section context helps a translator resolve ambiguous terms. "
+    },
+    {
+     "index": 5,
+     "type": "heading",
+     "text": "1.1 Background"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The background is deliberately brief. The point of this pape"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "1.1.1 Terminology"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We use 'block' for a semantic unit and 'region' for the page"
+    }
+   ]
+  },
+  {
+   "document": "pdf_h_no_references",
+   "layout": "double_column",
+   "pages": 1,
+   "text_pages": [
+    0
+   ],
+   "scanned_pages": [],
+   "per_page": [
+    {
+     "page": 0,
+     "comparable": true,
+     "scanned": false,
+     "recorded_chars": 4664,
+     "produced_chars": 4706,
+     "coverage": 1.0
+    }
+   ],
+   "paragraphs": 65,
+   "furniture": 1,
+   "warnings": [],
+   "page_columns": {
+    "0": 1
+   },
+   "blocks_total": 43,
+   "blocks_body": 42,
+   "coverage_body": 1.0,
+   "coverage_body_missing_chars": 0,
+   "coverage_body_reference_chars": 4664,
+   "coverage_all": 0.9947,
+   "matched_blocks": 34,
+   "unmatched_blocks": 8,
+   "order_accuracy": 0.9091,
+   "order_correct": 30,
+   "order_total": 33,
+   "region": {
+    "considered": 34,
+    "correct": 31,
+    "accuracy": 0.9117647058823529,
+    "wrong_page": [],
+    "wrong_region": [
+     [
+      [
+       2,
+       0
+      ],
+      "0.000",
+      "Abstract—This document omits a reference list and a conclusi"
+     ],
+     [
+      [
+       11,
+       0
+      ],
+      "0.000",
+      "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+     ],
+     [
+      [
+       39,
+       0
+      ],
+      "0.000",
+      "n/a"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. "
+    },
+    {
+     "index": 10,
+     "type": "heading",
+     "text": "3.1 Data and annotation"
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely"
+    },
+    {
+     "index": 35,
+     "type": "table_cell",
+     "text": "n/a"
+    },
+    {
+     "index": 41,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages c"
+    },
+    {
+     "index": 42,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm c"
+    }
+   ]
+  }
+ ],
+ "aggregate": {
+  "coverage": 0.9985002142551064,
+  "order": 0.8571428571428571,
+  "region": 0.7834645669291339,
+  "sampled_blocks": 254
+ }
+}

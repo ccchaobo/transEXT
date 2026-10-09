@@ -1,0 +1,2706 @@
+{
+ "name": "scan_c_skewed",
+ "title": "Hyphenation in Extracted Research Text",
+ "authors": "K. Linguist and L. Engineer",
+ "layout": "single_column",
+ "columns": 1,
+ "page_count": 2,
+ "language": "en",
+ "notes": "",
+ "has_formula": false,
+ "has_table": false,
+ "has_figure": false,
+ "has_references": true,
+ "has_footnotes": false,
+ "cross_page_paragraph": false,
+ "mixed_language": false,
+ "pages": [
+  {
+   "index": 0,
+   "rotation": 0,
+   "source_kind": "text",
+   "printed_label": "1",
+   "header_text": "Hyphenation in Extracted Research Text",
+   "footer_text": "1",
+   "has_formula": false,
+   "figure_boxes": [],
+   "table_boxes": [
+    [
+     56.0,
+     158.158,
+     539.276,
+     223.158
+    ]
+   ],
+   "blocks": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "Hyphenation in Extracted Research Text",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 0,
+     "bbox": [
+      148.896,
+      760.89,
+      446.38,
+      777.89
+     ],
+     "line_bboxes": [
+      [
+       148.896,
+       760.89,
+       446.38,
+       777.89
+      ]
+     ],
+     "line_texts": [
+      "Hyphenation in Extracted Research Text"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "K. Linguist and L. Engineer",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 1,
+     "bbox": [
+      238.728,
+      740.31,
+      356.548,
+      750.81
+     ],
+     "line_bboxes": [
+      [
+       238.728,
+       740.31,
+       356.548,
+       750.81
+      ]
+     ],
+     "line_texts": [
+      "K. Linguist and L. Engineer"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Hyphenation is the most common source of silent corruption in extracted text. We distinguish word-break hyphens from genuine compound hyphens using the fragment that precedes the break and the word that follows it, and we report the residual error rate on a set of hand-checked wrapped compounds.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 2,
+     "bbox": [
+      64.0,
+      694.73,
+      559.814,
+      727.79
+     ],
+     "line_bboxes": [
+      [
+       64.0,
+       718.29,
+       559.814,
+       727.79
+      ],
+      [
+       64.0,
+       706.51,
+       513.645,
+       716.01
+      ],
+      [
+       64.0,
+       694.73,
+       315.721,
+       704.23
+      ]
+     ],
+     "line_texts": [
+      "Abstract—Hyphenation is the most common source of silent corruption in extracted text. We distinguish word-break hyphens from",
+      "genuine compound hyphens using the fragment that precedes the break and the word that follows it, and we report the",
+      "residual error rate on a set of hand-checked wrapped compounds."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 3,
+     "bbox": [
+      56.0,
+      664.95,
+      136.562,
+      677.45
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       664.95,
+       136.562,
+       677.45
+      ]
+     ],
+     "line_texts": [
+      "1. Introduction"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": 1
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "A state-of-the-art system that relies on a well-known heuristic can still corrupt text when a high-quality multi-modal pipeline joins a real-time, end-to-end, non-linear, co-variate, or cross-domain compound that happened to wrap. We therefore treat every line-final hyphen as ambiguous until the following fragment resolves it.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 4,
+     "bbox": [
+      56.0,
+      624.15,
+      520.94,
+      658.95
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       648.95,
+       520.94,
+       658.95
+      ],
+      [
+       56.0,
+       636.55,
+       519.51,
+       646.55
+      ],
+      [
+       56.0,
+       624.15,
+       426.77,
+       634.15
+      ]
+     ],
+     "line_texts": [
+      "A state-of-the-art system that relies on a well-known heuristic can still corrupt text when a high-quality multi-modal",
+      "pipeline joins a real-time, end-to-end, non-linear, co-variate, or cross-domain compound that happened to wrap. We",
+      "therefore treat every line-final hyphen as ambiguous until the following fragment resolves it."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": null
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "The distinction matters because a wrong join is invisible: 'multi-modal' fused into 'multimodal' changes the token while 'experimental' split as 'experi-mental' is joined correctly. Both cases look identical at the line break, so the resolving evidence must come from the fragments themselves.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 5,
+     "bbox": [
+      56.0,
+      582.45,
+      533.18,
+      617.25
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       607.25,
+       533.18,
+       617.25
+      ],
+      [
+       56.0,
+       594.85,
+       518.97,
+       604.85
+      ],
+      [
+       56.0,
+       582.45,
+       266.24,
+       592.45
+      ]
+     ],
+     "line_texts": [
+      "The distinction matters because a wrong join is invisible: 'multi-modal' fused into 'multimodal' changes the token while",
+      "'experimental' split as 'experi-mental' is joined correctly. Both cases look identical at the line break, so the resolving",
+      "evidence must come from the fragments themselves."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": null
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "We evaluate on a hand-checked set of 200 wrapped compounds drawn from the synthetic corpus, reporting precision and recall for the join decision rather than a single accuracy figure, because the two error directions have different costs.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 6,
+     "bbox": [
+      56.0,
+      553.15,
+      537.25,
+      575.55
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       565.55,
+       523.39,
+       575.55
+      ],
+      [
+       56.0,
+       553.15,
+       537.25,
+       563.15
+      ]
+     ],
+     "line_texts": [
+      "We evaluate on a hand-checked set of 200 wrapped compounds drawn from the synthetic corpus, reporting precision",
+      "and recall for the join decision rather than a single accuracy figure, because the two error directions have different costs."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": null
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "3. Method",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 7,
+     "bbox": [
+      56.0,
+      525.75,
+      110.162,
+      538.25
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       525.75,
+       110.162,
+       538.25
+      ]
+     ],
+     "line_texts": [
+      "3. Method"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "3. Method"
+     ],
+     "level": 1
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the top-left of the displayed page, so that zoom, rotation and cropping never change the stored value.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 8,
+     "bbox": [
+      56.0,
+      484.95,
+      522.02,
+      519.75
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       509.75,
+       508.92,
+       519.75
+      ],
+      [
+       56.0,
+       497.35,
+       522.02,
+       507.35
+      ],
+      [
+       56.0,
+       484.95,
+       444.26,
+       494.95
+      ]
+     ],
+     "line_texts": [
+      "We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned",
+      "variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the",
+      "top-left of the displayed page, so that zoom, rotation and cropping never change the stored value."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "3. Method"
+     ],
+     "level": null
+    },
+    {
+     "index": 9,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally, blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final punctuation and the following line begins in lower case.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 9,
+     "bbox": [
+      56.0,
+      418.45,
+      537.31,
+      478.05
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       468.05,
+       536.74,
+       478.05
+      ],
+      [
+       56.0,
+       455.65,
+       527.02,
+       465.65
+      ],
+      [
+       56.0,
+       443.25,
+       537.31,
+       453.25
+      ],
+      [
+       56.0,
+       430.85,
+       503.11,
+       440.85
+      ],
+      [
+       56.0,
+       418.45,
+       280.14,
+       428.45
+      ]
+     ],
+     "line_texts": [
+      "Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical",
+      "gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each",
+      "band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally,",
+      "blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final",
+      "punctuation and the following line begins in lower case."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "n_lines": 5,
+     "section_path": [
+      "3. Method"
+     ],
+     "level": null
+    },
+    {
+     "index": 10,
+     "type": "heading",
+     "text": "3.1 Data and annotation",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 10,
+     "bbox": [
+      56.0,
+      392.75,
+      167.013,
+      403.55
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       392.75,
+       167.013,
+       403.55
+      ]
+     ],
+     "line_texts": [
+      "3.1 Data and annotation"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "3. Method",
+      "3.1 Data and annotation"
+     ],
+     "level": 2
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6 word-processing documents. Two annotators labelled every page independently and disagreements were resolved by discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned pages were rotated by 2 degrees to introduce a realistic skew.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 11,
+     "bbox": [
+      56.0,
+      339.958,
+      536.05,
+      387.158
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       377.158,
+       474.02,
+       387.158
+      ],
+      [
+       56.0,
+       364.758,
+       522.84,
+       374.758
+      ],
+      [
+       56.0,
+       352.358,
+       536.05,
+       362.358
+      ],
+      [
+       56.0,
+       339.958,
+       301.21,
+       349.958
+      ]
+     ],
+     "line_texts": [
+      "The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6",
+      "word-processing documents. Two annotators labelled every page independently and disagreements were resolved by",
+      "discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned",
+      "pages were rotated by 2 degrees to introduce a realistic skew."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0,
+      0
+     ],
+     "n_lines": 4,
+     "section_path": [
+      "3. Method",
+      "3.1 Data and annotation"
+     ],
+     "level": null
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the layer fails either test.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 12,
+     "bbox": [
+      56.0,
+      298.258,
+      536.46,
+      333.058
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       323.058,
+       536.46,
+       333.058
+      ],
+      [
+       56.0,
+       310.658,
+       519.48,
+       320.658
+      ],
+      [
+       56.0,
+       298.258,
+       139.87,
+       308.258
+      ]
+     ],
+     "line_texts": [
+      "Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of",
+      "replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the",
+      "layer fails either test."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "3. Method",
+      "3.1 Data and annotation"
+     ],
+     "level": null
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 13,
+     "bbox": [
+      56.0,
+      270.858,
+      107.387,
+      283.358
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       270.858,
+       107.387,
+       283.358
+      ]
+     ],
+     "line_texts": [
+      "4. Results"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": 1
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 14,
+     "bbox": [
+      56.0,
+      230.058,
+      513.9,
+      264.858
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       254.858,
+       513.9,
+       264.858
+      ],
+      [
+       56.0,
+       242.458,
+       497.84,
+       252.458
+      ],
+      [
+       56.0,
+       230.058,
+       366.78,
+       240.058
+      ]
+     ],
+     "line_texts": [
+      "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital",
+      "pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported",
+      "separately because column splitting is the dominant source of ordering errors."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 15,
+     "type": "table",
+     "text": "Table 1. Coverage and order accuracy by input class.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 15,
+     "bbox": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "line_bboxes": [],
+     "line_texts": [],
+     "line_page_indices": [],
+     "n_lines": 0,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 16,
+     "type": "caption",
+     "text": "Table 1. Coverage and order accuracy by input class.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 16,
+     "bbox": [
+      56.0,
+      214.158,
+      259.994,
+      223.158
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       214.158,
+       259.994,
+       223.158
+      ]
+     ],
+     "line_texts": [
+      "Table 1. Coverage and order accuracy by input class."
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 17,
+     "type": "table_cell",
+     "text": "Input class",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 17,
+     "bbox": [
+      59.0,
+      197.998,
+      100.76,
+      206.998
+     ],
+     "line_bboxes": [
+      [
+       59.0,
+       197.998,
+       100.76,
+       206.998
+      ]
+     ],
+     "line_texts": [
+      "Input class"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 18,
+     "type": "table_cell",
+     "text": "Docs",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 18,
+     "bbox": [
+      179.819,
+      197.998,
+      198.314,
+      206.998
+     ],
+     "line_bboxes": [
+      [
+       179.819,
+       197.998,
+       198.314,
+       206.998
+      ]
+     ],
+     "line_texts": [
+      "Docs"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 19,
+     "type": "table_cell",
+     "text": "Coverage",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 19,
+     "bbox": [
+      300.638,
+      197.998,
+      337.124,
+      206.998
+     ],
+     "line_bboxes": [
+      [
+       300.638,
+       197.998,
+       337.124,
+       206.998
+      ]
+     ],
+     "line_texts": [
+      "Coverage"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 20,
+     "type": "table_cell",
+     "text": "Order acc.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 20,
+     "bbox": [
+      421.457,
+      197.998,
+      462.443,
+      206.998
+     ],
+     "line_bboxes": [
+      [
+       421.457,
+       197.998,
+       462.443,
+       206.998
+      ]
+     ],
+     "line_texts": [
+      "Order acc."
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 21,
+     "type": "table_cell",
+     "text": "born-digital",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 21,
+     "bbox": [
+      59.0,
+      184.998,
+      101.498,
+      193.998
+     ],
+     "line_bboxes": [
+      [
+       59.0,
+       184.998,
+       101.498,
+       193.998
+      ]
+     ],
+     "line_texts": [
+      "born-digital"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 22,
+     "type": "table_cell",
+     "text": "8",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 22,
+     "bbox": [
+      179.819,
+      184.998,
+      184.319,
+      193.998
+     ],
+     "line_bboxes": [
+      [
+       179.819,
+       184.998,
+       184.319,
+       193.998
+      ]
+     ],
+     "line_texts": [
+      "8"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 23,
+     "type": "table_cell",
+     "text": "99.1%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 23,
+     "bbox": [
+      300.638,
+      184.998,
+      323.885,
+      193.998
+     ],
+     "line_bboxes": [
+      [
+       300.638,
+       184.998,
+       323.885,
+       193.998
+      ]
+     ],
+     "line_texts": [
+      "99.1%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 24,
+     "type": "table_cell",
+     "text": "96.4%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 24,
+     "bbox": [
+      421.457,
+      184.998,
+      444.704,
+      193.998
+     ],
+     "line_bboxes": [
+      [
+       421.457,
+       184.998,
+       444.704,
+       193.998
+      ]
+     ],
+     "line_texts": [
+      "96.4%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 25,
+     "type": "table_cell",
+     "text": "scanned",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 25,
+     "bbox": [
+      59.0,
+      171.998,
+      87.989,
+      180.998
+     ],
+     "line_bboxes": [
+      [
+       59.0,
+       171.998,
+       87.989,
+       180.998
+      ]
+     ],
+     "line_texts": [
+      "scanned"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 26,
+     "type": "table_cell",
+     "text": "6",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 26,
+     "bbox": [
+      179.819,
+      171.998,
+      184.319,
+      180.998
+     ],
+     "line_bboxes": [
+      [
+       179.819,
+       171.998,
+       184.319,
+       180.998
+      ]
+     ],
+     "line_texts": [
+      "6"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 27,
+     "type": "table_cell",
+     "text": "97.8%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 27,
+     "bbox": [
+      300.638,
+      171.998,
+      323.885,
+      180.998
+     ],
+     "line_bboxes": [
+      [
+       300.638,
+       171.998,
+       323.885,
+       180.998
+      ]
+     ],
+     "line_texts": [
+      "97.8%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 28,
+     "type": "table_cell",
+     "text": "95.1%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 28,
+     "bbox": [
+      421.457,
+      171.998,
+      444.704,
+      180.998
+     ],
+     "line_bboxes": [
+      [
+       421.457,
+       171.998,
+       444.704,
+       180.998
+      ]
+     ],
+     "line_texts": [
+      "95.1%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 29,
+     "type": "table_cell",
+     "text": "images",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 29,
+     "bbox": [
+      59.0,
+      158.998,
+      84.497,
+      167.998
+     ],
+     "line_bboxes": [
+      [
+       59.0,
+       158.998,
+       84.497,
+       167.998
+      ]
+     ],
+     "line_texts": [
+      "images"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 30,
+     "type": "table_cell",
+     "text": "4",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 30,
+     "bbox": [
+      179.819,
+      158.998,
+      184.319,
+      167.998
+     ],
+     "line_bboxes": [
+      [
+       179.819,
+       158.998,
+       184.319,
+       167.998
+      ]
+     ],
+     "line_texts": [
+      "4"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 31,
+     "type": "table_cell",
+     "text": "98.2%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 31,
+     "bbox": [
+      300.638,
+      158.998,
+      323.885,
+      167.998
+     ],
+     "line_bboxes": [
+      [
+       300.638,
+       158.998,
+       323.885,
+       167.998
+      ]
+     ],
+     "line_texts": [
+      "98.2%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 32,
+     "type": "table_cell",
+     "text": "n/a",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 32,
+     "bbox": [
+      421.457,
+      158.998,
+      432.455,
+      167.998
+     ],
+     "line_bboxes": [
+      [
+       421.457,
+       158.998,
+       432.455,
+       167.998
+      ]
+     ],
+     "line_texts": [
+      "n/a"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 33,
+     "type": "table_cell",
+     "text": "docx",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 33,
+     "bbox": [
+      59.0,
+      145.998,
+      76.496,
+      154.998
+     ],
+     "line_bboxes": [
+      [
+       59.0,
+       145.998,
+       76.496,
+       154.998
+      ]
+     ],
+     "line_texts": [
+      "docx"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 34,
+     "type": "table_cell",
+     "text": "6",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 34,
+     "bbox": [
+      179.819,
+      145.998,
+      184.319,
+      154.998
+     ],
+     "line_bboxes": [
+      [
+       179.819,
+       145.998,
+       184.319,
+       154.998
+      ]
+     ],
+     "line_texts": [
+      "6"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 35,
+     "type": "table_cell",
+     "text": "98.5%",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 35,
+     "bbox": [
+      300.638,
+      145.998,
+      323.885,
+      154.998
+     ],
+     "line_bboxes": [
+      [
+       300.638,
+       145.998,
+       323.885,
+       154.998
+      ]
+     ],
+     "line_texts": [
+      "98.5%"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 36,
+     "type": "table_cell",
+     "text": "n/a",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 36,
+     "bbox": [
+      421.457,
+      145.998,
+      432.455,
+      154.998
+     ],
+     "line_bboxes": [
+      [
+       421.457,
+       145.998,
+       432.455,
+       154.998
+      ]
+     ],
+     "line_texts": [
+      "n/a"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    }
+   ],
+   "visible_blocks": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "Hyphenation in Extracted Research Text",
+     "page_index": 0
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "K. Linguist and L. Engineer",
+     "page_index": 0
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—Hyphenation is the most common source of silent corruption in extracted text. We distinguish word-break hyphens from genuine compound hyphens using the fragment that precedes the break and the word that follows it, and we report the residual error rate on a set of hand-checked wrapped compounds.",
+     "page_index": 0
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction",
+     "page_index": 0
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "A state-of-the-art system that relies on a well-known heuristic can still corrupt text when a high-quality multi-modal pipeline joins a real-time, end-to-end, non-linear, co-variate, or cross-domain compound that happened to wrap. We therefore treat every line-final hyphen as ambiguous until the following fragment resolves it.",
+     "page_index": 0
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "The distinction matters because a wrong join is invisible: 'multi-modal' fused into 'multimodal' changes the token while 'experimental' split as 'experi-mental' is joined correctly. Both cases look identical at the line break, so the resolving evidence must come from the fragments themselves.",
+     "page_index": 0
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "We evaluate on a hand-checked set of 200 wrapped compounds drawn from the synthetic corpus, reporting precision and recall for the join decision rather than a single accuracy figure, because the two error directions have different costs.",
+     "page_index": 0
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "3. Method",
+     "page_index": 0
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the top-left of the displayed page, so that zoom, rotation and cropping never change the stored value.",
+     "page_index": 0
+    },
+    {
+     "index": 9,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally, blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final punctuation and the following line begins in lower case.",
+     "page_index": 0
+    },
+    {
+     "index": 10,
+     "type": "heading",
+     "text": "3.1 Data and annotation",
+     "page_index": 0
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6 word-processing documents. Two annotators labelled every page independently and disagreements were resolved by discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned pages were rotated by 2 degrees to introduce a realistic skew.",
+     "page_index": 0
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the layer fails either test.",
+     "page_index": 0
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results",
+     "page_index": 0
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+     "page_index": 0
+    },
+    {
+     "index": 16,
+     "type": "caption",
+     "text": "Table 1. Coverage and order accuracy by input class.",
+     "page_index": 0
+    },
+    {
+     "index": 17,
+     "type": "table_cell",
+     "text": "Input class",
+     "page_index": 0
+    },
+    {
+     "index": 18,
+     "type": "table_cell",
+     "text": "Docs",
+     "page_index": 0
+    },
+    {
+     "index": 19,
+     "type": "table_cell",
+     "text": "Coverage",
+     "page_index": 0
+    },
+    {
+     "index": 20,
+     "type": "table_cell",
+     "text": "Order acc.",
+     "page_index": 0
+    },
+    {
+     "index": 21,
+     "type": "table_cell",
+     "text": "born-digital",
+     "page_index": 0
+    },
+    {
+     "index": 22,
+     "type": "table_cell",
+     "text": "8",
+     "page_index": 0
+    },
+    {
+     "index": 23,
+     "type": "table_cell",
+     "text": "99.1%",
+     "page_index": 0
+    },
+    {
+     "index": 24,
+     "type": "table_cell",
+     "text": "96.4%",
+     "page_index": 0
+    },
+    {
+     "index": 25,
+     "type": "table_cell",
+     "text": "scanned",
+     "page_index": 0
+    },
+    {
+     "index": 26,
+     "type": "table_cell",
+     "text": "6",
+     "page_index": 0
+    },
+    {
+     "index": 27,
+     "type": "table_cell",
+     "text": "97.8%",
+     "page_index": 0
+    },
+    {
+     "index": 28,
+     "type": "table_cell",
+     "text": "95.1%",
+     "page_index": 0
+    },
+    {
+     "index": 29,
+     "type": "table_cell",
+     "text": "images",
+     "page_index": 0
+    },
+    {
+     "index": 30,
+     "type": "table_cell",
+     "text": "4",
+     "page_index": 0
+    },
+    {
+     "index": 31,
+     "type": "table_cell",
+     "text": "98.2%",
+     "page_index": 0
+    },
+    {
+     "index": 32,
+     "type": "table_cell",
+     "text": "n/a",
+     "page_index": 0
+    },
+    {
+     "index": 33,
+     "type": "table_cell",
+     "text": "docx",
+     "page_index": 0
+    },
+    {
+     "index": 34,
+     "type": "table_cell",
+     "text": "6",
+     "page_index": 0
+    },
+    {
+     "index": 35,
+     "type": "table_cell",
+     "text": "98.5%",
+     "page_index": 0
+    },
+    {
+     "index": 36,
+     "type": "table_cell",
+     "text": "n/a",
+     "page_index": 0
+    }
+   ],
+   "visible_lines": [
+    "Hyphenation in Extracted Research Text",
+    "K. Linguist and L. Engineer",
+    "Abstract—Hyphenation is the most common source of silent corruption in extracted text. We distinguish word-break hyphens from",
+    "genuine compound hyphens using the fragment that precedes the break and the word that follows it, and we report the",
+    "residual error rate on a set of hand-checked wrapped compounds.",
+    "1. Introduction",
+    "A state-of-the-art system that relies on a well-known heuristic can still corrupt text when a high-quality multi-modal",
+    "pipeline joins a real-time, end-to-end, non-linear, co-variate, or cross-domain compound that happened to wrap. We",
+    "therefore treat every line-final hyphen as ambiguous until the following fragment resolves it.",
+    "The distinction matters because a wrong join is invisible: 'multi-modal' fused into 'multimodal' changes the token while",
+    "'experimental' split as 'experi-mental' is joined correctly. Both cases look identical at the line break, so the resolving",
+    "evidence must come from the fragments themselves.",
+    "We evaluate on a hand-checked set of 200 wrapped compounds drawn from the synthetic corpus, reporting precision",
+    "and recall for the join decision rather than a single accuracy figure, because the two error directions have different costs.",
+    "3. Method",
+    "We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned",
+    "variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the",
+    "top-left of the displayed page, so that zoom, rotation and cropping never change the stored value.",
+    "Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical",
+    "gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each",
+    "band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally,",
+    "blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final",
+    "punctuation and the following line begins in lower case.",
+    "3.1 Data and annotation",
+    "The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6",
+    "word-processing documents. Two annotators labelled every page independently and disagreements were resolved by",
+    "discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned",
+    "pages were rotated by 2 degrees to introduce a realistic skew.",
+    "Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of",
+    "replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the",
+    "layer fails either test.",
+    "4. Results",
+    "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital",
+    "pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported",
+    "separately because column splitting is the dominant source of ordering errors.",
+    "Table 1. Coverage and order accuracy by input class.",
+    "Input class",
+    "Docs",
+    "Coverage",
+    "Order acc.",
+    "born-digital",
+    "8",
+    "99.1%",
+    "96.4%",
+    "scanned",
+    "6",
+    "97.8%",
+    "95.1%",
+    "images",
+    "4",
+    "98.2%",
+    "n/a",
+    "docx",
+    "6",
+    "98.5%",
+    "n/a"
+   ],
+   "visible_text": "Hyphenation in Extracted Research Text K. Linguist and L. Engineer Abstract—Hyphenation is the most common source of silent corruption in extracted text. We distinguish word-break hyphens from genuine compound hyphens using the fragment that precedes the break and the word that follows it, and we report the residual error rate on a set of hand-checked wrapped compounds. 1. Introduction A state-of-the-art system that relies on a well-known heuristic can still corrupt text when a high-quality multi-modal pipeline joins a real-time, end-to-end, non-linear, co-variate, or cross-domain compound that happened to wrap. We therefore treat every line-final hyphen as ambiguous until the following fragment resolves it. The distinction matters because a wrong join is invisible: 'multi-modal' fused into 'multimodal' changes the token while 'experimental' split as 'experi-mental' is joined correctly. Both cases look identical at the line break, so the resolving evidence must come from the fragments themselves. We evaluate on a hand-checked set of 200 wrapped compounds drawn from the synthetic corpus, reporting precision and recall for the join decision rather than a single accuracy figure, because the two error directions have different costs. 3. Method We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the top-left of the displayed page, so that zoom, rotation and cropping never change the stored value. Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally, blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final punctuation and the following line begins in lower case. 3.1 Data and annotation The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6 word-processing documents. Two annotators labelled every page independently and disagreements were resolved by discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned pages were rotated by 2 degrees to introduce a realistic skew. Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the layer fails either test. 4. Results Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors. Table 1. Coverage and order accuracy by input class. Input class Docs Coverage Order acc. born-digital 8 99.1% 96.4% scanned 6 97.8% 95.1% images 4 98.2% n/a docx 6 98.5% n/a",
+   "decorations": []
+  },
+  {
+   "index": 1,
+   "rotation": 0,
+   "source_kind": "text",
+   "printed_label": null,
+   "header_text": null,
+   "footer_text": null,
+   "has_formula": false,
+   "figure_boxes": [
+    [
+     56.0,
+     651.89,
+     539.276,
+     777.89
+    ]
+   ],
+   "table_boxes": [],
+   "blocks": [
+    {
+     "index": 37,
+     "type": "figure",
+     "text": "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no functional form is claimed.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 37,
+     "bbox": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "line_bboxes": [],
+     "line_texts": [],
+     "line_page_indices": [],
+     "n_lines": 0,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 38,
+     "type": "caption",
+     "text": "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no functional form is claimed.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 38,
+     "bbox": [
+      56.0,
+      626.73,
+      509.654,
+      646.89
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       637.89,
+       509.654,
+       646.89
+      ],
+      [
+       56.0,
+       626.73,
+       153.488,
+       635.73
+      ]
+     ],
+     "line_texts": [
+      "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no",
+      "functional form is claimed."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 39,
+     "type": "heading",
+     "text": "4.1 Ablation",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 39,
+     "bbox": [
+      56.0,
+      598.77,
+      112.408,
+      609.57
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       598.77,
+       112.408,
+       609.57
+      ]
+     ],
+     "line_texts": [
+      "4.1 Ablation"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": 2
+    },
+    {
+     "index": 40,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 40,
+     "bbox": [
+      56.0,
+      545.978,
+      534.49,
+      593.178
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       583.178,
+       534.25,
+       593.178
+      ],
+      [
+       56.0,
+       570.778,
+       534.49,
+       580.778
+      ],
+      [
+       56.0,
+       558.378,
+       520.06,
+       568.378
+      ],
+      [
+       56.0,
+       545.978,
+       83.48,
+       555.978
+      ]
+     ],
+     "line_texts": [
+      "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and",
+      "removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect,",
+      "changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the",
+      "reader."
+     ],
+     "line_page_indices": [
+      1,
+      1,
+      1,
+      1
+     ],
+     "n_lines": 4,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": null
+    },
+    {
+     "index": 41,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 41,
+     "bbox": [
+      56.0,
+      504.278,
+      535.35,
+      539.078
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       529.078,
+       518.4,
+       539.078
+      ],
+      [
+       56.0,
+       516.678,
+       535.35,
+       526.678
+      ],
+      [
+       56.0,
+       504.278,
+       180.45,
+       514.278
+      ]
+     ],
+     "line_texts": [
+      "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the",
+      "effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input",
+      "distribution, not of the method."
+     ],
+     "line_page_indices": [
+      1,
+      1,
+      1
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": null
+    },
+    {
+     "index": 42,
+     "type": "heading",
+     "text": "5. Discussion and Limitations",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 42,
+     "bbox": [
+      56.0,
+      476.878,
+      212.975,
+      489.378
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       476.878,
+       212.975,
+       489.378
+      ]
+     ],
+     "line_texts": [
+      "5. Discussion and Limitations"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": 1
+    },
+    {
+     "index": 43,
+     "type": "paragraph",
+     "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 43,
+     "bbox": [
+      56.0,
+      423.678,
+      527.6,
+      470.878
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       460.878,
+       520.13,
+       470.878
+      ],
+      [
+       56.0,
+       448.478,
+       527.6,
+       458.478
+      ],
+      [
+       56.0,
+       436.078,
+       508.69,
+       446.078
+      ],
+      [
+       56.0,
+       423.678,
+       368.44,
+       433.678
+      ]
+     ],
+     "line_texts": [
+      "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot",
+      "establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout",
+      "and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten",
+      "annotations and photographs of curved pages are out of scope for this version."
+     ],
+     "line_page_indices": [
+      1,
+      1,
+      1,
+      1
+     ],
+     "n_lines": 4,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": null
+    },
+    {
+     "index": 44,
+     "type": "paragraph",
+     "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 44,
+     "bbox": [
+      56.0,
+      394.378,
+      494.22,
+      416.778
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       406.778,
+       494.22,
+       416.778
+      ],
+      [
+       56.0,
+       394.378,
+       447.59,
+       404.378
+      ]
+     ],
+     "line_texts": [
+      "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region",
+      "association exists, the interface must say so rather than presenting an approximate match as exact."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": null
+    },
+    {
+     "index": 45,
+     "type": "heading",
+     "text": "6. Conclusion",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 45,
+     "bbox": [
+      56.0,
+      366.978,
+      128.238,
+      379.478
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       366.978,
+       128.238,
+       379.478
+      ]
+     ],
+     "line_texts": [
+      "6. Conclusion"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "6. Conclusion"
+     ],
+     "level": 1
+    },
+    {
+     "index": 46,
+     "type": "paragraph",
+     "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 46,
+     "bbox": [
+      56.0,
+      326.178,
+      519.78,
+      360.978
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       350.978,
+       506.16,
+       360.978
+      ],
+      [
+       56.0,
+       338.578,
+       519.78,
+       348.578
+      ],
+      [
+       56.0,
+       326.178,
+       371.75,
+       336.178
+      ]
+     ],
+     "line_texts": [
+      "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate",
+      "contract, per-format adapters and anchored translations. The system preserves the original page for inspection while",
+      "giving the reader a translated view that can always be traced back to its source."
+     ],
+     "line_page_indices": [
+      1,
+      1,
+      1
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "6. Conclusion"
+     ],
+     "level": null
+    },
+    {
+     "index": 47,
+     "type": "heading",
+     "text": "Acknowledgements",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 47,
+     "bbox": [
+      56.0,
+      298.778,
+      159.463,
+      311.278
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       298.778,
+       159.463,
+       311.278
+      ]
+     ],
+     "line_texts": [
+      "Acknowledgements"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "Acknowledgements"
+     ],
+     "level": 1
+    },
+    {
+     "index": 48,
+     "type": "paragraph",
+     "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 48,
+     "bbox": [
+      56.0,
+      270.378,
+      523.98,
+      292.778
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       282.778,
+       523.98,
+       292.778
+      ],
+      [
+       56.0,
+       270.378,
+       262.91,
+       280.378
+      ]
+     ],
+     "line_texts": [
+      "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data",
+      "team for preparing the annotated development split."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "Acknowledgements"
+     ],
+     "level": null
+    },
+    {
+     "index": 49,
+     "type": "heading",
+     "text": "References",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 49,
+     "bbox": [
+      56.0,
+      242.978,
+      114.3,
+      255.478
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       242.978,
+       114.3,
+       255.478
+      ]
+     ],
+     "line_texts": [
+      "References"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": 1
+    },
+    {
+     "index": 50,
+     "type": "reference",
+     "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 50,
+     "bbox": [
+      56.0,
+      216.818,
+      519.923,
+      236.978
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       227.978,
+       519.923,
+       236.978
+      ],
+      [
+       68.0,
+       216.818,
+       221.261,
+       225.818
+      ]
+     ],
+     "line_texts": [
+      "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp.",
+      "210–225, 2019. doi:10.1000/jsm.2019.210"
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 51,
+     "type": "reference",
+     "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 51,
+     "bbox": [
+      56.0,
+      192.498,
+      495.155,
+      212.658
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       203.658,
+       495.155,
+       212.658
+      ],
+      [
+       68.0,
+       192.498,
+       216.221,
+       201.498
+      ]
+     ],
+     "line_texts": [
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic",
+      "Conference on Learning, 2020, pp. 1–12."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 52,
+     "type": "reference",
+     "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 52,
+     "bbox": [
+      56.0,
+      179.338,
+      332.219,
+      188.338
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       179.338,
+       332.219,
+       188.338
+      ]
+     ],
+     "line_texts": [
+      "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021."
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 53,
+     "type": "reference",
+     "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 53,
+     "bbox": [
+      56.0,
+      166.178,
+      421.679,
+      175.178
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       166.178,
+       421.679,
+       175.178
+      ]
+     ],
+     "line_texts": [
+      "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021."
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 54,
+     "type": "reference",
+     "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 54,
+     "bbox": [
+      56.0,
+      141.858,
+      508.421,
+      162.018
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       153.018,
+       508.421,
+       162.018
+      ],
+      [
+       68.0,
+       141.858,
+       177.26,
+       150.858
+      ]
+     ],
+     "line_texts": [
+      "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67,",
+      "2018. doi:10.1000/ssl.2018.55"
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    }
+   ],
+   "visible_blocks": [
+    {
+     "index": 38,
+     "type": "caption",
+     "text": "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no functional form is claimed.",
+     "page_index": 1
+    },
+    {
+     "index": 39,
+     "type": "heading",
+     "text": "4.1 Ablation",
+     "page_index": 1
+    },
+    {
+     "index": 40,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+     "page_index": 1
+    },
+    {
+     "index": 41,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+     "page_index": 1
+    },
+    {
+     "index": 42,
+     "type": "heading",
+     "text": "5. Discussion and Limitations",
+     "page_index": 1
+    },
+    {
+     "index": 43,
+     "type": "paragraph",
+     "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+     "page_index": 1
+    },
+    {
+     "index": 44,
+     "type": "paragraph",
+     "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+     "page_index": 1
+    },
+    {
+     "index": 45,
+     "type": "heading",
+     "text": "6. Conclusion",
+     "page_index": 1
+    },
+    {
+     "index": 46,
+     "type": "paragraph",
+     "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+     "page_index": 1
+    },
+    {
+     "index": 47,
+     "type": "heading",
+     "text": "Acknowledgements",
+     "page_index": 1
+    },
+    {
+     "index": 48,
+     "type": "paragraph",
+     "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+     "page_index": 1
+    },
+    {
+     "index": 49,
+     "type": "heading",
+     "text": "References",
+     "page_index": 1
+    },
+    {
+     "index": 50,
+     "type": "reference",
+     "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+     "page_index": 1
+    },
+    {
+     "index": 51,
+     "type": "reference",
+     "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+     "page_index": 1
+    },
+    {
+     "index": 52,
+     "type": "reference",
+     "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+     "page_index": 1
+    },
+    {
+     "index": 53,
+     "type": "reference",
+     "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+     "page_index": 1
+    },
+    {
+     "index": 54,
+     "type": "reference",
+     "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+     "page_index": 1
+    }
+   ],
+   "visible_lines": [
+    "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no",
+    "functional form is claimed.",
+    "4.1 Ablation",
+    "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and",
+    "removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect,",
+    "changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the",
+    "reader.",
+    "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the",
+    "effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input",
+    "distribution, not of the method.",
+    "5. Discussion and Limitations",
+    "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot",
+    "establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout",
+    "and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten",
+    "annotations and photographs of curved pages are out of scope for this version.",
+    "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region",
+    "association exists, the interface must say so rather than presenting an approximate match as exact.",
+    "6. Conclusion",
+    "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate",
+    "contract, per-format adapters and anchored translations. The system preserves the original page for inspection while",
+    "giving the reader a translated view that can always be traced back to its source.",
+    "Acknowledgements",
+    "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data",
+    "team for preparing the annotated development split.",
+    "References",
+    "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp.",
+    "210–225, 2019. doi:10.1000/jsm.2019.210",
+    "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic",
+    "Conference on Learning, 2020, pp. 1–12.",
+    "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+    "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+    "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67,",
+    "2018. doi:10.1000/ssl.2018.55"
+   ],
+   "visible_text": "Figure 1. Error rate as a function of page rotation. Markers show measured values; the curve is a guide to the eye only, and no functional form is claimed. 4.1 Ablation Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader. Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method. 5. Discussion and Limitations Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version. We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact. 6. Conclusion We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source. Acknowledgements The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split. References [1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210 [2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12. [3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021. [4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021. [5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+   "decorations": []
+  }
+ ],
+ "source_format": "pdf",
+ "source_kind": "scanned",
+ "scan_profile": {
+  "dpi": 300,
+  "rotation_deg": 1.8,
+  "noise_sigma": 4.0,
+  "blur_radius": 0.5,
+  "jpeg_quality": 76,
+  "contrast": 1.0,
+  "brightness": 0,
+  "vignette": false,
+  "speckles": 120
+ },
+ "scan_pages": [
+  0,
+  1
+ ],
+ "rendered_pages": [
+  {
+   "index": 0,
+   "rendered": true,
+   "rotation": 0,
+   "dpi": 300,
+   "scan_rotation_deg": 1.8,
+   "width_pt": 621.84,
+   "height_pt": 860.64
+  },
+  {
+   "index": 1,
+   "rendered": true,
+   "rotation": 0,
+   "dpi": 300,
+   "scan_rotation_deg": 1.8,
+   "width_pt": 621.84,
+   "height_pt": 860.64
+  }
+ ]
+}

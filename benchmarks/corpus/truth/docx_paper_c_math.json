@@ -1,0 +1,231 @@
+{
+ "name": "docx_paper_c_math",
+ "source_format": "docx",
+ "source_kind": "docx",
+ "title": "Long Paragraphs, Footnotes and Equations",
+ "authors": "F. Analyst, G. Engineer",
+ "layout": "flow",
+ "text_blocks": [
+  {
+   "type": "title",
+   "text": "Long Paragraphs, Footnotes and Equations",
+   "order": 0
+  },
+  {
+   "type": "author",
+   "text": "F. Analyst, G. Engineer",
+   "order": 1
+  },
+  {
+   "type": "abstract",
+   "text": "Long paragraphs, footnotes and equations stress the relationship between a semantic block and the regions it occupies. We describe how a block may own several source regions and how a page-level fallback is distinguished from an exact paragraph anchor.",
+   "order": 2
+  },
+  {
+   "type": "heading",
+   "text": "1. Introduction",
+   "order": 3,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Reading order and evidence tracking are prerequisites for reliable automatic processing of mathematical articles. In this paper we study how a structure-aware pipeline can keep every generated statement attached to the passage it came from. Prior work has reported strong coverage on carefully cleaned collections, yet those numbers are known to degrade when the input layout differs from the development set [1], [2]. We therefore treat layout variation as a first-class experimental factor rather than a preprocessing detail.",
+   "order": 4
+  },
+  {
+   "type": "paragraph",
+   "text": "Our contributions are threefold. First, we describe a reproducible annotation protocol for two-column and single-column documents that records, for every block, the region of the page it occupies. Second, we show that a small set of layout heuristics recovers the intended reading order on the majority of pages without any learned component. Third, we quantify how much a long-lived cache changes measured cost, and we argue that reported cost figures should always state whether cache hits are included.",
+   "order": 5
+  },
+  {
+   "type": "paragraph",
+   "text": "The remainder of the paper is organised as follows. Section 2 reviews related work on document layout analysis and on evaluation of machine translation for scientific text. Section 3 defines the document model and the coordinate contract we rely on. Section 4 describes the pipeline, Section 5 reports results, and Section 6 discusses limitations and threats to validity.",
+   "order": 6
+  },
+  {
+   "type": "heading",
+   "text": "2. Formal Setting",
+   "order": 7,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "This section deliberately contains a paragraph that is longer than a single column can hold, so that it must continue across a page boundary. A reader who jumps to the continuation must land on the same translated block rather than on a second, disconnected fragment, and an annotation attached to the beginning of the paragraph must remain attached to the whole. This section deliberately contains a paragraph that is longer than a single column can hold, so that it must continue across a page boundary. A reader who jumps to the continuation must land on the same translated block rather than on a second, disconnected fragment, and an annotation attached to the beginning of the paragraph must remain attached to the whole. This section deliberately contains a paragraph that is longer than a single column can hold, so that it must continue across a page boundary. A reader who jumps to the continuation must land on the same translated block rather than on a second, disconnected fragment, and an annotation attached to the beginning of the paragraph must remain attached to the whole. We use this case to check that a block may own several source regions on different pages, and that the interface reports such a block honestly instead of pretending it fits on one page.",
+   "order": 8
+  },
+  {
+   "type": "formula",
+   "text": "p(y | x) = exp(S(x, y)) / Σ_{y'} exp(S(x, y'))",
+   "order": 9
+  },
+  {
+   "type": "paragraph",
+   "text": "Equation (2) normalises the score over all labellings. In practice the sum is computed by dynamic programming, which is exact for linear-chain models and approximate otherwise.",
+   "order": 10
+  },
+  {
+   "type": "footnote",
+   "text": "1 Supported by synthetic grant SYN-2021-004.",
+   "order": 11
+  },
+  {
+   "type": "footnote",
+   "text": "2 Correspondence: author@example.invalid",
+   "order": 12
+  },
+  {
+   "type": "heading",
+   "text": "3. Method",
+   "order": 13,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "We model a document as an ordered sequence of typed blocks. Each block carries the text as extracted, a cleaned variant, and one or more source regions. Regions are expressed in normalised page coordinates with the origin at the top-left of the displayed page, so that zoom, rotation and cropping never change the stored value.",
+   "order": 14
+  },
+  {
+   "type": "paragraph",
+   "text": "Reading order is recovered in three steps. Pages are first split into horizontal bands separated by unusually large vertical gaps; such a gap usually means a full-width object such as a figure or a table interrupted the column flow. Inside each band we search for a vertical gutter using a projection profile, and order the resulting columns from left to right. Finally, blocks that continue across a column or page boundary are merged when the preceding line lacks sentence-final punctuation and the following line begins in lower case.",
+   "order": 15
+  },
+  {
+   "type": "paragraph",
+   "text": "Let $x_i$ denote the feature vector for token i and let $y_i$ denote its assigned label. The score of a labelling is defined in Eq. (1), where the transition term encourages label consistency between adjacent tokens.",
+   "order": 16
+  },
+  {
+   "type": "formula",
+   "text": "S(x, y) = Σ_i θ · f(x_i, y_i) + Σ_i T(y_i, y_{i+1})",
+   "order": 17
+  },
+  {
+   "type": "paragraph",
+   "text": "Parameters are estimated by maximising the conditional likelihood of the training labels subject to an L2 penalty of 0.01. We use a batch size of 32 and train for at most 40 epochs, selecting the checkpoint with the best development-set F1.",
+   "order": 18
+  },
+  {
+   "type": "heading",
+   "text": "3.1 Data and annotation",
+   "order": 19,
+   "level": 2
+  },
+  {
+   "type": "paragraph",
+   "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 scanned or mixed PDFs, 4 page images and 6 word-processing documents. Two annotators labelled every page independently and disagreements were resolved by discussion; the resulting agreement was 0.91 by Cohen's kappa. Pages were scanned at 300 dpi, and 20% of the scanned pages were rotated by 2 degrees to introduce a realistic skew.",
+   "order": 20
+  },
+  {
+   "type": "paragraph",
+   "text": "Text extracted from a PDF is not assumed to be usable merely because a text layer exists. We measure the proportion of replacement characters and the density of alphanumeric characters, and route a page to optical recognition when the layer fails either test.",
+   "order": 21
+  },
+  {
+   "type": "heading",
+   "text": "4. Results",
+   "order": 22,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+   "order": 23
+  },
+  {
+   "type": "table",
+   "text": "Table 1. Coverage and order accuracy by input class.",
+   "order": 24
+  },
+  {
+   "type": "heading",
+   "text": "4.1 Ablation",
+   "order": 25,
+   "level": 2
+  },
+  {
+   "type": "paragraph",
+   "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+   "order": 26
+  },
+  {
+   "type": "paragraph",
+   "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+   "order": 27
+  },
+  {
+   "type": "heading",
+   "text": "5. Discussion and Limitations",
+   "order": 28,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+   "order": 29
+  },
+  {
+   "type": "paragraph",
+   "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+   "order": 30
+  },
+  {
+   "type": "heading",
+   "text": "6. Conclusion",
+   "order": 31,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+   "order": 32
+  },
+  {
+   "type": "heading",
+   "text": "Acknowledgements",
+   "order": 33,
+   "level": 1
+  },
+  {
+   "type": "paragraph",
+   "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+   "order": 34
+  },
+  {
+   "type": "heading",
+   "text": "References",
+   "order": 35,
+   "level": 1
+  },
+  {
+   "type": "reference",
+   "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+   "order": 36
+  },
+  {
+   "type": "reference",
+   "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+   "order": 37
+  },
+  {
+   "type": "reference",
+   "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+   "order": 38
+  },
+  {
+   "type": "reference",
+   "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+   "order": 39
+  },
+  {
+   "type": "reference",
+   "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+   "order": 40
+  }
+ ],
+ "paragraph_count": 37,
+ "table_count": 1,
+ "image_count": 0,
+ "formula_count": 2,
+ "footnote_count": 2,
+ "notes": "DOCX with display equations and footnote parts."
+}

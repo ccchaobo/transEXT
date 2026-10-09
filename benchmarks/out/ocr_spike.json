@@ -1,0 +1,191 @@
+{
+ "engines": {
+  "rapidocr": "available: 1.2.3",
+  "tesseract": "unavailable: pytesseract not importable: No module named 'pytesseract'"
+ },
+ "dpi": 250,
+ "results": {
+  "rapidocr": [
+   {
+    "document": "scan_a_clean_300dpi",
+    "pages": [
+     {
+      "page": 0,
+      "cer_order_insensitive": 0.0593,
+      "cer_strict": 0.0593,
+      "line_match_fraction": 0.957,
+      "reading_order_score": 0.86,
+      "reference_chars": 3523,
+      "recognised_chars": 3314,
+      "reference_lines": 46,
+      "recognised_lines": 44,
+      "seconds": 9.44,
+      "mean_confidence": 0.923
+     },
+     {
+      "page": 1,
+      "cer_order_insensitive": 0.0309,
+      "cer_strict": 0.1995,
+      "line_match_fraction": 0.922,
+      "reading_order_score": 0.848,
+      "reference_chars": 2201,
+      "recognised_chars": 2145,
+      "reference_lines": 51,
+      "recognised_lines": 48,
+      "seconds": 6.39,
+      "mean_confidence": 0.875
+     }
+    ],
+    "cer": 0.0484,
+    "reference_chars": 5724,
+    "seconds": 15.83,
+    "dpi": 250,
+    "wall_seconds": 20.83
+   },
+   {
+    "document": "scan_b_two_column_noisy",
+    "pages": [
+     {
+      "page": 0,
+      "cer_order_insensitive": 0.0446,
+      "cer_strict": 0.7476,
+      "line_match_fraction": 0.941,
+      "reading_order_score": 0.884,
+      "reference_chars": 4125,
+      "recognised_chars": 3945,
+      "reference_lines": 102,
+      "recognised_lines": 96,
+      "seconds": 11.08,
+      "mean_confidence": 0.913
+     },
+     {
+      "page": 1,
+      "cer_order_insensitive": 0.0159,
+      "cer_strict": 0.7711,
+      "line_match_fraction": 0.951,
+      "reading_order_score": 0.961,
+      "reference_chars": 2512,
+      "recognised_chars": 2544,
+      "reference_lines": 82,
+      "recognised_lines": 80,
+      "seconds": 6.99,
+      "mean_confidence": 0.892
+     }
+    ],
+    "cer": 0.0338,
+    "reference_chars": 6637,
+    "seconds": 18.06,
+    "dpi": 250,
+    "wall_seconds": 25.74
+   },
+   {
+    "document": "scan_c_skewed",
+    "pages": [
+     {
+      "page": 0,
+      "cer_order_insensitive": 0.0023,
+      "cer_strict": 0.0195,
+      "line_match_fraction": 0.929,
+      "reading_order_score": 0.784,
+      "reference_chars": 2663,
+      "recognised_chars": 2659,
+      "reference_lines": 56,
+      "recognised_lines": 52,
+      "seconds": 7.85,
+      "mean_confidence": 0.889
+     },
+     {
+      "page": 1,
+      "cer_order_insensitive": 0.0178,
+      "cer_strict": 0.0174,
+      "line_match_fraction": 1.0,
+      "reading_order_score": 1.0,
+      "reference_chars": 2132,
+      "recognised_chars": 2168,
+      "reference_lines": 33,
+      "recognised_lines": 35,
+      "seconds": 5.8,
+      "mean_confidence": 0.914
+     }
+    ],
+    "cer": 0.0092,
+    "reference_chars": 4795,
+    "seconds": 13.66,
+    "dpi": 250,
+    "wall_seconds": 17.74
+   },
+   {
+    "document": "scan_d_low_dpi",
+    "pages": [
+     {
+      "page": 0,
+      "cer_order_insensitive": 0.0,
+      "cer_strict": 0.0,
+      "line_match_fraction": 1.0,
+      "reading_order_score": 1.0,
+      "reference_chars": 3523,
+      "recognised_chars": 3523,
+      "reference_lines": 46,
+      "recognised_lines": 46,
+      "seconds": 9.1,
+      "mean_confidence": 0.919
+     },
+     {
+      "page": 1,
+      "cer_order_insensitive": 0.0159,
+      "cer_strict": 0.1368,
+      "line_match_fraction": 0.902,
+      "reading_order_score": 0.933,
+      "reference_chars": 2201,
+      "recognised_chars": 2182,
+      "reference_lines": 51,
+      "recognised_lines": 48,
+      "seconds": 5.56,
+      "mean_confidence": 0.872
+     }
+    ],
+    "cer": 0.0061,
+    "reference_chars": 5724,
+    "seconds": 14.65,
+    "dpi": 250,
+    "wall_seconds": 16.87
+   },
+   {
+    "document": "scan_e_grayscale",
+    "pages": [
+     {
+      "page": 0,
+      "cer_order_insensitive": 0.0441,
+      "cer_strict": 0.7479,
+      "line_match_fraction": 0.941,
+      "reading_order_score": 0.884,
+      "reference_chars": 4125,
+      "recognised_chars": 3947,
+      "reference_lines": 102,
+      "recognised_lines": 97,
+      "seconds": 9.39,
+      "mean_confidence": 0.913
+     },
+     {
+      "page": 1,
+      "cer_order_insensitive": 0.0159,
+      "cer_strict": 0.7703,
+      "line_match_fraction": 0.951,
+      "reading_order_score": 0.948,
+      "reference_chars": 2512,
+      "recognised_chars": 2544,
+      "reference_lines": 82,
+      "recognised_lines": 80,
+      "seconds": 6.83,
+      "mean_confidence": 0.89
+     }
+    ],
+    "cer": 0.0334,
+    "reference_chars": 6637,
+    "seconds": 16.22,
+    "dpi": 250,
+    "wall_seconds": 23.05
+   }
+  ]
+ }
+}

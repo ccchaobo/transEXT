@@ -1,0 +1,31 @@
+{
+ "note": "Files used while tuning heuristics (development) versus files reserved for reporting (holdout). The split is by the trailing letter of the corpus name and is written out so a checker can verify that no holdout file was used for tuning.",
+ "development": [
+  "docx_paper_a",
+  "pdf_a_single_column",
+  "pdf_b_two_column",
+  "scan_d_low_dpi"
+ ],
+ "holdout": [
+  "docx_paper_c_math",
+  "docx_paper_d_mixed",
+  "docx_paper_f_table",
+  "docx_paper_g_sections",
+  "docx_paper_j",
+  "img_a_clean_png",
+  "img_b_photo_jpeg",
+  "img_c_low_dpi_jpeg",
+  "img_d_cropped_png",
+  "mixed_f_hybrid",
+  "pdf_c_formula_footnote",
+  "pdf_d_mixed_language",
+  "pdf_e_hyphenation",
+  "pdf_f_two_column_wide_table",
+  "pdf_g_deep_sections",
+  "pdf_h_no_references",
+  "scan_a_clean_300dpi",
+  "scan_b_two_column_noisy",
+  "scan_c_skewed",
+  "scan_e_grayscale"
+ ]
+}

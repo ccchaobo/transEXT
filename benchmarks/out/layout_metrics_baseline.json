@@ -1,0 +1,2049 @@
+{
+ "documents": [
+  {
+   "document": "mixed_f_hybrid",
+   "layout": "double_column",
+   "pages": 2,
+   "paragraphs": 40,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 63,
+   "blocks_body": 61,
+   "coverage_body": 0.3884,
+   "coverage_body_missing_chars": 5015,
+   "coverage_body_reference_chars": 8200,
+   "coverage_all": 0.3788,
+   "matched_blocks": 33,
+   "unmatched_blocks": 28,
+   "order_accuracy": 0.5625,
+   "order_correct": 18,
+   "order_total": 32,
+   "region": {
+    "considered": 33,
+    "correct": 1,
+    "accuracy": 0.030303030303030304,
+    "wrong_page": [
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      9,
+      0,
+      1
+     ],
+     [
+      13,
+      0,
+      1
+     ],
+     [
+      15,
+      0,
+      1
+     ]
+    ],
+    "wrong_region": [
+     [
+      24,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      42,
+      "0.000"
+     ],
+     [
+      43,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      46,
+      "0.000"
+     ],
+     [
+      48,
+      "0.000"
+     ],
+     [
+      49,
+      "0.000"
+     ],
+     [
+      52,
+      "0.029"
+     ],
+     [
+      56,
+      "0.000"
+     ],
+     [
+      58,
+      "0.000"
+     ],
+     [
+      59,
+      "0.000"
+     ],
+     [
+      60,
+      "0.000"
+     ],
+     [
+      61,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "D. Researcher and E. Scholar"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Two-column layouts remain the dominant format in the physica"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The remainder of the paper is organised as follows. Section "
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "2. Related Work"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "Layout analysis for two-column articles has a long history. "
+    }
+   ]
+  },
+  {
+   "document": "pdf_a_single_column",
+   "layout": "single_column",
+   "pages": 3,
+   "paragraphs": 59,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "blocks_total": 61,
+   "blocks_body": 59,
+   "coverage_body": 0.9576,
+   "coverage_body_missing_chars": 349,
+   "coverage_body_reference_chars": 8238,
+   "coverage_all": 0.9339,
+   "matched_blocks": 40,
+   "unmatched_blocks": 19,
+   "order_accuracy": 0.5385,
+   "order_correct": 21,
+   "order_total": 39,
+   "region": {
+    "considered": 40,
+    "correct": 1,
+    "accuracy": 0.025,
+    "wrong_page": [
+     [
+      6,
+      0,
+      2
+     ],
+     [
+      9,
+      0,
+      1
+     ],
+     [
+      11,
+      0,
+      2
+     ],
+     [
+      19,
+      1,
+      0
+     ],
+     [
+      45,
+      1,
+      0
+     ],
+     [
+      51,
+      1,
+      0
+     ],
+     [
+      53,
+      2,
+      0
+     ],
+     [
+      55,
+      2,
+      1
+     ],
+     [
+      56,
+      2,
+      0
+     ],
+     [
+      58,
+      2,
+      1
+     ],
+     [
+      59,
+      2,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      4,
+      "0.000"
+     ],
+     [
+      8,
+      "0.000"
+     ],
+     [
+      10,
+      "0.000"
+     ],
+     [
+      13,
+      "0.000"
+     ],
+     [
+      16,
+      "0.078"
+     ],
+     [
+      17,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ],
+     [
+      23,
+      "0.000"
+     ],
+     [
+      24,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      41,
+      "0.000"
+     ],
+     [
+      46,
+      "0.000"
+     ],
+     [
+      49,
+      "0.000"
+     ],
+     [
+      16,
+      "0.043"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "Structured Extraction for Single-Column Articles"
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "A. Author, B. Author, and C. Author"
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "We describe a reproducible pipeline for extracting structure"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "2. Related Work"
+    },
+    {
+     "index": 12,
+     "type": "heading",
+     "text": "3. Method"
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first s"
+    }
+   ]
+  },
+  {
+   "document": "pdf_b_two_column",
+   "layout": "double_column",
+   "pages": 2,
+   "paragraphs": 78,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 63,
+   "blocks_body": 61,
+   "coverage_body": 0.9988,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 8200,
+   "coverage_all": 0.98,
+   "matched_blocks": 48,
+   "unmatched_blocks": 13,
+   "order_accuracy": 0.5532,
+   "order_correct": 26,
+   "order_total": 47,
+   "region": {
+    "considered": 48,
+    "correct": 1,
+    "accuracy": 0.020833333333333332,
+    "wrong_page": [
+     [
+      13,
+      0,
+      1
+     ],
+     [
+      15,
+      0,
+      1
+     ],
+     [
+      17,
+      0,
+      1
+     ],
+     [
+      20,
+      0,
+      1
+     ],
+     [
+      24,
+      1,
+      0
+     ],
+     [
+      46,
+      1,
+      0
+     ],
+     [
+      49,
+      1,
+      0
+     ],
+     [
+      50,
+      1,
+      0
+     ],
+     [
+      51,
+      1,
+      0
+     ],
+     [
+      54,
+      1,
+      0
+     ],
+     [
+      56,
+      1,
+      0
+     ],
+     [
+      58,
+      1,
+      0
+     ],
+     [
+      59,
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      0,
+      "0.000"
+     ],
+     [
+      1,
+      "0.000"
+     ],
+     [
+      3,
+      "0.000"
+     ],
+     [
+      5,
+      "0.000"
+     ],
+     [
+      6,
+      "0.000"
+     ],
+     [
+      7,
+      "0.000"
+     ],
+     [
+      8,
+      "0.036"
+     ],
+     [
+      9,
+      "0.000"
+     ],
+     [
+      12,
+      "0.000"
+     ],
+     [
+      14,
+      "0.000"
+     ],
+     [
+      16,
+      "0.000"
+     ],
+     [
+      18,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      42,
+      "0.000"
+     ],
+     [
+      43,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      48,
+      "0.000"
+     ],
+     [
+      52,
+      "0.029"
+     ],
+     [
+      60,
+      "0.000"
+     ],
+     [
+      61,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Two-column layouts remain the dominant format in the physica"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 10,
+     "type": "paragraph",
+     "text": "Scientific translation differs from general translation in w"
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "A second difference is citation structure. Reference markers"
+    },
+    {
+     "index": 19,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+    },
+    {
+     "index": 21,
+     "type": "heading",
+     "text": "4. Results"
+    },
+    {
+     "index": 22,
+     "type": "paragraph",
+     "text": "Table 1 summarises coverage and reading-order accuracy. Body"
+    },
+    {
+     "index": 28,
+     "type": "table_cell",
+     "text": "Order acc."
+    }
+   ]
+  },
+  {
+   "document": "pdf_c_formula_footnote",
+   "layout": "single_column",
+   "pages": 3,
+   "paragraphs": 62,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1,
+    "2": 1
+   },
+   "blocks_total": 62,
+   "blocks_body": 61,
+   "coverage_body": 0.9988,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 8419,
+   "coverage_all": 0.9936,
+   "matched_blocks": 41,
+   "unmatched_blocks": 20,
+   "order_accuracy": 0.525,
+   "order_correct": 21,
+   "order_total": 40,
+   "region": {
+    "considered": 41,
+    "correct": 0,
+    "accuracy": 0.0,
+    "wrong_page": [
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      18,
+      1,
+      0
+     ],
+     [
+      20,
+      1,
+      2
+     ],
+     [
+      21,
+      1,
+      0
+     ],
+     [
+      23,
+      1,
+      2
+     ],
+     [
+      47,
+      1,
+      0
+     ],
+     [
+      53,
+      1,
+      0
+     ],
+     [
+      55,
+      1,
+      0
+     ],
+     [
+      57,
+      2,
+      0
+     ],
+     [
+      58,
+      2,
+      1
+     ],
+     [
+      60,
+      2,
+      1
+     ],
+     [
+      61,
+      2,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      6,
+      "0.000"
+     ],
+     [
+      8,
+      "0.289"
+     ],
+     [
+      10,
+      "0.270"
+     ],
+     [
+      11,
+      "0.000"
+     ],
+     [
+      14,
+      "0.000"
+     ],
+     [
+      16,
+      "0.000"
+     ],
+     [
+      17,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      41,
+      "0.000"
+     ],
+     [
+      43,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      45,
+      "0.000"
+     ],
+     [
+      48,
+      "0.000"
+     ],
+     [
+      50,
+      "0.000"
+     ],
+     [
+      51,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "Long Paragraphs, Footnotes and Equations"
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "F. Analyst, G. Engineer, and H. Statistician"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "2. Formal Setting"
+    },
+    {
+     "index": 9,
+     "type": "formula",
+     "text": "p(y | x) = exp(S(x, y)) / Σ_{y'} exp(S(x, y'))"
+    },
+    {
+     "index": 12,
+     "type": "footnote",
+     "text": "2 Correspondence: author@example.invalid"
+    }
+   ]
+  },
+  {
+   "document": "pdf_d_mixed_language",
+   "layout": "single_column",
+   "pages": 2,
+   "paragraphs": 49,
+   "furniture": 4,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 57,
+   "blocks_body": 56,
+   "coverage_body": 0.9548,
+   "coverage_body_missing_chars": 311,
+   "coverage_body_reference_chars": 6875,
+   "coverage_all": 0.9475,
+   "matched_blocks": 35,
+   "unmatched_blocks": 21,
+   "order_accuracy": 0.5882,
+   "order_correct": 20,
+   "order_total": 34,
+   "region": {
+    "considered": 35,
+    "correct": 3,
+    "accuracy": 0.08571428571428572,
+    "wrong_page": [
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      4,
+      0,
+      1
+     ],
+     [
+      9,
+      0,
+      1
+     ],
+     [
+      15,
+      0,
+      1
+     ],
+     [
+      41,
+      1,
+      0
+     ],
+     [
+      47,
+      1,
+      0
+     ],
+     [
+      49,
+      1,
+      0
+     ],
+     [
+      52,
+      1,
+      0
+     ],
+     [
+      54,
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      0,
+      "0.000"
+     ],
+     [
+      5,
+      "0.000"
+     ],
+     [
+      11,
+      "0.000"
+     ],
+     [
+      17,
+      "0.043"
+     ],
+     [
+      20,
+      "0.000"
+     ],
+     [
+      21,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ],
+     [
+      23,
+      "0.000"
+     ],
+     [
+      24,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      42,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      55,
+      "0.000"
+     ],
+     [
+      17,
+      "0.036"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "I. Writer and J. Reader"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. 引言 Introduction"
+    },
+    {
+     "index": 6,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 7,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 10,
+     "type": "heading",
+     "text": "3. Method"
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first s"
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "3.1 Data and annotation"
+    }
+   ]
+  },
+  {
+   "document": "pdf_e_hyphenation",
+   "layout": "single_column",
+   "pages": 2,
+   "paragraphs": 52,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 55,
+   "blocks_body": 53,
+   "coverage_body": 0.9983,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 5939,
+   "coverage_all": 0.9725,
+   "matched_blocks": 40,
+   "unmatched_blocks": 13,
+   "order_accuracy": 0.5641,
+   "order_correct": 22,
+   "order_total": 39,
+   "region": {
+    "considered": 40,
+    "correct": 0,
+    "accuracy": 0.0,
+    "wrong_page": [
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      4,
+      0,
+      1
+     ],
+     [
+      8,
+      0,
+      1
+     ],
+     [
+      12,
+      0,
+      1
+     ],
+     [
+      40,
+      1,
+      0
+     ],
+     [
+      43,
+      1,
+      0
+     ],
+     [
+      46,
+      1,
+      0
+     ],
+     [
+      48,
+      1,
+      0
+     ],
+     [
+      53,
+      1,
+      0
+     ],
+     [
+      54,
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      5,
+      "0.000"
+     ],
+     [
+      6,
+      "0.000"
+     ],
+     [
+      14,
+      "0.000"
+     ],
+     [
+      16,
+      "0.000"
+     ],
+     [
+      17,
+      "0.000"
+     ],
+     [
+      18,
+      "0.000"
+     ],
+     [
+      19,
+      "0.000"
+     ],
+     [
+      20,
+      "0.000"
+     ],
+     [
+      21,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ],
+     [
+      23,
+      "0.000"
+     ],
+     [
+      24,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      41,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      50,
+      "0.000"
+     ],
+     [
+      51,
+      "0.426"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "K. Linguist and L. Engineer"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "3. Method"
+    },
+    {
+     "index": 9,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first s"
+    },
+    {
+     "index": 10,
+     "type": "heading",
+     "text": "3.1 Data and annotation"
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results"
+    },
+    {
+     "index": 39,
+     "type": "heading",
+     "text": "4.1 Ablation"
+    }
+   ]
+  },
+  {
+   "document": "pdf_f_two_column_wide_table",
+   "layout": "double_column",
+   "pages": 2,
+   "paragraphs": 81,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 2
+   },
+   "blocks_total": 66,
+   "blocks_body": 64,
+   "coverage_body": 0.9986,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 7347,
+   "coverage_all": 0.9779,
+   "matched_blocks": 44,
+   "unmatched_blocks": 20,
+   "order_accuracy": 0.5116,
+   "order_correct": 22,
+   "order_total": 43,
+   "region": {
+    "considered": 44,
+    "correct": 1,
+    "accuracy": 0.022727272727272728,
+    "wrong_page": [
+     [
+      8,
+      0,
+      1
+     ],
+     [
+      47,
+      0,
+      1
+     ],
+     [
+      49,
+      1,
+      0
+     ],
+     [
+      54,
+      1,
+      0
+     ],
+     [
+      62,
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      0,
+      "0.000"
+     ],
+     [
+      2,
+      "0.000"
+     ],
+     [
+      3,
+      "0.000"
+     ],
+     [
+      7,
+      "0.000"
+     ],
+     [
+      9,
+      "0.000"
+     ],
+     [
+      10,
+      "0.050"
+     ],
+     [
+      13,
+      "0.000"
+     ],
+     [
+      16,
+      "0.000"
+     ],
+     [
+      19,
+      "0.000"
+     ],
+     [
+      20,
+      "0.000"
+     ],
+     [
+      21,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ],
+     [
+      23,
+      "0.000"
+     ],
+     [
+      24,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      41,
+      "0.000"
+     ],
+     [
+      42,
+      "0.000"
+     ],
+     [
+      43,
+      "0.000"
+     ],
+     [
+      44,
+      "0.000"
+     ],
+     [
+      45,
+      "0.000"
+     ],
+     [
+      46,
+      "0.000"
+     ],
+     [
+      52,
+      "0.000"
+     ],
+     [
+      55,
+      "0.000"
+     ],
+     [
+      59,
+      "0.000"
+     ],
+     [
+      61,
+      "0.000"
+     ],
+     [
+      63,
+      "0.000"
+     ],
+     [
+      64,
+      "0.000"
+     ],
+     [
+      65,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "M. Editor and N. Reviewer"
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 5,
+     "type": "paragraph",
+     "text": "Our contributions are threefold. First, we describe a reprod"
+    },
+    {
+     "index": 11,
+     "type": "formula",
+     "text": "S(x, y) = Σ_i θ · f(x_i, y_i) + Σ_i T(y_i, y_{i+1})"
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Parameters are estimated by maximising the conditional likel"
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+    },
+    {
+     "index": 15,
+     "type": "paragraph",
+     "text": "Text extracted from a PDF is not assumed to be usable merely"
+    },
+    {
+     "index": 17,
+     "type": "paragraph",
+     "text": "A full-width table or figure forces the column flow to resta"
+    }
+   ]
+  },
+  {
+   "document": "pdf_g_deep_sections",
+   "layout": "single_column",
+   "pages": 2,
+   "paragraphs": 21,
+   "furniture": 0,
+   "warnings": [],
+   "page_columns": {
+    "0": 1,
+    "1": 1
+   },
+   "blocks_total": 31,
+   "blocks_body": 31,
+   "coverage_body": 0.9974,
+   "coverage_body_missing_chars": 10,
+   "coverage_body_reference_chars": 3807,
+   "coverage_all": 0.9974,
+   "matched_blocks": 18,
+   "unmatched_blocks": 13,
+   "order_accuracy": 0.4706,
+   "order_correct": 8,
+   "order_total": 17,
+   "region": {
+    "considered": 18,
+    "correct": 0,
+    "accuracy": 0.0,
+    "wrong_page": [
+     [
+      6,
+      0,
+      1
+     ],
+     [
+      16,
+      0,
+      1
+     ],
+     [
+      19,
+      0,
+      1
+     ],
+     [
+      24,
+      1,
+      0
+     ],
+     [
+      26,
+      1,
+      0
+     ],
+     [
+      27,
+      1,
+      0
+     ],
+     [
+      29,
+      1,
+      0
+     ],
+     [
+      30,
+      1,
+      0
+     ]
+    ],
+    "wrong_region": [
+     [
+      0,
+      "0.000"
+     ],
+     [
+      2,
+      "0.000"
+     ],
+     [
+      4,
+      "0.000"
+     ],
+     [
+      8,
+      "0.000"
+     ],
+     [
+      10,
+      "0.000"
+     ],
+     [
+      12,
+      "0.000"
+     ],
+     [
+      14,
+      "0.000"
+     ],
+     [
+      17,
+      "0.045"
+     ],
+     [
+      20,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 1,
+     "type": "author",
+     "text": "O. Author"
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction"
+    },
+    {
+     "index": 5,
+     "type": "heading",
+     "text": "1.1 Background"
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "1.1.1 Terminology"
+    },
+    {
+     "index": 9,
+     "type": "heading",
+     "text": "1.2 Scope"
+    },
+    {
+     "index": 11,
+     "type": "heading",
+     "text": "2. Method"
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results"
+    },
+    {
+     "index": 15,
+     "type": "heading",
+     "text": "4.1 Ablation"
+    }
+   ]
+  },
+  {
+   "document": "pdf_h_no_references",
+   "layout": "double_column",
+   "pages": 1,
+   "paragraphs": 68,
+   "furniture": 1,
+   "warnings": [],
+   "page_columns": {
+    "0": 1
+   },
+   "blocks_total": 43,
+   "blocks_body": 42,
+   "coverage_body": 1.0,
+   "coverage_body_missing_chars": 0,
+   "coverage_body_reference_chars": 4655,
+   "coverage_all": 0.9958,
+   "matched_blocks": 38,
+   "unmatched_blocks": 4,
+   "order_accuracy": 0.5135,
+   "order_correct": 19,
+   "order_total": 37,
+   "region": {
+    "considered": 38,
+    "correct": 0,
+    "accuracy": 0.0,
+    "wrong_page": [],
+    "wrong_region": [
+     [
+      0,
+      "0.000"
+     ],
+     [
+      1,
+      "0.000"
+     ],
+     [
+      2,
+      "0.000"
+     ],
+     [
+      3,
+      "0.000"
+     ],
+     [
+      5,
+      "0.000"
+     ],
+     [
+      6,
+      "0.000"
+     ],
+     [
+      7,
+      "0.000"
+     ],
+     [
+      8,
+      "0.000"
+     ],
+     [
+      10,
+      "0.000"
+     ],
+     [
+      12,
+      "0.000"
+     ],
+     [
+      13,
+      "0.000"
+     ],
+     [
+      14,
+      "0.000"
+     ],
+     [
+      15,
+      "0.000"
+     ],
+     [
+      16,
+      "0.000"
+     ],
+     [
+      17,
+      "0.000"
+     ],
+     [
+      19,
+      "0.000"
+     ],
+     [
+      20,
+      "0.000"
+     ],
+     [
+      21,
+      "0.000"
+     ],
+     [
+      22,
+      "0.000"
+     ],
+     [
+      23,
+      "0.000"
+     ],
+     [
+      24,
+      "0.000"
+     ],
+     [
+      25,
+      "0.000"
+     ],
+     [
+      26,
+      "0.000"
+     ],
+     [
+      27,
+      "0.000"
+     ],
+     [
+      28,
+      "0.000"
+     ],
+     [
+      29,
+      "0.000"
+     ],
+     [
+      30,
+      "0.000"
+     ],
+     [
+      31,
+      "0.000"
+     ],
+     [
+      32,
+      "0.000"
+     ],
+     [
+      33,
+      "0.000"
+     ],
+     [
+      34,
+      "0.000"
+     ],
+     [
+      35,
+      "0.000"
+     ],
+     [
+      36,
+      "0.000"
+     ],
+     [
+      37,
+      "0.000"
+     ],
+     [
+      38,
+      "0.000"
+     ],
+     [
+      39,
+      "0.000"
+     ],
+     [
+      40,
+      "0.000"
+     ],
+     [
+      42,
+      "0.000"
+     ]
+    ]
+   },
+   "unmatched_detail": [
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Reading order and evidence tracking are prerequisites for re"
+    },
+    {
+     "index": 9,
+     "type": "paragraph",
+     "text": "Reading order is recovered in three steps. Pages are first s"
+    },
+    {
+     "index": 11,
+     "type": "paragraph",
+     "text": "The corpus contains 24 documents: 8 born-digital PDFs, 6 sca"
+    },
+    {
+     "index": 41,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages c"
+    }
+   ]
+  }
+ ],
+ "aggregate": {
+  "coverage": 0.9071822308690013,
+  "order": 0.5396341463414634,
+  "region": 0.020771513353115726,
+  "sampled_blocks": 337
+ }
+}

@@ -1,0 +1,174 @@
+{
+  "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
+  "python_executable": "E:\\anaconda\\python.exe",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "machine": "AMD64",
+  "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+  "packages": {
+    "fastapi": {
+      "version": "0.136.3",
+      "license": "MIT",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Homepage, https://github.com/fastapi/fastapi"
+    },
+    "uvicorn": {
+      "version": "0.48.0",
+      "license": "BSD-3-Clause",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Changelog, https://uvicorn.dev/release-notes"
+    },
+    "starlette": {
+      "version": "1.2.0",
+      "license": "BSD-3-Clause",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Homepage, https://github.com/Kludex/starlette"
+    },
+    "pydantic": {
+      "version": "2.13.4",
+      "license": "MIT",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Homepage, https://github.com/pydantic/pydantic"
+    },
+    "sqlalchemy": {
+      "version": "2.0.39",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://www.sqlalchemy.org"
+    },
+    "aiosqlite": {
+      "version": "NOT INSTALLED",
+      "license": "",
+      "license_source": "",
+      "obligations": [],
+      "home": ""
+    },
+    "httpx": {
+      "version": "0.28.1",
+      "license": "BSD License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Changelog, https://github.com/encode/httpx/blob/master/CHANGELOG.md"
+    },
+    "python-multipart": {
+      "version": "0.0.29",
+      "license": "Apache Software License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Homepage, https://github.com/Kludex/python-multipart"
+    },
+    "pypdf": {
+      "version": "6.14.2",
+      "license": "BSD-3-Clause",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Bug Reports, https://github.com/py-pdf/pypdf/issues"
+    },
+    "PyMuPDF": {
+      "version": "1.28.2",
+      "license": "Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License",
+      "license_source": "package metadata",
+      "obligations": [
+        "strong copyleft: network use triggers distribution obligations",
+        "copyleft",
+        "dual licence: a commercial option exists"
+      ],
+      "home": "Documentation, https://pymupdf.readthedocs.io/"
+    },
+    "Pillow": {
+      "version": "11.1.0",
+      "license": "CMU License (MIT-CMU)",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Changelog, https://github.com/python-pillow/Pillow/releases"
+    },
+    "python-docx": {
+      "version": "1.2.0",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Changelog, https://github.com/python-openxml/python-docx/blob/master/HISTORY.rst"
+    },
+    "numpy": {
+      "version": "2.1.3",
+      "license": "BSD License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "homepage, https://numpy.org"
+    },
+    "reportlab": {
+      "version": "4.5.1",
+      "license": "BSD License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://www.reportlab.com/"
+    },
+    "pytest": {
+      "version": "8.3.4",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Changelog, https://docs.pytest.org/en/stable/changelog.html"
+    },
+    "pytest-asyncio": {
+      "version": "NOT INSTALLED",
+      "license": "",
+      "license_source": "",
+      "obligations": [],
+      "home": ""
+    },
+    "rapidocr-onnxruntime": {
+      "version": "1.2.3",
+      "license": "Apache-2.0",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://github.com/RapidAI/RapidOCR"
+    },
+    "onnxruntime": {
+      "version": "1.20.1",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://onnxruntime.ai"
+    },
+    "opencv-python": {
+      "version": "5.0.0.93",
+      "license": "Apache Software License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://github.com/opencv/opencv-python"
+    },
+    "pyclipper": {
+      "version": "1.4.0",
+      "license": "OSI Approved",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://github.com/fonttools/pyclipper"
+    },
+    "shapely": {
+      "version": "2.1.1",
+      "license": "BSD License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "Documentation, https://shapely.readthedocs.io/"
+    },
+    "six": {
+      "version": "1.17.0",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://github.com/benjaminp/six"
+    },
+    "PyYAML": {
+      "version": "6.0.2",
+      "license": "MIT License",
+      "license_source": "package metadata",
+      "obligations": [],
+      "home": "https://pyyaml.org/"
+    }
+  }
+}

@@ -1,0 +1,1565 @@
+{
+ "name": "pdf_g_deep_sections",
+ "title": "A Short Note on Section Trees",
+ "authors": "O. Author",
+ "layout": "single_column",
+ "columns": 1,
+ "page_count": 2,
+ "language": "en",
+ "notes": "Three-level heading nesting; short sections.",
+ "has_formula": false,
+ "has_table": false,
+ "has_figure": false,
+ "has_references": true,
+ "has_footnotes": false,
+ "cross_page_paragraph": false,
+ "mixed_language": false,
+ "pages": [
+  {
+   "index": 0,
+   "rotation": 0,
+   "source_kind": "text",
+   "printed_label": "1",
+   "header_text": "A Short Note on Section Trees",
+   "footer_text": "1",
+   "has_formula": false,
+   "figure_boxes": [],
+   "table_boxes": [],
+   "blocks": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "A Short Note on Section Trees",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 0,
+     "bbox": [
+      187.86,
+      760.89,
+      407.415,
+      777.89
+     ],
+     "line_bboxes": [
+      [
+       187.86,
+       760.89,
+       407.415,
+       777.89
+      ]
+     ],
+     "line_texts": [
+      "A Short Note on Section Trees"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "O. Author",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 1,
+     "bbox": [
+      276.349,
+      740.31,
+      318.927,
+      750.81
+     ],
+     "line_bboxes": [
+      [
+       276.349,
+       740.31,
+       318.927,
+       750.81
+      ]
+     ],
+     "line_texts": [
+      "O. Author"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels deep.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 2,
+     "bbox": [
+      64.0,
+      706.51,
+      552.68,
+      727.79
+     ],
+     "line_bboxes": [
+      [
+       64.0,
+       718.29,
+       552.68,
+       727.79
+      ],
+      [
+       64.0,
+       706.51,
+       84.311,
+       716.01
+      ]
+     ],
+     "line_texts": [
+      "Abstract—A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels",
+      "deep."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [],
+     "level": null
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 3,
+     "bbox": [
+      56.0,
+      676.73,
+      136.562,
+      689.23
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       676.73,
+       136.562,
+       689.23
+      ]
+     ],
+     "line_texts": [
+      "1. Introduction"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": 1
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens and measurably reduces term drift across a long document.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 4,
+     "bbox": [
+      56.0,
+      648.33,
+      526.77,
+      670.73
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       660.73,
+       526.77,
+       670.73
+      ],
+      [
+       56.0,
+       648.33,
+       291.78,
+       658.33
+      ]
+     ],
+     "line_texts": [
+      "Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens",
+      "and measurably reduces term drift across a long document."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "1. Introduction"
+     ],
+     "level": null
+    },
+    {
+     "index": 5,
+     "type": "heading",
+     "text": "1.1 Background",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 5,
+     "bbox": [
+      56.0,
+      622.63,
+      129.213,
+      633.43
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       622.63,
+       129.213,
+       633.43
+      ]
+     ],
+     "line_texts": [
+      "1.1 Background"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction",
+      "1.1 Background"
+     ],
+     "level": 2
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any section.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 6,
+     "bbox": [
+      56.0,
+      594.638,
+      512.86,
+      617.038
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       607.038,
+       512.86,
+       617.038
+      ],
+      [
+       56.0,
+       594.638,
+       86.83,
+       604.638
+      ]
+     ],
+     "line_texts": [
+      "The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any",
+      "section."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "1. Introduction",
+      "1.1 Background"
+     ],
+     "level": null
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "1.1.1 Terminology",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 7,
+     "bbox": [
+      56.0,
+      568.938,
+      139.7,
+      579.738
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       568.938,
+       139.7,
+       579.738
+      ]
+     ],
+     "line_texts": [
+      "1.1.1 Terminology"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction",
+      "1.1 Background",
+      "1.1.1 Terminology"
+     ],
+     "level": 3
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region belongs to exactly one block.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 8,
+     "bbox": [
+      56.0,
+      540.946,
+      533.36,
+      563.346
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       553.346,
+       533.36,
+       563.346
+      ],
+      [
+       56.0,
+       540.946,
+       172.93,
+       550.946
+      ]
+     ],
+     "line_texts": [
+      "We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region",
+      "belongs to exactly one block."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "1. Introduction",
+      "1.1 Background",
+      "1.1.1 Terminology"
+     ],
+     "level": null
+    },
+    {
+     "index": 9,
+     "type": "heading",
+     "text": "1.2 Scope",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 9,
+     "bbox": [
+      56.0,
+      515.246,
+      99.2,
+      526.046
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       515.246,
+       99.2,
+       526.046
+      ]
+     ],
+     "line_texts": [
+      "1.2 Scope"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction",
+      "1.2 Scope"
+     ],
+     "level": 2
+    },
+    {
+     "index": 10,
+     "type": "paragraph",
+     "text": "The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 10,
+     "bbox": [
+      56.0,
+      499.654,
+      507.04,
+      509.654
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       499.654,
+       507.04,
+       509.654
+      ]
+     ],
+     "line_texts": [
+      "The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere."
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "1. Introduction",
+      "1.2 Scope"
+     ],
+     "level": null
+    },
+    {
+     "index": 11,
+     "type": "heading",
+     "text": "2. Method",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 11,
+     "bbox": [
+      56.0,
+      472.254,
+      110.162,
+      484.754
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       472.254,
+       110.162,
+       484.754
+      ]
+     ],
+     "line_texts": [
+      "2. Method"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "2. Method"
+     ],
+     "level": 1
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two signals can disagree, in which case numbering wins because it is explicit.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 12,
+     "bbox": [
+      56.0,
+      443.854,
+      512.86,
+      466.254
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       456.254,
+       512.86,
+       466.254
+      ],
+      [
+       56.0,
+       443.854,
+       349.01,
+       453.854
+      ]
+     ],
+     "line_texts": [
+      "Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two",
+      "signals can disagree, in which case numbering wins because it is explicit."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "2. Method"
+     ],
+     "level": null
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 13,
+     "bbox": [
+      56.0,
+      416.454,
+      107.387,
+      428.954
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       416.454,
+       107.387,
+       428.954
+      ]
+     ],
+     "line_texts": [
+      "4. Results"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": 1
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 14,
+     "bbox": [
+      56.0,
+      375.654,
+      513.9,
+      410.454
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       400.454,
+       513.9,
+       410.454
+      ],
+      [
+       56.0,
+       388.054,
+       497.84,
+       398.054
+      ],
+      [
+       56.0,
+       375.654,
+       366.78,
+       385.654
+      ]
+     ],
+     "line_texts": [
+      "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital",
+      "pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported",
+      "separately because column splitting is the dominant source of ordering errors."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "4. Results"
+     ],
+     "level": null
+    },
+    {
+     "index": 15,
+     "type": "heading",
+     "text": "4.1 Ablation",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 15,
+     "bbox": [
+      56.0,
+      349.954,
+      112.408,
+      360.754
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       349.954,
+       112.408,
+       360.754
+      ]
+     ],
+     "line_texts": [
+      "4.1 Ablation"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": 2
+    },
+    {
+     "index": 16,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 16,
+     "bbox": [
+      56.0,
+      297.162,
+      534.49,
+      344.362
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       334.362,
+       534.25,
+       344.362
+      ],
+      [
+       56.0,
+       321.962,
+       534.49,
+       331.962
+      ],
+      [
+       56.0,
+       309.562,
+       520.06,
+       319.562
+      ],
+      [
+       56.0,
+       297.162,
+       83.48,
+       307.162
+      ]
+     ],
+     "line_texts": [
+      "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and",
+      "removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect,",
+      "changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the",
+      "reader."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0,
+      0
+     ],
+     "n_lines": 4,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": null
+    },
+    {
+     "index": 17,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 17,
+     "bbox": [
+      56.0,
+      255.462,
+      535.35,
+      290.262
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       280.262,
+       518.4,
+       290.262
+      ],
+      [
+       56.0,
+       267.862,
+       535.35,
+       277.862
+      ],
+      [
+       56.0,
+       255.462,
+       180.45,
+       265.462
+      ]
+     ],
+     "line_texts": [
+      "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the",
+      "effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input",
+      "distribution, not of the method."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "4. Results",
+      "4.1 Ablation"
+     ],
+     "level": null
+    },
+    {
+     "index": 18,
+     "type": "heading",
+     "text": "5. Discussion and Limitations",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 18,
+     "bbox": [
+      56.0,
+      228.062,
+      212.975,
+      240.562
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       228.062,
+       212.975,
+       240.562
+      ]
+     ],
+     "line_texts": [
+      "5. Discussion and Limitations"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": 1
+    },
+    {
+     "index": 19,
+     "type": "paragraph",
+     "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 19,
+     "bbox": [
+      56.0,
+      174.862,
+      527.6,
+      222.062
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       212.062,
+       520.13,
+       222.062
+      ],
+      [
+       56.0,
+       199.662,
+       527.6,
+       209.662
+      ],
+      [
+       56.0,
+       187.262,
+       508.69,
+       197.262
+      ],
+      [
+       56.0,
+       174.862,
+       368.44,
+       184.862
+      ]
+     ],
+     "line_texts": [
+      "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot",
+      "establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout",
+      "and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten",
+      "annotations and photographs of curved pages are out of scope for this version."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0,
+      0
+     ],
+     "n_lines": 4,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": null
+    },
+    {
+     "index": 20,
+     "type": "paragraph",
+     "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 20,
+     "bbox": [
+      56.0,
+      145.562,
+      494.22,
+      167.962
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       157.962,
+       494.22,
+       167.962
+      ],
+      [
+       56.0,
+       145.562,
+       447.59,
+       155.562
+      ]
+     ],
+     "line_texts": [
+      "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region",
+      "association exists, the interface must say so rather than presenting an approximate match as exact."
+     ],
+     "line_page_indices": [
+      0,
+      0
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "5. Discussion and Limitations"
+     ],
+     "level": null
+    },
+    {
+     "index": 21,
+     "type": "heading",
+     "text": "6. Conclusion",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 21,
+     "bbox": [
+      56.0,
+      118.162,
+      128.238,
+      130.662
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       118.162,
+       128.238,
+       130.662
+      ]
+     ],
+     "line_texts": [
+      "6. Conclusion"
+     ],
+     "line_page_indices": [
+      0
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "6. Conclusion"
+     ],
+     "level": 1
+    },
+    {
+     "index": 22,
+     "type": "paragraph",
+     "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+     "page_index": 0,
+     "page_indices": [
+      0
+     ],
+     "reading_order": 22,
+     "bbox": [
+      56.0,
+      77.362,
+      519.78,
+      112.162
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       102.162,
+       506.16,
+       112.162
+      ],
+      [
+       56.0,
+       89.762,
+       519.78,
+       99.762
+      ],
+      [
+       56.0,
+       77.362,
+       371.75,
+       87.362
+      ]
+     ],
+     "line_texts": [
+      "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate",
+      "contract, per-format adapters and anchored translations. The system preserves the original page for inspection while",
+      "giving the reader a translated view that can always be traced back to its source."
+     ],
+     "line_page_indices": [
+      0,
+      0,
+      0
+     ],
+     "n_lines": 3,
+     "section_path": [
+      "6. Conclusion"
+     ],
+     "level": null
+    }
+   ],
+   "visible_blocks": [
+    {
+     "index": 0,
+     "type": "title",
+     "text": "A Short Note on Section Trees",
+     "page_index": 0
+    },
+    {
+     "index": 1,
+     "type": "author",
+     "text": "O. Author",
+     "page_index": 0
+    },
+    {
+     "index": 2,
+     "type": "abstract",
+     "text": "Abstract—A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels deep.",
+     "page_index": 0
+    },
+    {
+     "index": 3,
+     "type": "heading",
+     "text": "1. Introduction",
+     "page_index": 0
+    },
+    {
+     "index": 4,
+     "type": "paragraph",
+     "text": "Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens and measurably reduces term drift across a long document.",
+     "page_index": 0
+    },
+    {
+     "index": 5,
+     "type": "heading",
+     "text": "1.1 Background",
+     "page_index": 0
+    },
+    {
+     "index": 6,
+     "type": "paragraph",
+     "text": "The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any section.",
+     "page_index": 0
+    },
+    {
+     "index": 7,
+     "type": "heading",
+     "text": "1.1.1 Terminology",
+     "page_index": 0
+    },
+    {
+     "index": 8,
+     "type": "paragraph",
+     "text": "We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region belongs to exactly one block.",
+     "page_index": 0
+    },
+    {
+     "index": 9,
+     "type": "heading",
+     "text": "1.2 Scope",
+     "page_index": 0
+    },
+    {
+     "index": 10,
+     "type": "paragraph",
+     "text": "The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere.",
+     "page_index": 0
+    },
+    {
+     "index": 11,
+     "type": "heading",
+     "text": "2. Method",
+     "page_index": 0
+    },
+    {
+     "index": 12,
+     "type": "paragraph",
+     "text": "Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two signals can disagree, in which case numbering wins because it is explicit.",
+     "page_index": 0
+    },
+    {
+     "index": 13,
+     "type": "heading",
+     "text": "4. Results",
+     "page_index": 0
+    },
+    {
+     "index": 14,
+     "type": "paragraph",
+     "text": "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors.",
+     "page_index": 0
+    },
+    {
+     "index": 15,
+     "type": "heading",
+     "text": "4.1 Ablation",
+     "page_index": 0
+    },
+    {
+     "index": 16,
+     "type": "paragraph",
+     "text": "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader.",
+     "page_index": 0
+    },
+    {
+     "index": 17,
+     "type": "paragraph",
+     "text": "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method.",
+     "page_index": 0
+    },
+    {
+     "index": 18,
+     "type": "heading",
+     "text": "5. Discussion and Limitations",
+     "page_index": 0
+    },
+    {
+     "index": 19,
+     "type": "paragraph",
+     "text": "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version.",
+     "page_index": 0
+    },
+    {
+     "index": 20,
+     "type": "paragraph",
+     "text": "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact.",
+     "page_index": 0
+    },
+    {
+     "index": 21,
+     "type": "heading",
+     "text": "6. Conclusion",
+     "page_index": 0
+    },
+    {
+     "index": 22,
+     "type": "paragraph",
+     "text": "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+     "page_index": 0
+    }
+   ],
+   "visible_lines": [
+    "A Short Note on Section Trees",
+    "O. Author",
+    "Abstract—A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels",
+    "deep.",
+    "1. Introduction",
+    "Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens",
+    "and measurably reduces term drift across a long document.",
+    "1.1 Background",
+    "The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any",
+    "section.",
+    "1.1.1 Terminology",
+    "We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region",
+    "belongs to exactly one block.",
+    "1.2 Scope",
+    "The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere.",
+    "2. Method",
+    "Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two",
+    "signals can disagree, in which case numbering wins because it is explicit.",
+    "4. Results",
+    "Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital",
+    "pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported",
+    "separately because column splitting is the dominant source of ordering errors.",
+    "4.1 Ablation",
+    "Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and",
+    "removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect,",
+    "changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the",
+    "reader.",
+    "Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the",
+    "effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input",
+    "distribution, not of the method.",
+    "5. Discussion and Limitations",
+    "Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot",
+    "establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout",
+    "and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten",
+    "annotations and photographs of curved pages are out of scope for this version.",
+    "We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region",
+    "association exists, the interface must say so rather than presenting an approximate match as exact.",
+    "6. Conclusion",
+    "We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate",
+    "contract, per-format adapters and anchored translations. The system preserves the original page for inspection while",
+    "giving the reader a translated view that can always be traced back to its source."
+   ],
+   "visible_text": "A Short Note on Section Trees O. Author Abstract—A short paper used to exercise the heading tree and section context passed to translation. Its sections nest three levels deep. 1. Introduction Section context helps a translator resolve ambiguous terms. Passing the nearest enclosing headings costs a few tokens and measurably reduces term drift across a long document. 1.1 Background The background is deliberately brief. The point of this paper is the shape of the section tree, not the content of any section. 1.1.1 Terminology We use 'block' for a semantic unit and 'region' for the page area it occupies. A block may have several regions; a region belongs to exactly one block. 1.2 Scope The scope is limited to born-digital single-column documents in this paper; other formats are covered elsewhere. 2. Method Headings are clustered by numbering depth when a numbering scheme exists, and by font size otherwise. The two signals can disagree, in which case numbering wins because it is explicit. 4. Results Table 1 summarises coverage and reading-order accuracy. Body character coverage reaches 99.1% on born-digital pages, and adjacent-block order is correct for 96.4% of the annotated pairs. The two-column subset is reported separately because column splitting is the dominant source of ordering errors. 4.1 Ablation Removing band segmentation reduces order accuracy on pages containing full-width objects from 96.4% to 81.2%, and removing the gutter search reduces accuracy on two-column pages to 74.5%. Dehyphenation has a much smaller effect, changing character coverage by 0.3 percentage points, but it is kept because the failures it prevents are visible to the reader. Cache behaviour is reported in the same table. With a warm cache, median cost per document falls by 68%, and the effect is larger for documents whose sections repeat standard phrasing. We emphasise that this is a property of the input distribution, not of the method. 5. Discussion and Limitations Three limitations deserve emphasis. First, our evaluation uses synthetic documents authored for this study; it cannot establish performance on published literature, and no claim of that kind is made. Second, the annotation covers layout and coverage, not semantic correctness of translation. Third, the scanned subset is clean printed text; handwritten annotations and photographs of curved pages are out of scope for this version. We also note that a page-level fallback is not equivalent to a paragraph-level anchor. When no reliable region association exists, the interface must say so rather than presenting an approximate match as exact. 6. Conclusion We presented a structure-aware pipeline for bilingual reading of research documents, with an explicit coordinate contract, per-format adapters and anchored translations. The system preserves the original page for inspection while giving the reader a translated view that can always be traced back to its source.",
+   "decorations": []
+  },
+  {
+   "index": 1,
+   "rotation": 0,
+   "source_kind": "text",
+   "printed_label": null,
+   "header_text": null,
+   "footer_text": null,
+   "has_formula": false,
+   "figure_boxes": [],
+   "table_boxes": [],
+   "blocks": [
+    {
+     "index": 23,
+     "type": "heading",
+     "text": "Acknowledgements",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 23,
+     "bbox": [
+      56.0,
+      765.39,
+      159.463,
+      777.89
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       765.39,
+       159.463,
+       777.89
+      ]
+     ],
+     "line_texts": [
+      "Acknowledgements"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "Acknowledgements"
+     ],
+     "level": 1
+    },
+    {
+     "index": 24,
+     "type": "paragraph",
+     "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 24,
+     "bbox": [
+      56.0,
+      736.99,
+      523.98,
+      759.39
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       749.39,
+       523.98,
+       759.39
+      ],
+      [
+       56.0,
+       736.99,
+       262.91,
+       746.99
+      ]
+     ],
+     "line_texts": [
+      "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data",
+      "team for preparing the annotated development split."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "Acknowledgements"
+     ],
+     "level": null
+    },
+    {
+     "index": 25,
+     "type": "heading",
+     "text": "References",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 25,
+     "bbox": [
+      56.0,
+      709.59,
+      114.3,
+      722.09
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       709.59,
+       114.3,
+       722.09
+      ]
+     ],
+     "line_texts": [
+      "References"
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": 1
+    },
+    {
+     "index": 26,
+     "type": "reference",
+     "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 26,
+     "bbox": [
+      56.0,
+      683.43,
+      519.923,
+      703.59
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       694.59,
+       519.923,
+       703.59
+      ],
+      [
+       68.0,
+       683.43,
+       221.261,
+       692.43
+      ]
+     ],
+     "line_texts": [
+      "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp.",
+      "210–225, 2019. doi:10.1000/jsm.2019.210"
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 27,
+     "type": "reference",
+     "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 27,
+     "bbox": [
+      56.0,
+      659.11,
+      495.155,
+      679.27
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       670.27,
+       495.155,
+       679.27
+      ],
+      [
+       68.0,
+       659.11,
+       216.221,
+       668.11
+      ]
+     ],
+     "line_texts": [
+      "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic",
+      "Conference on Learning, 2020, pp. 1–12."
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 28,
+     "type": "reference",
+     "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 28,
+     "bbox": [
+      56.0,
+      645.95,
+      332.219,
+      654.95
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       645.95,
+       332.219,
+       654.95
+      ]
+     ],
+     "line_texts": [
+      "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021."
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 29,
+     "type": "reference",
+     "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 29,
+     "bbox": [
+      56.0,
+      632.79,
+      421.679,
+      641.79
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       632.79,
+       421.679,
+       641.79
+      ]
+     ],
+     "line_texts": [
+      "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021."
+     ],
+     "line_page_indices": [
+      1
+     ],
+     "n_lines": 1,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    },
+    {
+     "index": 30,
+     "type": "reference",
+     "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+     "page_index": 1,
+     "page_indices": [
+      1
+     ],
+     "reading_order": 30,
+     "bbox": [
+      56.0,
+      608.47,
+      508.421,
+      628.63
+     ],
+     "line_bboxes": [
+      [
+       56.0,
+       619.63,
+       508.421,
+       628.63
+      ],
+      [
+       68.0,
+       608.47,
+       177.26,
+       617.47
+      ]
+     ],
+     "line_texts": [
+      "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67,",
+      "2018. doi:10.1000/ssl.2018.55"
+     ],
+     "line_page_indices": [
+      1,
+      1
+     ],
+     "n_lines": 2,
+     "section_path": [
+      "References"
+     ],
+     "level": null
+    }
+   ],
+   "visible_blocks": [
+    {
+     "index": 23,
+     "type": "heading",
+     "text": "Acknowledgements",
+     "page_index": 1
+    },
+    {
+     "index": 24,
+     "type": "paragraph",
+     "text": "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split.",
+     "page_index": 1
+    },
+    {
+     "index": 25,
+     "type": "heading",
+     "text": "References",
+     "page_index": 1
+    },
+    {
+     "index": 26,
+     "type": "reference",
+     "text": "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210",
+     "page_index": 1
+    },
+    {
+     "index": 27,
+     "type": "reference",
+     "text": "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12.",
+     "page_index": 1
+    },
+    {
+     "index": 28,
+     "type": "reference",
+     "text": "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+     "page_index": 1
+    },
+    {
+     "index": 29,
+     "type": "reference",
+     "text": "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+     "page_index": 1
+    },
+    {
+     "index": 30,
+     "type": "reference",
+     "text": "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+     "page_index": 1
+    }
+   ],
+   "visible_lines": [
+    "Acknowledgements",
+    "The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data",
+    "team for preparing the annotated development split.",
+    "References",
+    "[1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp.",
+    "210–225, 2019. doi:10.1000/jsm.2019.210",
+    "[2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic",
+    "Conference on Learning, 2020, pp. 1–12.",
+    "[3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021.",
+    "[4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021.",
+    "[5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67,",
+    "2018. doi:10.1000/ssl.2018.55"
+   ],
+   "visible_text": "Acknowledgements The authors thank the anonymous reviewers for detailed comments on the evaluation protocol, and the synthetic data team for preparing the annotated development split. References [1] A. Author and B. Author, “A representative baseline for sequence labeling,” Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210 [2] C. Researcher, D. Scholar, and E. Writer, “On the evaluation of structured predictors,” in Proceedings of the Synthetic Conference on Learning, 2020, pp. 1–12. [3] F. Analyst, “A survey of annotation protocols,” arXiv:2101.01234, 2021. [4] G. Engineer, “Reproducibility notes for the baseline corpus,” Technical report TR-2021-07, 2021. [5] H. Statistician and I. Reviewer, “Confidence intervals for rare-event recall,” Synthetic Statistics Letters, vol. 8, pp. 55–67, 2018. doi:10.1000/ssl.2018.55",
+   "decorations": []
+  }
+ ],
+ "source_format": "pdf",
+ "source_kind": "text",
+ "contains_deep_sections": true
+}

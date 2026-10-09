@@ -1,0 +1,716 @@
+{
+ "generator": "rr_m0.corpus_generator",
+ "generator_version": "1.0.0",
+ "corpus_kind": "synthetic-authored",
+ "licence_note": "All documents in this corpus were written and laid out by this repository's generator. They contain no third-party text and may be redistributed. They do not represent real research.",
+ "counts": {
+  "text_pdf": 8,
+  "scanned_pdf": 5,
+  "mixed_pdf": 1,
+  "image": 4,
+  "docx": 6,
+  "anomaly": 11
+ },
+ "total_files": 35,
+ "entries": [
+  {
+   "name": "pdf_a_single_column",
+   "kind": "text_pdf",
+   "layout": "single_column",
+   "path": "files/pdf_a_single_column.pdf",
+   "truth_path": "truth/pdf_a_single_column.json",
+   "page_count": 3,
+   "notes": "Baseline single-column born-digital PDF with figure, table and references.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:d3b816bd7f26316bd9e18fbd03faf0a1695060149c3214bd0225c2a914bc5c5b",
+   "size_bytes": 10386,
+   "extra": {
+    "has_formula": false,
+    "has_table": true,
+    "has_figure": true
+   }
+  },
+  {
+   "name": "pdf_b_two_column",
+   "kind": "text_pdf",
+   "layout": "double_column",
+   "path": "files/pdf_b_two_column.pdf",
+   "truth_path": "truth/pdf_b_two_column.json",
+   "page_count": 2,
+   "notes": "Two-column PDF with display formula, table and figure.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:08c36054472de96dafd61c39a1d9537ba102f29c553330f2abc56dfcc9a722d9",
+   "size_bytes": 11075,
+   "extra": {
+    "has_formula": true,
+    "has_table": true,
+    "has_figure": true
+   }
+  },
+  {
+   "name": "pdf_c_formula_footnote",
+   "kind": "text_pdf",
+   "layout": "single_column",
+   "path": "files/pdf_c_formula_footnote.pdf",
+   "truth_path": "truth/pdf_c_formula_footnote.json",
+   "page_count": 3,
+   "notes": "Single column; long paragraph crosses a page boundary; two footnotes.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:cd858a070315f58a41013b5a51d626af7220f3824235f8a495f63e29d42057c0",
+   "size_bytes": 9486,
+   "extra": {
+    "has_formula": true,
+    "has_table": true,
+    "has_figure": false
+   }
+  },
+  {
+   "name": "pdf_d_mixed_language",
+   "kind": "text_pdf",
+   "layout": "single_column",
+   "path": "files/pdf_d_mixed_language.pdf",
+   "truth_path": "truth/pdf_d_mixed_language.json",
+   "page_count": 2,
+   "notes": "Single column with a Chinese/English mixed abstract and body.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:8e4324b8176a5302f7bd0433d158c6fd57f3b6166c6e3b0464043b8f79e50354",
+   "size_bytes": 32383,
+   "extra": {
+    "has_formula": false,
+    "has_table": true,
+    "has_figure": false
+   }
+  },
+  {
+   "name": "pdf_e_hyphenation",
+   "kind": "text_pdf",
+   "layout": "single_column",
+   "path": "files/pdf_e_hyphenation.pdf",
+   "truth_path": "truth/pdf_e_hyphenation.json",
+   "page_count": 2,
+   "notes": "Single column, hyphen-heavy: wrapped compounds must not be fused.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:ae311f5fbe6f5da5f9fa16794e38dc71f3e9b9894039d440acc39c7d6f09a6ae",
+   "size_bytes": 8686,
+   "extra": {
+    "has_formula": false,
+    "has_table": true,
+    "has_figure": true
+   }
+  },
+  {
+   "name": "pdf_f_two_column_wide_table",
+   "kind": "text_pdf",
+   "layout": "double_column",
+   "path": "files/pdf_f_two_column_wide_table.pdf",
+   "truth_path": "truth/pdf_f_two_column_wide_table.json",
+   "page_count": 2,
+   "notes": "Two-column PDF with a full-width table and a rotated final page.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:b8a9a9032d98182d7afa2492f33f3282798b1afc0672934c70f6192aed704227",
+   "size_bytes": 10469,
+   "extra": {
+    "has_formula": true,
+    "has_table": true,
+    "has_figure": true
+   }
+  },
+  {
+   "name": "pdf_g_deep_sections",
+   "kind": "text_pdf",
+   "layout": "single_column",
+   "path": "files/pdf_g_deep_sections.pdf",
+   "truth_path": "truth/pdf_g_deep_sections.json",
+   "page_count": 2,
+   "notes": "Three-level heading nesting; short sections.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:2962c72c500c2fe47255edce4aa393db51d17bff554cd2f5abede35c8855c74a",
+   "size_bytes": 5494,
+   "extra": {
+    "has_formula": false,
+    "has_table": false,
+    "has_figure": false
+   }
+  },
+  {
+   "name": "pdf_h_no_references",
+   "kind": "text_pdf",
+   "layout": "double_column",
+   "path": "files/pdf_h_no_references.pdf",
+   "truth_path": "truth/pdf_h_no_references.json",
+   "page_count": 1,
+   "notes": "Two column, no references section, no acknowledgements.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:ec0ae38eaa0bf29481244fc63dc7aa916b5ad88fa711f668bf68a86121969a84",
+   "size_bytes": 6085,
+   "extra": {
+    "has_formula": false,
+    "has_table": true,
+    "has_figure": false
+   }
+  },
+  {
+   "name": "scan_a_clean_300dpi",
+   "kind": "scanned_pdf",
+   "layout": "single_column",
+   "path": "files/scan_a_clean_300dpi.pdf",
+   "truth_path": "truth/scan_a_clean_300dpi.json",
+   "page_count": 3,
+   "notes": "Clean 300 dpi scan of the single-column paper: the primary OCR baseline.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 1.6,
+    "blur_radius": 0.3,
+    "jpeg_quality": 90,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:8d5947b865ad94929b1cf0005826d8b47bd77718dbea7226678c6b1c8111d3d4",
+   "size_bytes": 3124598,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 3
+   }
+  },
+  {
+   "name": "scan_b_two_column_noisy",
+   "kind": "scanned_pdf",
+   "layout": "double_column",
+   "path": "files/scan_b_two_column_noisy.pdf",
+   "truth_path": "truth/scan_b_two_column_noisy.json",
+   "page_count": 2,
+   "notes": "Two-column scan with heavy noise and speckle.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 9.0,
+    "blur_radius": 0.6,
+    "jpeg_quality": 62,
+    "contrast": 0.92,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 260
+   },
+   "expected_error": null,
+   "sha256": "sha256:cc2c0a02bdfeaf09354dbc254060d0921066fe68dfb54054ffe7e8605a16539f",
+   "size_bytes": 1789584,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 2
+   }
+  },
+  {
+   "name": "scan_c_skewed",
+   "kind": "scanned_pdf",
+   "layout": "single_column",
+   "path": "files/scan_c_skewed.pdf",
+   "truth_path": "truth/scan_c_skewed.json",
+   "page_count": 2,
+   "notes": "Scanned with 1.8 degree skew: exercises rotation handling.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 1.8,
+    "noise_sigma": 4.0,
+    "blur_radius": 0.5,
+    "jpeg_quality": 76,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 120
+   },
+   "expected_error": null,
+   "sha256": "sha256:293c9f00fc63c82f66ceff9438f4bc1a6de3bad4232b32d63c8417e0f19b57fa",
+   "size_bytes": 1535094,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 2
+   }
+  },
+  {
+   "name": "scan_d_low_dpi",
+   "kind": "scanned_pdf",
+   "layout": "single_column",
+   "path": "files/scan_d_low_dpi.pdf",
+   "truth_path": "truth/scan_d_low_dpi.json",
+   "page_count": 3,
+   "notes": "200 dpi scan; reported separately, never merged into the clean figure.",
+   "profile": {
+    "dpi": 200,
+    "rotation_deg": 0.0,
+    "noise_sigma": 2.0,
+    "blur_radius": 0.4,
+    "jpeg_quality": 86,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:86263cdbe6be01a89c6049686a2d3bc4921ae5b18b9be569764b4a192bf5982a",
+   "size_bytes": 1381723,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 3
+   }
+  },
+  {
+   "name": "scan_e_grayscale",
+   "kind": "scanned_pdf",
+   "layout": "double_column",
+   "path": "files/scan_e_grayscale.pdf",
+   "truth_path": "truth/scan_e_grayscale.json",
+   "page_count": 2,
+   "notes": "High-contrast grayscale scan.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 3.0,
+    "blur_radius": 0.4,
+    "jpeg_quality": 82,
+    "contrast": 1.05,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:424ad5e0efac2ad7636495a2be116a3c3b83de214ff5832aab8f6121b32d0184",
+   "size_bytes": 2262402,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 2
+   }
+  },
+  {
+   "name": "mixed_f_hybrid",
+   "kind": "mixed_pdf",
+   "layout": "double_column",
+   "path": "files/mixed_f_hybrid.pdf",
+   "truth_path": "truth/mixed_f_hybrid.json",
+   "page_count": 2,
+   "notes": "Hybrid PDF: pages 0 and 2 are rasterised, the rest keep their text layer.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 1.6,
+    "blur_radius": 0.3,
+    "jpeg_quality": 90,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:296fbf90e395ead0d209bc948735badfbccc2ec0af2f4845915a906bceaa371f",
+   "size_bytes": 1681204,
+   "extra": {
+    "image_format": "jpeg",
+    "scanned_pages": 2
+   }
+  },
+  {
+   "name": "img_a_clean_png",
+   "kind": "image",
+   "layout": "single_column",
+   "path": "images/img_a_clean_png.png",
+   "truth_path": "truth/img_a_clean_png.json",
+   "page_count": 1,
+   "notes": "Clean PNG of the single-column first page.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 1.6,
+    "blur_radius": 0.3,
+    "jpeg_quality": 90,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:bceeab87a58e1d9af0b389c2207aa5594c387b3568914ba99a39e5057b80fd4d",
+   "size_bytes": 11406324,
+   "extra": {
+    "page_index": 0,
+    "image_format": "png",
+    "image_size_px": [
+     2481,
+     3508
+    ]
+   }
+  },
+  {
+   "name": "img_b_photo_jpeg",
+   "kind": "image",
+   "layout": "single_column",
+   "path": "images/img_b_photo_jpeg.jpg",
+   "truth_path": "truth/img_b_photo_jpeg.json",
+   "page_count": 1,
+   "notes": "Photograph-like JPEG with skew, vignette and noise.",
+   "profile": {
+    "dpi": 240,
+    "rotation_deg": -2.4,
+    "noise_sigma": 11.0,
+    "blur_radius": 0.9,
+    "jpeg_quality": 58,
+    "contrast": 0.88,
+    "brightness": -6,
+    "vignette": true,
+    "speckles": 400
+   },
+   "expected_error": null,
+   "sha256": "sha256:f31b9cbea2931708f1bff332a8a732553019dfa0d60986b1c574099c40fe65fd",
+   "size_bytes": 725252,
+   "extra": {
+    "page_index": 0,
+    "image_format": "jpeg",
+    "image_size_px": [
+     2101,
+     2889
+    ]
+   }
+  },
+  {
+   "name": "img_c_low_dpi_jpeg",
+   "kind": "image",
+   "layout": "double_column",
+   "path": "images/img_c_low_dpi_jpeg.jpg",
+   "truth_path": "truth/img_c_low_dpi_jpeg.json",
+   "page_count": 1,
+   "notes": "200 dpi JPEG of the two-column first page.",
+   "profile": {
+    "dpi": 200,
+    "rotation_deg": 0.0,
+    "noise_sigma": 2.0,
+    "blur_radius": 0.4,
+    "jpeg_quality": 86,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:60bb5246e2bc412c69f3e2ff59fe55cd3d05d4ccb135dc286e4df78c8c39e5cf",
+   "size_bytes": 759786,
+   "extra": {
+    "page_index": 0,
+    "image_format": "jpeg",
+    "image_size_px": [
+     1654,
+     2339
+    ]
+   }
+  },
+  {
+   "name": "img_d_cropped_png",
+   "kind": "image",
+   "layout": "single_column",
+   "path": "images/img_d_cropped_png.png",
+   "truth_path": "truth/img_d_cropped_png.json",
+   "page_count": 1,
+   "notes": "Top 55% of the page only: exercises partial-page anchoring.",
+   "profile": {
+    "dpi": 300,
+    "rotation_deg": 0.0,
+    "noise_sigma": 1.6,
+    "blur_radius": 0.3,
+    "jpeg_quality": 90,
+    "contrast": 1.0,
+    "brightness": 0,
+    "vignette": false,
+    "speckles": 0
+   },
+   "expected_error": null,
+   "sha256": "sha256:f432b556b710646d9e42389b57e8c8cb4f58f952ff05d64249d3d427dea399c5",
+   "size_bytes": 6309764,
+   "extra": {
+    "page_index": 0,
+    "image_format": "png",
+    "image_size_px": [
+     2481,
+     1929
+    ]
+   }
+  },
+  {
+   "name": "docx_paper_j",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_j.docx",
+   "truth_path": "truth/docx_paper_j.json",
+   "page_count": 0,
+   "notes": "Baseline DOCX with table, image, equation and footnote parts.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:db5152e5b324f57a67206fced9358a9d39cd199432812ebb6812651d0130d26a",
+   "size_bytes": 44499,
+   "extra": {
+    "paragraph_count": 36,
+    "table_count": 1,
+    "image_count": 1,
+    "formula_count": 1,
+    "footnote_count": 0
+   }
+  },
+  {
+   "name": "docx_paper_a",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_a.docx",
+   "truth_path": "truth/docx_paper_a.json",
+   "page_count": 0,
+   "notes": "Same content as pdf_a, used to compare conversion against a known layout.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:4ee9a1970465cb947bbe667a305f2a6e948fcbdd8df2efe1766c229cad7ec89c",
+   "size_bytes": 44697,
+   "extra": {
+    "paragraph_count": 39,
+    "table_count": 1,
+    "image_count": 1,
+    "formula_count": 0,
+    "footnote_count": 0
+   }
+  },
+  {
+   "name": "docx_paper_d_mixed",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_d_mixed.docx",
+   "truth_path": "truth/docx_paper_d_mixed.json",
+   "page_count": 0,
+   "notes": "Mixed-script DOCX.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:be4c4b222c33d1e81af1aee337ff801522f3b760934553860798289f1cd2901d",
+   "size_bytes": 40453,
+   "extra": {
+    "paragraph_count": 35,
+    "table_count": 1,
+    "image_count": 0,
+    "formula_count": 0,
+    "footnote_count": 0
+   }
+  },
+  {
+   "name": "docx_paper_c_math",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_c_math.docx",
+   "truth_path": "truth/docx_paper_c_math.json",
+   "page_count": 0,
+   "notes": "DOCX with display equations and footnote parts.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:078ca8af0dfdd9e6e7420d26e09574f5e649e0241e9d3303546149151472a85e",
+   "size_bytes": 41117,
+   "extra": {
+    "paragraph_count": 37,
+    "table_count": 1,
+    "image_count": 0,
+    "formula_count": 2,
+    "footnote_count": 2
+   }
+  },
+  {
+   "name": "docx_paper_g_sections",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_g_sections.docx",
+   "truth_path": "truth/docx_paper_g_sections.json",
+   "page_count": 0,
+   "notes": "Deep heading nesting in DOCX form.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:bd7740e3ecd17791ce7308f3779e8b054c05acffd21dece96aecd958cee3815f",
+   "size_bytes": 38723,
+   "extra": {
+    "paragraph_count": 31,
+    "table_count": 0,
+    "image_count": 0,
+    "formula_count": 0,
+    "footnote_count": 0
+   }
+  },
+  {
+   "name": "docx_paper_f_table",
+   "kind": "docx",
+   "layout": "flow",
+   "path": "files/docx_paper_f_table.docx",
+   "truth_path": "truth/docx_paper_f_table.json",
+   "page_count": 0,
+   "notes": "DOCX with a wide table and an embedded image.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:460d9745296ef82a3b9e23fda253fad44246fc05b03145db2ff53a989ecfd3de",
+   "size_bytes": 44737,
+   "extra": {
+    "paragraph_count": 39,
+    "table_count": 1,
+    "image_count": 1,
+    "formula_count": 1,
+    "footnote_count": 0
+   }
+  },
+  {
+   "name": "corrupt_truncated",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/corrupt_truncated.pdf",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "Truncated PDF: header present, body cut off.",
+   "profile": null,
+   "expected_error": "corrupt_file",
+   "sha256": "sha256:89bb0044b246fb3503cbf79aadb3abf9938436cf7d9d52e13508d2f7f2aaa41e",
+   "size_bytes": 3462
+  },
+  {
+   "name": "encrypted",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/encrypted.pdf",
+   "truth_path": null,
+   "page_count": 1,
+   "notes": "AES-256 encrypted PDF; must be reported, never silently retried.",
+   "profile": null,
+   "expected_error": "encrypted_file",
+   "sha256": "sha256:d666e6a32b02584eb37cf0f812a9278c1aa92496b4265b385f55af23b77ed7b2",
+   "size_bytes": 1502
+  },
+  {
+   "name": "legacy_word97",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/legacy_word97.doc",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "Word 97 binary format. Must be rejected with a conversion hint, not parsed as DOCX.",
+   "profile": null,
+   "expected_error": "legacy_doc_unsupported",
+   "sha256": "sha256:40e2c09aa3f4b167381a81e3f0ec161444bea5edfe018822a482868a8c1c2b3e",
+   "size_bytes": 2588
+  },
+  {
+   "name": "empty",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/empty.pdf",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "Zero-byte upload.",
+   "profile": null,
+   "expected_error": "empty_file",
+   "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "size_bytes": 0
+  },
+  {
+   "name": "garbage_text_layer",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/garbage_text_layer.pdf",
+   "truth_path": null,
+   "page_count": 1,
+   "notes": "Has a text layer that is present but unusable; must be routed to OCR, not trusted.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:fae039e0570aa8a3c79ed6fcba1fc6c1710f2ed3c68961f083f9842d2653513f",
+   "size_bytes": 977
+  },
+  {
+   "name": "blank_pages",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/blank_pages.pdf",
+   "truth_path": null,
+   "page_count": 3,
+   "notes": "Three genuinely blank pages: must parse to zero blocks without error.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:89f84e278f6a845b113061a039f004be820a1693547c8202dda92abfaa407958",
+   "size_bytes": 855
+  },
+  {
+   "name": "oversized_page",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/oversized_page.jpg",
+   "truth_path": null,
+   "page_count": 1,
+   "notes": "52x72 cm at 300 dpi equivalent; exercises the decoded-pixel guard.",
+   "profile": null,
+   "expected_error": "decompression_bomb",
+   "sha256": "sha256:d83edbc7b993983346938d05600e75b5320847d7907e2e30abd2de66bfbc2e83",
+   "size_bytes": 586335
+  },
+  {
+   "name": "docx_zip_bomb",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/docx_zip_bomb.docx",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "A DOCX whose expansion ratio exceeds the guard; must be rejected before extraction.",
+   "profile": null,
+   "expected_error": "decompression_bomb",
+   "sha256": "sha256:4e4b0033abdc03281f364846a2da5ea1efc29c4b6921ce8f2503795bc845483a",
+   "size_bytes": 224482
+  },
+  {
+   "name": "unsupported_format",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/unsupported_format.webp",
+   "truth_path": null,
+   "page_count": 1,
+   "notes": "WEBP is deliberately out of P0 scope; the error must name the supported set.",
+   "profile": null,
+   "expected_error": "unsupported_format",
+   "sha256": "sha256:fc05323de3a58175d2db5d9cbd6bfd7542d364d0c3948ee763b08713ab888f3e",
+   "size_bytes": 926
+  },
+  {
+   "name": "renamed_docx_as_doc",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/renamed_docx_as_doc.doc",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "A real DOCX renamed to .doc: content sniffing must win over the extension.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:db5152e5b324f57a67206fced9358a9d39cd199432812ebb6812651d0130d26a",
+   "size_bytes": 44499
+  },
+  {
+   "name": "docx_nested_archive",
+   "kind": "anomaly",
+   "layout": "n/a",
+   "path": "anomalies/docx_nested_archive.docx",
+   "truth_path": null,
+   "page_count": 0,
+   "notes": "DOCX containing an extra nested archive part; conversion must ignore or refuse safely.",
+   "profile": null,
+   "expected_error": null,
+   "sha256": "sha256:7e5a36b18ddefaa315b8c22646c5c8851d4f71bdcdc79168d53f4013a1cad033",
+   "size_bytes": 42430
+  }
+ ],
+ "source_documents": {
+  "pdf_a_single_column": "pdf_a_single_column.pdf",
+  "pdf_b_two_column": "pdf_b_two_column.pdf",
+  "pdf_e_hyphenation": "pdf_e_hyphenation.pdf"
+ },
+ "holdout_note": "Development and holdout split: files whose name ends in a letter from a to e form the development set used while tuning heuristics; f to j form the holdout set. benchmarks/holdout.json records the split explicitly so it can be checked mechanically."
+}
