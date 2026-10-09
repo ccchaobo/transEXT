@@ -132,12 +132,12 @@ at the calibrated 250 dpi. Full data in
 | **OCR recognition, one page** | 17 | **7.6 s** | **10.7 s** | **10.7 s** | — | **not interactive** |
 
 Peak working set for the whole run: 1743 MiB, a batch figure across many documents
-rather than a per-document footprint ([limitations §13](docs/limitations.md)).
+rather than a per-document footprint ([limitations §14](docs/limitations.md)).
 
 OCR recognition is three orders of magnitude outside the interactive targets, and
 no tuning changes that. The reader therefore shows the page image first and fills
 in text as recognition completes. This is recorded as
-[limitations §12](docs/limitations.md) rather than presented as a pass.
+[limitations §13](docs/limitations.md) rather than presented as a pass.
 
 ### OCR accuracy
 
@@ -204,10 +204,11 @@ better result 43% of the time, below chance. See
 
 | Spec §12.2 item | Status | Evidence |
 | --- | --- | --- |
-| Coordinate contract, all rotations | **PASS** | `scripts/check_rotation.py`; markers within 2 px of the transform's prediction for 0/90/180/270 |
-| Body character coverage ≥ 98% | **PENDING** | needs the layout module measured against the corpus; not yet done |
-| Adjacent-block order ≥ 95% | **PENDING** | the layout module's reading order is not yet measured; the OCR reading-order scores above are the recogniser's sequence, not layout's output |
-| ≥ 200 sampled blocks ≥ 95% correct page and region | **PENDING** | not yet measured |
+| Coordinate contract, all rotations | **PASS** | `scripts/check_rotation.py --verify`; markers within 2 px of the transform's prediction for 0/90/180/270, re-measured from pixels |
+| PDF text box frame | **PASS** (was a defect) | `scripts/diagnose_adapter_vs_render.py`, `scripts/verify_coordinate_fix.py`; every line box was vertically mirrored. See [ADR 0011](docs/adr/0011-pymupdf-text-frame.md) |
+| Body character coverage ≥ 98% | **PASS** | **0.9985** pooled over the 9 text-layer documents (84 of 56008 chars, normalisation only); `scripts/measure_layout.py` |
+| Adjacent-block order ≥ 95% | **FAIL** | **0.8571** (210/245 pairs). Cause known and not fixed: full-width headers suppress column detection, so two-column bodies interleave |
+| ≥ 200 sampled blocks ≥ 95% correct page and region | **FAIL** | **0.7835** (199/254 blocks) on the same cause; 254 blocks sampled, meeting the ≥200 requirement |
 | OCR CER ≤ 5% on clear scans | **PASS** | recognition 0.0484 / 0.0092 / 0.0334 on the three clear scans, all ≤ 0.05 |
 | OCR reading order | **PARTIAL, not claimed as pass** | 0.78–1.0 per page before layout reordering; see above |
 | Protected placeholder integrity 100% | **PASS** | `tests/unit/test_cleaning.py`, including a percentage token that earlier went unprotected |
@@ -216,6 +217,12 @@ better result 43% of the time, below chance. See
 | Page turn ≤ 300 ms | **PASS** | 214.5 ms P95, 40.6 ms P50, worst case 278.5 ms |
 | Anomaly handling | **PASS** | 11/11 handled as intended by `scripts/spike_extract.py` |
 | Job recovery, retry, fencing | **PASS** | `scripts/smoke_storage.py` |
+
+The layout items are measured over **text-layer pages only**. A scanned page has no
+text layer, so the extractor returns nothing for it and OCR is required; averaging
+such a page into a text-layer coverage figure reported 0.39 for `mixed_f_hybrid`, whose
+first page is an image, while every text page scores 0.997 or better.
+`scripts/measure_layout.py` names the pages it could not judge instead of hiding them.
 
 The PENDING rows are not failures. They are items that require a real translation
 provider, a real-world corpus, or a measurement that has not been built yet, and

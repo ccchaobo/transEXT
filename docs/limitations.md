@@ -41,7 +41,41 @@ estimates match real billing, and that retry and rate-limit behaviour matches a
 real service. The human review of at least 100 paragraphs required by the spec
 cannot begin without one.
 
-## 3. DOCX conversion is a declared degraded path
+## 3. Two-column pages with a full-width header read in the wrong order
+
+On a page that mixes a full-width header with a two-column body, the layout module's
+reading order is wrong: it interleaves the left and right columns. Measured on the
+corpus, adjacent-block order is **0.8571** (210/245 pairs) against a target of 0.95,
+and page-and-region accuracy is **0.7835** (199/254 blocks) against a target of 0.95.
+On `pdf_b_two_column` and `pdf_h_no_references`, the first two-column page is reported
+as one column.
+
+**Cause, established by measurement.** `segment_bands()` sorts every line on a page by
+vertical position and then splits that sequence on large vertical gaps. On a page that
+mixes a full-width header with two columns, sorting by vertical position interleaves
+the title, both columns and the abstract. The three header lines are then *adjacent* to
+body lines from both columns, and no vertical-gap test can separate them. The header
+lines cross the page centre, so the column search sees a gutter that is not empty and
+correctly refuses to split; the body is then read as one column, left to right. The
+projection profile the column search uses is also unweighted, so one long line counts
+as much as one short one.
+
+**Why it is not yet fixed.** Grouping the lines by horizontal region *before* ordering
+them is the right shape of fix, and a rewrite along those lines was attempted. It
+measured **worse** — order 0.8264, region 0.7729, 86 bands, and new "ordering may be
+unreliable" warnings — so it was reverted rather than kept. The reverted code is not in
+the tree. A correct fix needs the column structure decided before the reading order, and
+it needs its own tests; it is not in place.
+
+**Bounded consequence.** Text coverage is unaffected (0.9985): no text is lost, it is
+ordered and attributed to the wrong column. Source anchoring still lands on the correct
+page. The affected items are the two layout acceptance figures above, and any
+annotation or export that depends on paragraph order on such a page.
+
+**Status:** open defect, measured. Both figures are reported as **FAIL**, not rounded
+up or relabelled.
+
+## 4. DOCX conversion is a declared degraded path
 
 See [ADR 0005](adr/0005-docx-conversion-path.md) for the full list. In summary,
 these are **not** reproduced, and each is reported as a user-visible issue on the
@@ -53,7 +87,7 @@ document rather than silently dropped:
 * Word's pagination (the product uses its own rendering and says so),
 * the document's fonts, numbering scheme, and equation layout.
 
-## 4. Frontend verification is not automated
+## 5. Frontend verification is not automated
 
 This environment has no browser automation and no headless browser. There is no
 end-to-end UI test.
@@ -67,7 +101,7 @@ that highlighting lands on the intended rectangle at every zoom level, and that
 the layout is usable at small window sizes. These require a browser and a human,
 and they are listed as manual steps rather than claimed as covered.
 
-## 5. Real scanning conditions are not represented
+## 6. Real scanning conditions are not represented
 
 The scanned documents are produced by rasterising a born-digital PDF and applying
 a modelled degradation (JPEG compression, Gaussian blur, additive noise,
@@ -82,7 +116,7 @@ speckle, skew, vignette). Real scans additionally exhibit:
 Only 2° and 1.8° skew is represented, which is mild; real skewed scans commonly
 reach 3–5°.
 
-## 6. Coordinate accuracy is bounded by the parser, not asserted
+## 7. Coordinate accuracy is bounded by the parser, not asserted
 
 The coordinate contract is tested against page geometry that the PDF file itself
 declares (media box, crop box, rotation), which is an independent check. Content
@@ -92,27 +126,27 @@ positions are checked against draw-time ground truth.
 correct *line* within a paragraph. Block-level anchoring is what is implemented
 and tested. Sub-block anchoring would need a finer contract and is not claimed.
 
-## 7. Page-level location is never presented as paragraph-level
+## 8. Page-level location is never presented as paragraph-level
 
 Following the spec, a page-level result is always described as page-level. The
 reader's location indicators name a page and a region, not a sentence. Where a
 block's extraction is uncertain, the uncertainty is surfaced as a quality issue
 rather than presented as a precise anchor.
 
-## 8. Encrypted documents are refused, not cracked
+## 9. Encrypted documents are refused, not cracked
 
 An encrypted PDF is detected and reported. No password prompt, no dictionary
 attack, and no attempt to extract partial content is made. This is a product
 boundary, not a technical gap.
 
-## 9. Deletion scope
+## 10. Deletion scope
 
 Deleting a document removes its database rows, its original file, its derived
 resources and its caches. **Backups and any copies the user made outside the
 application are explicitly not covered**, and the confirmation text says so.
 A backup policy is a separate concern that is not implemented.
 
-## 10. PyMuPDF licence obligation
+## 11. PyMuPDF licence obligation
 
 PyMuPDF is dual licensed AGPL-3.0 / Artifex commercial. This is an obligation on
 *distribution*, not on development or internal use. It is recorded in
@@ -120,14 +154,14 @@ PyMuPDF is dual licensed AGPL-3.0 / Artifex commercial. This is an obligation on
 must be re-checked before any commercial or network-service distribution. The
 library is confined behind the `DocumentParser` interface so it can be replaced.
 
-## 11. Performance figures are for this machine only
+## 12. Performance figures are for this machine only
 
 Timings describe the machine and versions recorded in the environment inventory.
 They are not portable, and a slower machine or a cold page cache will differ. The
 spec's thresholds are treated as targets to calibrate and freeze, not as
 guarantees.
 
-## 12. OCR is too slow for an interactive first screen on scanned documents
+## 13. OCR is too slow for an interactive first screen on scanned documents
 
 Measured on this machine at the calibrated 250 dpi (ADR 0004), over the 24 normal
 corpus samples:
@@ -154,7 +188,7 @@ incremental progress a requirement rather than a nicety.
 **Not attempted:** parallelism across pages, GPU inference, or a smaller model.
 Each is a real option and none has been measured, so none is claimed.
 
-## 13. Peak memory during a corpus run was 1.7 GiB
+## 14. Peak memory during a corpus run was 1.7 GiB
 
 The M0 performance harness peaked at 1743 MiB of working set while walking the
 whole corpus. That is a batch figure, not a single-document figure: it includes

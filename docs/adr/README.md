@@ -17,6 +17,7 @@ supersedes the old one, because the point is to keep the reasoning auditable.
 | [0008](0008-normalised-coordinates.md) | Normalised coordinates with an explicit transform | accepted |
 | [0009](0009-rotation-transform-measured.md) | The rotation transform is measured against the renderer | accepted |
 | [0010](0010-recognition-and-order-measured-separately.md) | Recognition accuracy and reading order are measured separately | accepted |
+| [0011](0011-pymupdf-text-frame.md) | PyMuPDF text boxes are in the unrotated media frame, not raw PDF space | accepted |
 
 ## Not decided yet
 
