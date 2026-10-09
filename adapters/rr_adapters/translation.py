@@ -32,12 +32,45 @@ from typing import Any, Literal, Protocol, Sequence
 
 import httpx
 
+from rr_contracts import ErrorCode
+
 #: Bumped whenever the prompt below changes, because it is part of the cache key: a
 #: translation produced under an older prompt must not be reused silently.
 PROMPT_VERSION = "v1"
 
-#: Error code for "the service may or may not have processed this".
-EXTERNAL_UNKNOWN_RESULT = "EXTERNAL_UNKNOWN_RESULT"
+# Business error codes come from the shared contract instead of being invented here.
+# The contract owns them because it also maps each one to an HTTP status (``HTTP_STATUS``)
+# and marks which are retryable; a second vocabulary in this adapter would report the
+# same failure two different ways and lose that mapping.
+CODE_UNKNOWN_RESULT = ErrorCode.EXTERNAL_UNKNOWN_RESULT.value
+CODE_UNAVAILABLE = ErrorCode.EXTERNAL_UNAVAILABLE.value
+CODE_RATE_LIMITED = ErrorCode.EXTERNAL_RATE_LIMITED.value
+CODE_AUTH_FAILED = ErrorCode.EXTERNAL_AUTH_FAILED.value
+CODE_NO_BALANCE = ErrorCode.EXTERNAL_INSUFFICIENT_BALANCE.value
+CODE_INVALID_REQUEST = ErrorCode.INVALID_REQUEST.value
+CODE_TRANSLATION_FAILED = ErrorCode.TRANSLATION_FAILED.value
+
+#: The module's name for "the service may or may not have processed this".
+EXTERNAL_UNKNOWN_RESULT = CODE_UNKNOWN_RESULT
+
+
+def code_for_status(status: int) -> str:
+    """Map an HTTP status from the service onto the shared error vocabulary.
+
+    Kept coarse on purpose: the status says *which class* of failure occurred, and the
+    response body (truncated, in ``error_message``) says the rest.  Inventing a code per
+    status would put values in the database that nothing else in the system knows.
+    """
+    if status in (401, 403):
+        return CODE_AUTH_FAILED
+    if status == 402:
+        return CODE_NO_BALANCE
+    if status == 429:
+        return CODE_RATE_LIMITED
+    if status >= 500:
+        return CODE_UNAVAILABLE
+    return CODE_INVALID_REQUEST
+
 
 #: Language codes to the names used in the prompt.  Sending "zh" to a model usually
 #: works, but "Chinese" removes any doubt.
@@ -355,7 +388,9 @@ class OpenAIChatTranslationProvider:
                     time.sleep(self.config.backoff_seconds * (2 ** (attempt - 1)))
                     continue
                 result.status = "failed"
-                result.error_code = "TRANSPORT_ERROR"
+                # The connection failed, so nothing was delivered: this is a plain
+                # service-unavailable failure, not an unknown outcome.
+                result.error_code = CODE_UNAVAILABLE
                 result.error_message = last_error
                 return result
 
@@ -366,7 +401,7 @@ class OpenAIChatTranslationProvider:
 
             if response.status_code >= 400:
                 result.status = "failed"
-                result.error_code = f"HTTP_{response.status_code}"
+                result.error_code = code_for_status(response.status_code)
                 # Truncated: an error body can be a whole HTML page.
                 result.error_message = (response.text or "")[:400]
                 return result
@@ -375,14 +410,14 @@ class OpenAIChatTranslationProvider:
                 data = response.json()
             except (json.JSONDecodeError, ValueError) as exc:
                 result.status = "failed"
-                result.error_code = "BAD_JSON"
+                result.error_code = CODE_TRANSLATION_FAILED
                 result.error_message = f"response was not JSON: {exc}"
                 return result
 
             text = self._extract_text(data)
             if text is None:
                 result.status = "failed"
-                result.error_code = "EMPTY_COMPLETION"
+                result.error_code = CODE_TRANSLATION_FAILED
                 result.error_message = (
                     "response contained no message content: "
                     f"{json.dumps(data)[:300]}"
@@ -390,7 +425,7 @@ class OpenAIChatTranslationProvider:
                 return result
             if not text:
                 result.status = "failed"
-                result.error_code = "EMPTY_TEXT"
+                result.error_code = CODE_TRANSLATION_FAILED
                 result.error_message = "model returned an empty string"
                 return result
 
@@ -401,10 +436,11 @@ class OpenAIChatTranslationProvider:
                 result.usage = {k: v for k, v in usage.items() if isinstance(v, (int, float))}
             return result
 
-        result.status = "failed"
-        result.error_code = "RETRIES_EXHAUSTED"
-        result.error_message = last_error or "no attempt succeeded"
-        return result
+        # Defensive: every branch above returns on the final attempt.
+        result.status = "failed"  # pragma: no cover
+        result.error_code = CODE_UNAVAILABLE  # pragma: no cover
+        result.error_message = last_error or "no attempt succeeded"  # pragma: no cover
+        return result  # pragma: no cover
 
     # -- the interface -----------------------------------------------------
 
@@ -589,6 +625,13 @@ def load_env_file(path: str | Path) -> int:
 
 
 __all__ = [
+    "CODE_AUTH_FAILED",
+    "CODE_INVALID_REQUEST",
+    "CODE_NO_BALANCE",
+    "CODE_RATE_LIMITED",
+    "CODE_TRANSLATION_FAILED",
+    "CODE_UNAVAILABLE",
+    "CODE_UNKNOWN_RESULT",
     "DEFAULT_OLLAMA_CLOUD_BASE_URL",
     "DEFAULT_SYSTEM_PROMPT",
     "EXTERNAL_UNKNOWN_RESULT",
@@ -611,6 +654,7 @@ __all__ = [
     "TranslationResult",
     "TranslationUnit",
     "config_from_env",
+    "code_for_status",
     "describe_configuration",
     "language_name",
     "load_env_file",

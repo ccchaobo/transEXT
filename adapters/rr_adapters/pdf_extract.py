@@ -38,9 +38,12 @@ from document_core.layout import TextLine
 __all__ = [
     "PdfPageInfo",
     "PdfExtraction",
+    "PdfInspection",
     "PdfTextExtractor",
+    "PdfCorruptError",
     "page_geometry",
     "is_encrypted",
+    "inspect_pdf",
     "page_is_probably_scanned",
 ]
 
@@ -109,6 +112,67 @@ def is_encrypted(path: str | Path) -> bool:
     doc = pymupdf.open(str(path))
     try:
         return bool(doc.needs_pass)
+    finally:
+        doc.close()
+
+
+class PdfCorruptError(ValueError):
+    """The file cannot be opened as a PDF at all."""
+
+
+@dataclass(frozen=True)
+class PdfInspection:
+    """Cheap facts about a PDF, known before committing to a full parse."""
+
+    page_count: int
+    encrypted: bool
+    needs_password: bool
+
+
+def inspect_pdf(path: str | Path) -> PdfInspection:
+    """Read a PDF's page count and encryption state without extracting anything.
+
+    This runs at import so an encrypted or absurdly long document is refused while the
+    user is still watching, rather than after a parse job has been queued and a worker
+    has spent time on it.  Reading the page tree is cheap; extracting text is not.
+
+    The bytes are read into memory and handed to PyMuPDF as a *stream* rather than a path.
+    That is not an optimisation; it is a fix for a Windows defect measured here:
+
+    PyMuPDF keeps the file open for as long as the exception that references its internals
+    is alive.  Deleting the just-written file from inside the ``except`` block that is
+    handling such an exception therefore fails with ``WinError 32``, and — measured, not
+    assumed — so does deleting it anywhere while the exception object is still held.  A
+    refused import would then leave an undeletable file behind, and the cleanup failure
+    would replace the real error with a sharing violation.  Opening from a buffer means no
+    file handle exists to leak, whatever happens to the exception afterwards.
+
+    The read is bounded by the upload limit the caller already enforced, so the cost is
+    transient and capped.
+    """
+    path = Path(path)
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise PdfCorruptError(f"cannot read the file: {exc}") from None
+    try:
+        doc = pymupdf.open(stream=data, filetype="pdf")
+    except Exception as exc:  # pymupdf raises several unrelated exception types here
+        # `from None`: the cause would otherwise keep a reference to PyMuPDF's internals
+        # (and the buffer) alive, and would only add noise to the message.
+        raise PdfCorruptError(f"cannot open as a PDF: {exc}") from None
+    try:
+        needs_password = bool(doc.needs_pass)
+        try:
+            page_count = int(doc.page_count)
+        except Exception:
+            # An encrypted document may not expose a page tree until it is unlocked.
+            page_count = 0
+        return PdfInspection(
+            page_count=page_count,
+            encrypted=bool(doc.is_encrypted),
+            needs_password=needs_password,
+        )
     finally:
         doc.close()
 

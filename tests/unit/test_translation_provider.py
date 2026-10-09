@@ -16,6 +16,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
+from rr_contracts import ErrorCode
 from rr_adapters.translation import (
     EXTERNAL_UNKNOWN_RESULT,
     PROMPT_VERSION,
@@ -23,6 +24,7 @@ from rr_adapters.translation import (
     OpenAITranslationConfig,
     TranslationConfigError,
     TranslationUnit,
+    code_for_status,
     config_from_env,
     describe_configuration,
     language_name,
@@ -282,10 +284,27 @@ class TestFailureHandling:
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         result = outcome.results[0]
         assert result.status == "failed"
-        assert result.error_code == "HTTP_400"
+        assert result.error_code == ErrorCode.INVALID_REQUEST.value
         assert "bad model id" in (result.error_message or "")
         # A 400 will fail identically next time, so repeating it would just cost time.
         assert len(seen) == 1
+
+    def test_auth_failure_is_told_apart_from_a_generic_error(self) -> None:
+        # A wrong key and a malformed request need different fixes, so they must not
+        # share a code.
+        provider = provider_with(lambda r: httpx.Response(401, text="bad key"))
+        outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
+        assert outcome.results[0].error_code == ErrorCode.EXTERNAL_AUTH_FAILED.value
+
+    def test_insufficient_balance_is_its_own_code(self) -> None:
+        provider = provider_with(lambda r: httpx.Response(402, text="no credit"))
+        outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
+        assert outcome.results[0].error_code == ErrorCode.EXTERNAL_INSUFFICIENT_BALANCE.value
+
+    def test_rate_limit_after_retries_reports_rate_limited(self) -> None:
+        provider = provider_with(lambda r: httpx.Response(429, text="slow down"))
+        outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
+        assert outcome.results[0].error_code == ErrorCode.EXTERNAL_RATE_LIMITED.value
 
     def test_exhausted_retries_are_reported_as_a_failure(self) -> None:
         seen: list[int] = []
@@ -297,6 +316,7 @@ class TestFailureHandling:
         provider = provider_with(handler)
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         assert outcome.results[0].status == "failed"
+        assert outcome.results[0].error_code == ErrorCode.EXTERNAL_UNAVAILABLE.value
         assert outcome.results[0].attempts == 3
         assert len(seen) == 3
 
@@ -307,25 +327,32 @@ class TestFailureHandling:
         provider = provider_with(handler)
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         assert outcome.results[0].status == "failed"
-        assert outcome.results[0].error_code == "TRANSPORT_ERROR"
+        assert outcome.results[0].error_code == ErrorCode.EXTERNAL_UNAVAILABLE.value
 
     def test_missing_choices_is_reported_not_silently_empty(self) -> None:
         provider = provider_with(lambda r: httpx.Response(200, json={"id": "x"}))
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         assert outcome.results[0].status == "failed"
-        assert outcome.results[0].error_code == "EMPTY_COMPLETION"
+        assert outcome.results[0].error_code == ErrorCode.TRANSLATION_FAILED.value
 
     def test_empty_string_translation_is_a_failure(self) -> None:
         provider = provider_with(lambda r: httpx.Response(200, json=completion("   ")))
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         assert outcome.results[0].status == "failed"
-        assert outcome.results[0].error_code == "EMPTY_TEXT"
+        assert outcome.results[0].error_code == ErrorCode.TRANSLATION_FAILED.value
 
     def test_non_json_response_is_a_failure(self) -> None:
         provider = provider_with(lambda r: httpx.Response(200, text="<html>nope</html>"))
         outcome = provider.translate([TranslationUnit(block_id="b1", text="hello")])
         assert outcome.results[0].status == "failed"
-        assert outcome.results[0].error_code == "BAD_JSON"
+        assert outcome.results[0].error_code == ErrorCode.TRANSLATION_FAILED.value
+
+    def test_every_reported_code_exists_in_the_shared_contract(self) -> None:
+        # The adapter must not invent a second vocabulary: a code it reports has to be
+        # one the contract knows, or it cannot map to an HTTP status or be retried.
+        known = {code.value for code in ErrorCode}
+        for status in (400, 401, 402, 403, 404, 418, 429, 500, 502, 503, 504):
+            assert code_for_status(status) in known
 
     def test_error_body_is_truncated(self) -> None:
         # An error body can be an entire HTML page; it must not be stored whole.
