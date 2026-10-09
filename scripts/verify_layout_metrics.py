@@ -45,7 +45,7 @@ def main() -> int:
 
     blocks = load_truth_blocks(truth, extraction.geometry_by_page)
     paragraphs = [
-        (p.text, min(p.page_indices or [0]), tuple(p.bbox.as_list()))
+        (p.text, tuple(sorted(p.page_indices or [0])), tuple(p.bbox.as_list()))
         for p in result.paragraphs
     ]
 
@@ -64,9 +64,9 @@ def main() -> int:
             f"{block.bbox[2]:.3f},{block.bbox[3]:.3f}) {block.text[:42]!r}"
         )
     print("\n  --- layout paragraph regions ---")
-    for index, (text, page, bbox) in enumerate(paragraphs[:8]):
+    for index, (text, pages, bbox) in enumerate(paragraphs[:8]):
         print(
-            f"    p{index:3} page={page} "
+            f"    p{index:3} pages={pages} "
             f"bbox=({bbox[0]:.3f},{bbox[1]:.3f},{bbox[2]:.3f},{bbox[3]:.3f}) "
             f"{text[:42]!r}"
         )

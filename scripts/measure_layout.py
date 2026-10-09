@@ -142,7 +142,11 @@ def measure_document(extractor: PdfTextExtractor, name: str) -> dict:
     blocks = load_truth_blocks(truth, extraction.geometry_by_page)
 
     paragraphs = [
-        (para.text, _para_page(para), tuple(para.bbox.as_list()))
+        (
+            para.text,
+            tuple(sorted(para.page_indices or [0])),
+            tuple(para.bbox.as_list()),
+        )
         for para in result.paragraphs
     ]
 
@@ -223,7 +227,9 @@ def measure_document(extractor: PdfTextExtractor, name: str) -> dict:
         if b.block_type in BODY_TYPES
         and b.page_index in text_pages
     ]
-    judged_paragraphs = [p for p in paragraphs if p[1] in text_pages]
+    judged_paragraphs = [
+        p for p in paragraphs if any(page in text_pages for page in p[1])
+    ]
     report = match_blocks_to_paragraphs(judged_blocks, judged_paragraphs)
     order_accuracy, order_correct, order_total = adjacent_order_accuracy(
         [m.block for m in report.matches], report.matches

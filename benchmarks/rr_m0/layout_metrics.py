@@ -168,11 +168,15 @@ def match_blocks_to_paragraphs(
     *,
     min_similarity: float = 0.5,
     min_length_ratio: float = 0.5,
+    min_vertical_overlap: float = 0.25,
 ) -> MatchReport:
     """Pair reference blocks with the layout paragraphs that answer for them.
 
-    ``paragraphs`` is ``(text, page_index, bbox)`` per paragraph, in the pipeline's
-    reading order.
+    ``paragraphs`` is ``(text, page_indices, bbox)`` per paragraph, in the pipeline's
+    reading order.  ``page_indices`` is the *set* of pages the paragraph's text was
+    drawn on rather than one representative page: a paragraph that runs across a page
+    break has text on both pages, so a reference block's continuation entry on the
+    second page has to be allowed to pair with it.
 
     Pairing is greedy on similarity and one-to-one: each paragraph may answer for at
     most one reference block, so a paragraph cannot be counted twice as evidence
@@ -182,6 +186,32 @@ def match_blocks_to_paragraphs(
     similarity normalised by the longer string lets a short paragraph claim a long
     reference block.  The shorter side must be at least ``min_length_ratio`` of the
     longer, so a heading cannot answer for a paragraph.
+
+    **A block is only paired with a paragraph on the same page.**  Without that
+    restriction the matcher paired a page-0 sentence with an acknowledgement on page 2,
+    or a page-1 figure caption with a page-0 body sentence, whenever the two happened to
+    share enough characters.  Those pairings are impossible — a block's text is drawn on
+    one page and a paragraph's text comes from one page — and each one invents an
+    ordering inversion that corresponds to no real reading-order mistake.  Measured
+    before the restriction: 28 of 232 pairs (12.1%) crossed pages, and the damage was
+    concentrated in exactly the documents that scored worst (``pdf_g_deep_sections``
+    40% cross-page at order 0.75, ``pdf_f_two_column_wide_table`` 17% at 0.7826), while
+    ``pdf_h_no_references`` — the same paper as ``pdf_b_two_column`` — scored 0.9091
+    against 0.7857 purely because none of its pairs crossed a page.
+
+    **The pairing must also be vertically plausible.**  Even on the right page, matching
+    on text alone attached a block at y=0.273 to a paragraph at y=0.730, and a right-column
+    heading at y=0.248 to a paragraph at the foot of the page.  A paragraph only answers
+    for a block if their vertical extents meet: the block's y range must overlap the
+    paragraph's by at least ``min_vertical_overlap`` of the block's own height.  The test
+    is stated as a share of the *block*, not of the paragraph, because a paragraph that
+    legally absorbs a heading is taller than the block and that merge must stay allowed —
+    what is being rejected is a block that sits far away from the paragraph claiming it.
+
+    Without this, a handful of high-similarity but positionally impossible pairs claim
+    paragraphs early (the greedy pass sorts by similarity) and push the genuinely correct
+    paragraph out, which shows up as an ordering inversion that the layout code did not
+    commit.
     """
     report = MatchReport()
     available = set(range(len(paragraphs)))
@@ -192,6 +222,21 @@ def match_blocks_to_paragraphs(
         reference = normalise(block.text)
         ref_counts = Counter(reference)
         for pi in range(len(paragraphs)):
+            # Same page only, where a paragraph may legitimately occupy several pages.
+            # See the docstring: cross-page pairings are impossible and they distort
+            # the ordering measure.
+            if block.page_index not in paragraphs[pi][1]:
+                continue
+            # Vertically plausible: see the docstring.  Stated against the block's own
+            # height so a paragraph that legitimately absorbed a heading (and is
+            # therefore taller than the block) is not rejected.
+            block_height = block.bbox[3] - block.bbox[1]
+            if block_height > 0:
+                overlap = min(block.bbox[3], paragraphs[pi][2][3]) - max(
+                    block.bbox[1], paragraphs[pi][2][1]
+                )
+                if overlap < min_vertical_overlap * block_height:
+                    continue
             text = normalise(paragraphs[pi][0])
             if not text:
                 continue
@@ -224,14 +269,17 @@ def match_blocks_to_paragraphs(
         if pi is None:
             report.unmatched_blocks.append(block)
             continue
-        text, page_index, bbox = paragraphs[pi]
+        text, page_indices, bbox = paragraphs[pi]
         report.matches.append(
             MatchResult(
                 block=block,
                 paragraph_index=pi,
                 paragraph_text=text,
                 similarity=_similarity(normalise(block.text), normalise(text)),
-                page_index=page_index,
+                # The block's own page, which is the page the pairing was made on.  For
+                # a paragraph that spans a page break this differs from the paragraph's
+                # first page, and region accuracy compares against the block's page.
+                page_index=block.page_index,
                 bbox=bbox,
             )
         )
