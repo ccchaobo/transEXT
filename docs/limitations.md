@@ -191,40 +191,43 @@ holding rendered page buffers for many documents in one process. Per-document
 memory has not been measured separately, so a claim about the product's footprint
 on one open document cannot be made from this number.
 
-## 15. Two-column front matter is over-merged and misordered on page one
+## 15. Two-column front matter is over-merged, and was misordered on page one
 
 Found by running a real file end to end (`scripts/evidence_parse.py`), not by any
-of the M0 metrics. On `pdf_b_two_column` page 0 the corpus records **21 blocks** —
+of the M0 metrics.
+
+**The ordering half is fixed** (ADR 0013). On `pdf_b_two_column` page 0, the page
+title used to be emitted third — after the whole left column — because the title,
+author line and inset abstract cross the body's gutter and the cut emitted the
+crossing group in a fixed middle position. The crossing group is now placed by its
+vertical centre. Page 0 went from 141 inverted line pairs to 0, and pooled
+line-order accuracy from 0.9872 to 1.0000, with no other metric moving.
+
+**The over-merging half is not fixed.** The corpus records 21 blocks on that page —
 title, author, abstract, then the left column, then the right column — and the
-pipeline emits **7 paragraphs**, in this order:
+pipeline still emits 6 paragraphs. Distinct headings and paragraphs are absorbed
+into long runs, and the author line absorbs the head of the abstract:
 
-| pipeline position | what it actually is |
+| block | what it actually is |
 | --- | --- |
-| 0 | the tail of the abstract |
-| 1 | a left-column run, several source blocks merged |
-| 2 | the title |
-| 3 | the author line with the head of the abstract absorbed into it |
-| 4-6 | the right column, in runs |
+| 0 | the title (correct) |
+| 1 | the author line with the head of the abstract absorbed into it |
+| 2, 3 | left-column and right-column runs, several source blocks merged |
+| 4 | a paragraph typed as a heading |
+| 5 | a continued right-column run |
 
-The correct order starts with the title. So the title is third, the abstract is
-split in two and its halves are separated by a whole column, and distinct headings
-and paragraphs have been absorbed into a few long runs.
+One anchor therefore covers text that should be several anchors, so a reader
+cannot pair the abstract's halves with their translations individually. Paragraph
+assembly (`assemble_paragraphs` / `_should_merge`) is where this lives; it has not
+been diagnosed.
 
-**Neither M0 reading-order measure catches this**, and that is the more important
-finding:
+**The old reading-order measure could not see the ordering defect.** It scored
+these pages at 0.9733 and passed. Word-LCS finds the longest common subsequence, so
+displacing a *short* block is nearly free: dropping the 8-word title to keep the
+200-word abstract costs about 1%. `scripts/measure_line_order.py` now measures
+line order instead, matched by bounding-box IoU, so merging cannot disturb it and a
+short block counts as much as a long one. Both figures are reported.
 
-* The word-LCS measure (`scripts/measure_reading_order.py`) scores this document's
-  two-column pages at 0.9733. LCS finds the longest common subsequence, so
-  displacing a *short* block is nearly free: dropping the 8-word title and keeping
-  the 200-word abstract costs about 1% of the score. A metric that barely notices
-  the title is in the wrong place cannot be used to claim reading order is correct.
-* The adjacent-pair measure (0.9591 pooled) counts pairs, and two misplaced blocks
-  out of twenty-one is about 4%.
-
-Block order is what the reader is built on: the source pane highlights a block and
-the translation pane follows it. Over-merged runs mean one anchor covers text that
-should be several anchors, and the abstract halves cannot be paired with their
-translations. This is recorded as a defect, not a tuning target.
 
 ## 16. Tables are not extracted, so table cells are offered for translation
 

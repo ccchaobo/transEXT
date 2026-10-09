@@ -19,6 +19,7 @@ supersedes the old one, because the point is to keep the reasoning auditable.
 | [0010](0010-recognition-and-order-measured-separately.md) | Recognition accuracy and reading order are measured separately | accepted |
 | [0011](0011-pymupdf-text-frame.md) | PyMuPDF text boxes are in the unrotated media frame, not raw PDF space | accepted |
 | [0012](0012-xy-cut-reading-order.md) | Reading order comes from a recursive whitespace cut, not from sorting by y | accepted |
+| [0013](0013-placing-the-crossing-group.md) | The crossing group is placed by its vertical centre, not fixed in the middle | accepted |
 
 ## Not decided yet
 

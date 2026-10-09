@@ -207,9 +207,10 @@ better result 43% of the time, below chance. See
 | Coordinate contract, all rotations | **PASS** | `scripts/check_rotation.py --verify`; markers within 2 px of the transform's prediction for 0/90/180/270, re-measured from pixels |
 | PDF text box frame | **PASS** (was a defect) | `scripts/diagnose_adapter_vs_render.py`, `scripts/verify_coordinate_fix.py`; every line box was vertically mirrored. See [ADR 0011](docs/adr/0011-pymupdf-text-frame.md) |
 | Body character coverage ≥ 98% | **PASS** | **0.9985** pooled over the 9 text-layer documents (84 of 56008 chars, typographic quotation marks); `scripts/measure_layout.py` |
-| Adjacent-block order ≥ 95% | **PASS** | **0.9591** (211/220 pairs); `scripts/measure_layout.py` |
-| Reading order (matcher-independent) ≥ 95% | **PASS** | **0.9915** pooled word-LCS over 17 pages; every page ≥ 0.95; `scripts/measure_reading_order.py`. Two-column pages were **0.53–0.54** before the XY-cut fix |
-| ≥ 200 sampled blocks ≥ 95% correct page and region | **FAIL** | **0.8952** (205/229 blocks). Not trusted — both dominant failure modes are artefacts of comparing against a paragraph's whole-page union box; see [limitations §3](docs/limitations.md). 229 blocks sampled, meeting the ≥200 requirement |
+| Adjacent-block order ≥ 95% | **PASS** | **0.9725** (212/218 pairs); `scripts/measure_layout.py` |
+| Reading order (matcher-independent) ≥ 95% | **PASS** | **0.9983** pooled word-LCS over 17 pages; every page ≥ 0.95; `scripts/measure_reading_order.py`. Two-column pages were **0.53–0.54** before the XY-cut fix |
+| Reading order (line-level, merge-independent) ≥ 95% | **PASS** | **1.0000** — 0 inverted pairs of 32964 over 928 matched lines, every document at 1.0000; `scripts/measure_line_order.py`. See [ADR 0013](docs/adr/0013-placing-the-crossing-group.md) |
+| ≥ 200 sampled blocks ≥ 95% correct page and region | **FAIL** | **0.8987** (204/227 blocks). Not trusted — both dominant failure modes are artefacts of comparing against a paragraph's whole-page union box; see [limitations §3](docs/limitations.md). 227 blocks sampled, meeting the ≥200 requirement |
 | OCR CER ≤ 5% on clear scans | **PASS** | recognition 0.0484 / 0.0092 / 0.0334 on the three clear scans, all ≤ 0.05 |
 | OCR reading order | **PARTIAL, not claimed as pass** | 0.78–1.0 per page before layout reordering; see above |
 | Protected placeholder integrity 100% | **PASS** | `tests/unit/test_cleaning.py`, including a percentage token that earlier went unprotected |
@@ -226,12 +227,21 @@ first page is an image, while every text page scores 0.997 or better.
 `scripts/measure_layout.py` names the pages it could not judge instead of hiding them.
 
 Two measurement defects made a broken layout read as PASS, so reading order is now
-reported two ways. `adjacent_order_accuracy` counts only pairs where both blocks were
+reported three ways. `adjacent_order_accuracy` counts only pairs where both blocks were
 matched, which means a block the pipeline moved out of order and the matcher then failed
 to pair is excluded from the score; that is how a pipeline still emitting left, right,
 left, right on two-column pages showed 0.9858. `scripts/measure_reading_order.py` compares
-the reference word sequence against the pipeline's with no matcher in the loop, and it is
-the figure to trust. See [ADR 0012](docs/adr/0012-xy-cut-reading-order.md).
+the reference word sequence against the pipeline's with no matcher in the loop.
+
+Neither of those saw the next defect, and the direction was reversed: here the *old*
+measure was too **lenient** and was hiding a real fault. Word-LCS scores a page 0.9733
+while the page title is emitted third, because dropping an 8-word title to keep a 200-word
+abstract costs about 1% of the score. `scripts/measure_line_order.py` measures the order of
+**lines** instead — matched by bounding-box IoU, so merging cannot disturb it, and a short
+block counts as much as a long one. It found that page 0 of every two-column document was
+out of order and every other page was perfect, which pointed straight at the cause. See
+[ADR 0012](docs/adr/0012-xy-cut-reading-order.md) and
+[ADR 0013](docs/adr/0013-placing-the-crossing-group.md).
 
 The PENDING rows are not failures. They are items that require a real translation
 provider, a real-world corpus, or a measurement that has not been built yet, and

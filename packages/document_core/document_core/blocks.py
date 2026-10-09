@@ -150,13 +150,19 @@ def is_reference_like(text: str) -> bool:
     stripped = _normalise(text)
     if not stripped:
         return False
-    if len(stripped) > 1200:  # a whole page of references collapsed into one block
-        return True
 
     has_lead = bool(_REFERENCE_LEAD_RE.match(stripped))
     marker_hits = len(_CITATION_MARKERS_RE.findall(stripped))
     has_year = bool(_YEAR_RE.search(stripped))
     has_quoted = bool(_QUOTED_TITLE_RE.search(stripped))
+
+    # A very long block is only a bibliography if it is *dense* in citation markers.  Length
+    # by itself must not imply a citation: any over-merged body block is long too, and a
+    # bare length rule typed the merged author+abstract block of ``pdf_b_two_column`` as a
+    # reference, which would have kept the whole abstract out of translation.
+    if len(stripped) > 1200:
+        density = marker_hits / (len(stripped) / 100.0)
+        return marker_hits >= 3 and density >= 1.0 and has_year
 
     if has_lead:
         # "[3] Smith, J., Title, Journal, 2019, pp. 1-10."

@@ -119,6 +119,11 @@ class LayoutParams:
     #: overlap at all.  Without this a single column was cut into stacked fragments
     #: wherever a short line left a corridor.
     cut_min_column_overlap: float = 0.5
+    #: Which cut to attempt first.  The two orders are not equivalent, and the difference
+    #: is a real defect rather than a preference; see :func:`_split_regions`.  Kept as a
+    #: parameter so both orders can be measured in one run and the comparison reproduced,
+    #: rather than being settled by argument.
+    cut_horizontal_first: bool = True
 
 
 @dataclass
@@ -306,6 +311,140 @@ def _y_occupancy(lines: list[TextLine], indices: list[int], n_rows: int) -> list
     return occupancy
 
 
+def _vertical_cut(
+    lines: list[TextLine],
+    indices: list[int],
+    params: LayoutParams,
+    depth: int,
+    x0: float,
+    x1: float,
+) -> list[list[int]] | None:
+    """Cut at a full-height corridor, if one separates two side-by-side columns.
+
+    Returns None when no such cut applies, so the caller can try the other kind.
+
+    A vertical gap is also present inside a single column wherever a line ends early, so
+    this is the cut that needs the overlap guard below rather than being avoided.
+    """
+    profile = _x_profile(lines, indices, _CUT_BINS)
+    min_bins = max(1, int(params.gutter_min_width * _CUT_BINS))
+    candidates = [
+        (g0, g1)
+        for g0, g1 in _find_gutters(profile, min_bins, max_val=params.cut_max_occupancy)
+        # A gutter must not be a margin: text has to sit on both sides of it.
+        if g0 > 0 and g1 < _CUT_BINS
+    ]
+    if not candidates:
+        return None
+
+    g0, g1 = max(candidates, key=lambda g: g[1] - g[0])
+    cut_x = x0 + (g0 + (g1 - g0) / 2.0) / _CUT_BINS * (x1 - x0)
+    # Partition into three groups.  A line lying entirely on one side belongs to that
+    # side; a line that *crosses* the cut belongs to neither and becomes its own group.
+    #
+    # Neither of the two obvious alternatives works.  Requiring every line to be wholly on
+    # one side (`x1 <= cut` / `x0 >= cut`) leaves a side empty as soon as the detected
+    # corridor overlaps the start of the right column, which is the normal case because one
+    # indented or full-width line drags the corridor off the true gutter — on
+    # ``pdf_b_two_column`` that discarded the cut and left 101 lines as one region.
+    # Partitioning by each line's centre instead forces a *centred* line onto one side: the
+    # page title, centred at x=0.5, was pushed into the left group and ended up inside the
+    # left column's text.  Crossing lines are their own group, which is also what they are
+    # on the page.
+    left = [i for i in indices if lines[i].bbox.x1 <= cut_x]
+    right = [i for i in indices if lines[i].bbox.x0 >= cut_x]
+    spanning_set = set(indices) - set(left) - set(right)
+    spanning = [i for i in indices if i in spanning_set]
+
+    # A vertical cut means "two columns" only if the two sides are read side by side.  A
+    # single column also has a clear corridor wherever lines are short, and cutting there
+    # split one column into stacked fragments — this collapsed a 101-line page from 33
+    # paragraphs to 8.  Two columns overlap vertically; stacked groups do not.
+    if not (left and right and len(left) + len(right) + len(spanning) == len(indices)):
+        return None
+    left_top = min(lines[i].bbox.y0 for i in left)
+    left_bottom = max(lines[i].bbox.y1 for i in left)
+    right_top = min(lines[i].bbox.y0 for i in right)
+    right_bottom = max(lines[i].bbox.y1 for i in right)
+    overlap = min(left_bottom, right_bottom) - max(left_top, right_top)
+    shorter = min(left_bottom - left_top, right_bottom - right_top)
+    if not (shorter > 0 and overlap >= params.cut_min_column_overlap * shorter):
+        return None
+
+    # Where the crossing group goes.  Emitting it in a fixed middle position — left,
+    # spanning, right — reads the front matter of every two-column paper *after* the whole
+    # left column, because a title, an author line and an inset abstract cross the body's
+    # gutter.  Measured at 0.972-0.978 line-order accuracy on exactly the three two-column
+    # corpus documents, page 0 only, against 1.0000 everywhere else, and the count of
+    # inverted pairs was 3 x 47 = 141, i.e. wholly explained by these three lines being
+    # emitted late.
+    #
+    # The rule is positional, not a special case for page one: content whose vertical centre
+    # lies above both columns is above them and reads first, and content centred below both
+    # reads last.  A full-width object in the middle of the page is neither, and keeps the
+    # middle position.  Centres rather than edges, because a running head is a single line
+    # that sits inside the left column's width and above everything else — on
+    # ``pdf_h_no_references`` that one line is the left group's topmost line, so an
+    # edge-based test compared the front matter against y=0.038 and concluded it was not
+    # above the column, leaving 138 inverted pairs.  Comparing centres asks the question
+    # that actually matters: is this group in the upper part of the page or not?
+    if spanning:
+        span_top = min(lines[i].bbox.y0 for i in spanning)
+        span_bottom = max(lines[i].bbox.y1 for i in spanning)
+        span_centre = (span_top + span_bottom) / 2.0
+        left_centre = (left_top + left_bottom) / 2.0
+        right_centre = (right_top + right_bottom) / 2.0
+        if span_centre < min(left_centre, right_centre):
+            return (
+                _split_regions(lines, spanning, params, depth + 1)
+                + _split_regions(lines, left, params, depth + 1)
+                + _split_regions(lines, right, params, depth + 1)
+            )
+        if span_centre > max(left_centre, right_centre):
+            return (
+                _split_regions(lines, left, params, depth + 1)
+                + _split_regions(lines, right, params, depth + 1)
+                + _split_regions(lines, spanning, params, depth + 1)
+            )
+
+    return (
+        _split_regions(lines, left, params, depth + 1)
+        + _split_regions(lines, spanning, params, depth + 1)
+        + _split_regions(lines, right, params, depth + 1)
+    )
+
+
+def _horizontal_cut(
+    lines: list[TextLine],
+    indices: list[int],
+    params: LayoutParams,
+    depth: int,
+    typical: float,
+    y0: float,
+    y1: float,
+) -> list[list[int]] | None:
+    """Cut at a full-width horizontal gap, if one separates stacked groups.
+
+    Returns None when no such cut applies.
+    """
+    occupancy = _y_occupancy(lines, indices, _CUT_ROWS)
+    y_span = y1 - y0
+    gap = _widest_gap(occupancy, invert=False)
+    if gap is None or y_span <= 0:
+        return None
+    gap_height = gap[2] / _CUT_ROWS * y_span
+    if not (gap_height > params.band_gap_factor * typical and 0 < gap[0] and gap[1] < _CUT_ROWS):
+        return None
+    cut_y = y0 + (gap[0] + gap[2] / 2.0) / _CUT_ROWS * y_span
+    above = [i for i in indices if lines[i].bbox.y1 <= cut_y]
+    below = [i for i in indices if lines[i].bbox.y0 >= cut_y]
+    if not (above and below and len(above) + len(below) == len(indices)):
+        return None
+    return _split_regions(lines, above, params, depth + 1) + _split_regions(
+        lines, below, params, depth + 1
+    )
+
+
 def _split_regions(
     lines: list[TextLine],
     indices: list[int],
@@ -315,25 +454,38 @@ def _split_regions(
     """Recursively cut a region into reading-order groups (XY-cut).
 
     The page is divided by its whitespace, alternating between horizontal cuts (a full
-    width gap, which separates stacked blocks) and vertical cuts (a full height gap,
-    which separates columns), until no cut is available.  The leaves are emitted
-    depth-first, and that order is the reading order.
+    width gap, which separates stacked blocks) and vertical cuts (a full height gap, which
+    separates columns), until no cut is available.  The leaves are emitted depth-first, and
+    that order is the reading order.
 
     **Why this replaces splitting on vertical gaps alone.**  The previous approach sorted
     every line by y and then split that sequence on large vertical gaps.  On a page that
     mixes a full-width header with two columns, sorting by y interleaves the title, both
     columns and the abstract, so a title spanning the page centre ends up *adjacent* to
-    body lines in both columns.  No gap test can then separate them: the header lines
-    keep the column gutter from being detected, the two-column body measures as one
-    column, and the page is read left, right, left, right.  Measured with a
-    matcher-independent word-order score, that read two-column pages at 0.53-0.54 while
-    single-column pages read at 1.0000.  Grouping has to come *before* ordering, and a
-    recursive cut on whitespace is what does that: the title is isolated by a horizontal
-    cut, and only then are the two columns separated by a vertical cut inside the body.
+    body lines in both columns.  No gap test can then separate them: the header lines keep
+    the column gutter from being detected, the two-column body measures as one column, and
+    the page is read left, right, left, right.  Measured with a matcher-independent
+    word-order score, that read two-column pages at 0.53-0.54 while single-column pages read
+    at 1.0000.  Grouping has to come *before* ordering, and a recursive cut on whitespace is
+    what does that: the title is isolated by a horizontal cut, and only then are the two
+    columns separated by a vertical cut inside the body.
 
-    A horizontal cut is tried first because a full-width gap is the stronger signal: a
-    section rule or a figure spanning both columns ends the reading order above it.  If
-    no horizontal cut exists but no column gutter does either, the region is atomic.
+    **Why the horizontal cut is tried first.**  A full-width gap is the stronger signal,
+    and the two cuts are not symmetric: the vertical cut *always* finds a corridor on a
+    two-column page, because the front matter's full-width lines leave one down the middle,
+    and cutting vertically there puts those lines into the middle group.  Emitting
+    ``left + spanning + right`` then places the title, author and abstract *after* the whole
+    left column.  That is what the code did when it tried the vertical cut first, and it
+    read page one of every two-column document out of order — measured at 0.972-0.978
+    line-order accuracy on exactly the three two-column corpus documents, page 0 only, with
+    every other page at 1.0000.  Cutting horizontally first isolates the front matter above
+    the body, and the vertical cut then applies to the body alone, where left-then-right is
+    correct.  It also gives the right answer for a full-width table or figure in the middle
+    of a two-column page, which the vertical cut reads as left, spanning, right.
+
+    A horizontal cut at the very top of a single column is harmless: it only splits
+    paragraphs apart in an order that is already correct.  The vertical cut keeps its
+    overlap guard, so a corridor between stacked groups is still rejected.
     """
     if not indices:
         return []
@@ -344,76 +496,19 @@ def _split_regions(
     typical = median(heights) if heights else 0.0
     x0 = min(lines[i].bbox.x0 for i in indices)
     x1 = max(lines[i].bbox.x1 for i in indices)
-
-    # --- vertical cut: a gutter running the height of the region -----------
-    # Tried first.  Splitting columns is the decision that must not be skipped: a page
-    # whose columns are not separated is read left, right, left, right, and no later
-    # stage can recover the order.  A vertical gap, by contrast, is also present inside
-    # a single column wherever a line ends early, so it is the cut that needs the
-    # overlap guard below rather than being avoided.
-    profile = _x_profile(lines, indices, _CUT_BINS)
-    min_bins = max(1, int(params.gutter_min_width * _CUT_BINS))
-    candidates = [
-        (g0, g1)
-        for g0, g1 in _find_gutters(profile, min_bins, max_val=params.cut_max_occupancy)
-        # A gutter must not be a margin: text has to sit on both sides of it.
-        if g0 > 0 and g1 < _CUT_BINS
-    ]
-    if candidates:
-        g0, g1 = max(candidates, key=lambda g: g[1] - g[0])
-        cut_x = x0 + (g0 + (g1 - g0) / 2.0) / _CUT_BINS * (x1 - x0)
-        # Partition into three groups.  A line lying entirely on one side belongs to
-        # that side; a line that *crosses* the cut belongs to neither and becomes its
-        # own group in the middle of the reading order.
-        #
-        # Neither of the two obvious alternatives works.  Requiring every line to be
-        # wholly on one side (`x1 <= cut` / `x0 >= cut`) leaves a side empty as soon as
-        # the detected corridor overlaps the start of the right column, which is the
-        # normal case because one indented or full-width line drags the corridor off the
-        # true gutter — on ``pdf_b_two_column`` that discarded the cut and left 101
-        # lines as one region.  Partitioning by each line's centre instead forces a
-        # *centred* line onto one side: the page title, centred at x=0.5, was pushed
-        # into the left group and ended up inside the left column's text.  Crossing
-        # lines are their own group, which is also what they are on the page.
-        left = [i for i in indices if lines[i].bbox.x1 <= cut_x]
-        right = [i for i in indices if lines[i].bbox.x0 >= cut_x]
-        spanning = [i for i in indices if i not in set(left) and i not in set(right)]
-
-        # A vertical cut means "two columns" only if the two sides are read side by
-        # side.  A single column also has a clear corridor wherever lines are short, and
-        # cutting there split one column into stacked fragments — this collapsed a
-        # 101-line page from 33 paragraphs to 8.  Two columns overlap vertically;
-        # stacked groups do not.
-        if left and right and len(left) + len(right) + len(spanning) == len(indices):
-            left_top = min(lines[i].bbox.y0 for i in left)
-            left_bottom = max(lines[i].bbox.y1 for i in left)
-            right_top = min(lines[i].bbox.y0 for i in right)
-            right_bottom = max(lines[i].bbox.y1 for i in right)
-            overlap = min(left_bottom, right_bottom) - max(left_top, right_top)
-            shorter = min(left_bottom - left_top, right_bottom - right_top)
-            if shorter > 0 and overlap >= params.cut_min_column_overlap * shorter:
-                return (
-                    _split_regions(lines, left, params, depth + 1)
-                    + _split_regions(lines, spanning, params, depth + 1)
-                    + _split_regions(lines, right, params, depth + 1)
-                )
-
-    # --- horizontal cut: a full-width vertical gap -------------------------
-    occupancy = _y_occupancy(lines, indices, _CUT_ROWS)
     y0 = min(lines[i].bbox.y0 for i in indices)
     y1 = max(lines[i].bbox.y1 for i in indices)
-    y_span = y1 - y0
-    gap = _widest_gap(occupancy, invert=False)
-    if gap is not None and y_span > 0:
-        gap_height = gap[2] / _CUT_ROWS * y_span
-        if gap_height > params.band_gap_factor * typical and 0 < gap[0] and gap[1] < _CUT_ROWS:
-            cut_y = y0 + (gap[0] + gap[2] / 2.0) / _CUT_ROWS * y_span
-            above = [i for i in indices if lines[i].bbox.y1 <= cut_y]
-            below = [i for i in indices if lines[i].bbox.y0 >= cut_y]
-            if above and below and len(above) + len(below) == len(indices):
-                return _split_regions(
-                    lines, above, params, depth + 1
-                ) + _split_regions(lines, below, params, depth + 1)
+
+    attempts = (
+        ("horizontal", "vertical") if params.cut_horizontal_first else ("vertical", "horizontal")
+    )
+    for cut in attempts:
+        if cut == "horizontal":
+            result = _horizontal_cut(lines, indices, params, depth, typical, y0, y1)
+        else:
+            result = _vertical_cut(lines, indices, params, depth, x0, x1)
+        if result is not None:
+            return result
 
     return [sorted(indices, key=lambda i: (lines[i].bbox.y0, lines[i].bbox.x0))]
 

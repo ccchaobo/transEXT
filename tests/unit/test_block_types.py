@@ -112,6 +112,30 @@ class TestProseIsNotACitation:
         text = "See the earlier work on vol. 3 and the discussion of pp. 12 for details."
         assert is_reference_like(text) is False
 
+    def test_a_long_body_block_is_not_a_reference(self) -> None:
+        # A bare "long text is a bibliography" rule typed the merged author+abstract block
+        # of pdf_b_two_column as a reference, which keeps a whole abstract out of
+        # translation.  Any over-merged body block is long.
+        text = (
+            "D. Researcher and E. Scholar Abstract—Two-column layouts remain the dominant "
+            "format in the physical sciences. We study reading-order recovery on such pages "
+            "and report an accuracy for adjacent block pairs, with column splitting "
+            "accounting for most residual errors. A band-segmentation step that restarts "
+            "column flow after full-width objects raises accuracy substantially. We use "
+            "placeholders for protected tokens and verify their completeness mechanically. "
+        ) * 3
+        assert len(text) > 1200
+        assert is_reference_like(text) is False
+
+    def test_a_long_run_of_dense_entries_is_a_reference(self) -> None:
+        entry = (
+            "[{n}] A. Author and B. Author, “A study of things,” Journal of Synthetic "
+            "Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210 "
+        )
+        text = " ".join(entry.format(n=i) for i in range(1, 12))
+        assert len(text) > 1200
+        assert is_reference_like(text) is True
+
 
 class TestCitationsAreCitations:
     def test_a_corpus_reference_is_recognised(self) -> None:
