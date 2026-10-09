@@ -217,9 +217,42 @@ into long runs, and the author line absorbs the head of the abstract:
 | 5 | a continued right-column run |
 
 One anchor therefore covers text that should be several anchors, so a reader
-cannot pair the abstract's halves with their translations individually. Paragraph
-assembly (`assemble_paragraphs` / `_should_merge`) is where this lives; it has not
-been diagnosed.
+cannot pair the abstract's halves with their translations individually.
+
+**The mechanism is now diagnosed** (`scripts/diagnose_merging.py`), and it is not
+"paragraph assembly merges too eagerly" — it is two defects that cancel into a
+third behaviour:
+
+1. `_same_column_flow` rejects every *negative* `_vertical_gap`, but consecutive
+   lines of one paragraph routinely have slightly overlapping boxes, because a
+   line box covers ascender to descender while the leading is smaller than that.
+   On `pdf_b_two_column` page 0 the left column's 47 lines produced **33 breaks**,
+   every one of them at a gap of exactly −0.00112. The guard was meant to catch the
+   reading order stepping backwards out of a column; that case is a gap of about
+   −0.84, three orders of magnitude away.
+2. The other break condition is `gap > paragraph_gap_factor * typical_height`, i.e.
+   1.55 × 0.01585 = **0.02456**. Every paragraph boundary actually present on that
+   page has a gap between 0.00423 and 0.01618, so this threshold **can never fire**.
+   The unit is wrong as well as the value: `typical_height` is the box height, while
+   the natural unit for a paragraph break is the top-to-top *step* (0.01475 here,
+   against 0.0200 across a boundary).
+
+So step 1 splits at almost every line and simultaneously fails to split at real
+paragraph boundaries, and step 2's `_should_merge` then re-joins the fragments. The
+net effect is coarse blocks, but neither condition is doing what it says.
+
+**Measured over the whole corpus: only 11 of 76 corpus text blocks (0.1447) are
+addressable on their own** — 34 are absorbed into a longer paragraph.
+`scripts/measure_segmentation.py` reports this, and its 41% "differs" bucket is
+itself not yet trustworthy, so the figure is a lower bound on the problem rather
+than a clean score.
+
+This is left unfixed deliberately. Correcting it needs a step-based threshold
+calibrated across every page of the corpus; calibrating it from this one page is
+how an earlier attempt collapsed a 101-line page from 33 paragraphs to 8. Ordering
+was fixed first because a title emitted third is fatal to the reader, whereas a
+coarse anchor is merely inconvenient: the text is present and translated, just not
+addressable piece by piece.
 
 **The old reading-order measure could not see the ordering defect.** It scored
 these pages at 0.9733 and passed. Word-LCS finds the longest common subsequence, so
