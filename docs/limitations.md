@@ -41,39 +41,34 @@ estimates match real billing, and that retry and rate-limit behaviour matches a
 real service. The human review of at least 100 paragraphs required by the spec
 cannot begin without one.
 
-## 3. Two-column pages with a full-width header read in the wrong order
+## 3. Page-and-region accuracy is measured against a paragraph's whole-page box
 
-On a page that mixes a full-width header with a two-column body, the layout module's
-reading order is wrong: it interleaves the left and right columns. Measured on the
-corpus, adjacent-block order is **0.8571** (210/245 pairs) against a target of 0.95,
-and page-and-region accuracy is **0.7835** (199/254 blocks) against a target of 0.95.
-On `pdf_b_two_column` and `pdf_h_no_references`, the first two-column page is reported
-as one column.
+The acceptance item "≥ 200 sampled blocks, ≥ 95% attributed to the correct page and
+region" reads **0.8952** (205/229 blocks) on the corpus, and that figure is **not
+trusted**. Both dominant failure modes are artefacts of the comparison, not placement
+errors:
 
-**Cause, established by measurement.** `segment_bands()` sorts every line on a page by
-vertical position and then splits that sequence on large vertical gaps. On a page that
-mixes a full-width header with two columns, sorting by vertical position interleaves
-the title, both columns and the abstract. The three header lines are then *adjacent* to
-body lines from both columns, and no vertical-gap test can separate them. The header
-lines cross the page centre, so the column search sees a gutter that is not empty and
-correctly refuses to split; the body is then read as one column, left to right. The
-projection profile the column search uses is also unweighted, so one long line counts
-as much as one short one.
+* A reference block whose text was split across two corpus blocks is matched to the
+  paragraph holding its *continuation* — a fragment with a small box — while the
+  reference block's own box is the union of both parts. The block is on the right page
+  in the right column; the boxes simply are not the same shape. Example overlap 0.133
+  for `[5] H. Statistician and I. Reviewer, "Co…`.
+* A heading or author line absorbed into the paragraph that follows it sits at 0.492
+  against the 0.5 threshold, so a correct merge is recorded as a region failure.
 
-**Why it is not yet fixed.** Grouping the lines by horizontal region *before* ordering
-them is the right shape of fix, and a rewrite along those lines was attempted. It
-measured **worse** — order 0.8264, region 0.7729, 86 bands, and new "ordering may be
-unreliable" warnings — so it was reverted rather than kept. The reverted code is not in
-the tree. A correct fix needs the column structure decided before the reading order, and
-it needs its own tests; it is not in place.
+The cause is structural: the matcher compares a block against a paragraph's union box
+for the whole page, while the pipeline now splits that paragraph into column fragments.
+The metric needs to compare against the paragraph's fragment on the block's own page.
 
-**Bounded consequence.** Text coverage is unaffected (0.9985): no text is lost, it is
-ordered and attributed to the wrong column. Source anchoring still lands on the correct
-page. The affected items are the two layout acceptance figures above, and any
-annotation or export that depends on paragraph order on such a page.
+**What is verified instead:** the text is present (coverage 0.9985, no line recorded as
+drawn is absent) and it is in the right order (pooled reading order **0.9915** by a
+matcher-independent word-LCS measure). Reading order and coverage are the two items that
+speak to whether text is lost or misordered; this item speaks to whether a highlight
+would land on the right rectangle, and it cannot be answered by the current comparison.
 
-**Status:** open defect, measured. Both figures are reported as **FAIL**, not rounded
-up or relabelled.
+**Status:** the acceptance figure is reported as **FAIL** and not worked around. Either
+the metric is corrected to compare per-page fragments, or the item stays FAIL. It is not
+to be re-labelled.
 
 ## 4. DOCX conversion is a declared degraded path
 
