@@ -325,4 +325,40 @@ was found by measuring, and several were wrong the first time. It is carried bec
 error it prevents is a silent translation omission, which is the expensive direction, but it
 would be the first thing to re-examine against real papers.
 
+## 19. A re-parse invalidates the translation cache by design
+
+`cache_key` includes the parse revision id, because the spec lists it among the required
+inputs. The consequence is worth stating: **re-parsing a document whose text has not changed
+invalidates every translation of it**, and the text is paid for again. The block content hash
+alone would be enough for correctness — it is what actually determines the output — so the
+revision only ever makes the key *stricter*.
+
+This is not a bug and no cached row is ever reused incorrectly because of it. It is a cost,
+and the spec's own wording is the reason it is not relaxed here. If re-parsing becomes common
+(an OCR re-run, a parser upgrade), the honest options are to drop the revision from the key or
+to make the key configurable, and either is a decision to take deliberately with the cost
+measured rather than a silent change.
+
+## 20. The section path is currently the document title
+
+Measured in `scripts/evidence_translation.py`: every block of `pdf_b_two_column` carries
+`section_path == ["Reading Order Recovery in Two-Column Layouts"]`, the paper's title. The
+layout stage pushes the title onto the section stack because a title is short and set larger
+than the body, which is its test for a heading; the real section headings never reach the
+stack, because they are still merged into the paragraph below them (section 15).
+
+Two consequences, both real:
+
+* The outline the reader will navigate by has one level and one entry, so it is useless.
+* The context sent to the translation provider is the title for every block, which resolves
+  nothing. A context that already appears in the block's own text is now dropped, so the title
+  block no longer sends itself as its own context, but the rest still receive a title that
+  says nothing about their section.
+
+Both are fixed by the same change — separating a heading from the paragraph under it — which
+is therefore the next thing to fix, not a cosmetic one. Until then the outline is withheld
+rather than shown with one entry, since a single-entry outline presented as navigation would
+misrepresent what the reader knows about the document.
+
+
 
