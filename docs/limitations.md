@@ -429,6 +429,82 @@ defect in the result. Anyone revisiting it should first explain why a relationsh
 `Document` changes the insert ordering of `job_events`, which is the part that does not follow
 from the documentation.
 
+## 23. Six defects that only appeared when the server was actually run
+
+The 607 tests that passed at the end of M1 did not find any of the following. Each was found
+within minutes of starting `python -m rr_api`, uploading a file through HTTP and running
+`python -m rr_worker` as a separate process. They are recorded individually because the *reason*
+they were invisible is different in each case, and that reason is the useful part.
+
+**23.1 A failed parse returned HTTP 500 from the document's own detail endpoint.** The issues of
+the active revision were collected by a list comprehension:
+
+```python
+for issue in (revision.issues or []) if revision
+```
+
+This reads as though `if revision` guards the loop. It does not: the comprehension's `if` is a
+*filter*, applied to each value, and the iterable is evaluated first. When `revision` was `None`
+the endpoint raised `AttributeError: 'NoneType' object has no attribute 'issues'` and FastAPI
+answered 500. Every existing test imported a document that parsed successfully, so `revision` was
+never `None` in any of them; the one path where the reader most needs an explanation was the one
+path never exercised. Fixed by guarding before the loop.
+
+**23.2 A parse failure was recorded as `translation_failed`.** The worker mapped every handler
+exception through `rr_services.translation.error_code_for`, whose fallback is a translation code,
+because it was written for the translation service. Importing a DOCX therefore produced a job
+whose error code pointed at the API key. The mapping is now per job type, with a vocabulary that
+already existed in `ErrorCode` (`parse_failed`, `ocr_failed`, `conversion_failed`), and an
+unimplemented format reports `unsupported_format` — which is what it is.
+
+**23.3 A document kept `parse_status = "pending"` forever after its parse had failed.** Only a
+successful parse wrote the field. A reader looking at the library saw a document still waiting
+for work that had already finished badly. The worker now writes the stage status for the document
+as well as the job, including partial and cancelled, because the status a reader sees has to
+reflect what happened.
+
+**23.4 `warning_count` counted only revision-level warnings.** A three-page scan showed
+**0 warnings** on its library card while every one of its pages carried "no text layer on this
+page; OCR is required". Page warnings are now aggregated into the count, so the card says 9.
+The page-level text is also rendered above the page in the reader.
+
+**23.5 Translating a document that does not exist answered `translation_not_configured`.** The
+provider check ran before the document lookup, so a typo'd or deleted id sent the reader off to
+configure an API key for a document that was never there. The more specific fact is now reported
+first: 404 `not_found` for a missing document, 409 only for a real document with no provider.
+
+**23.6 `python -m rr_worker --once` hung forever on an empty queue.** `max_jobs=1` means "stop
+after one job", so with nothing queued it polled indefinitely. This was a command-line design
+fault, not a queue fault, and it was found by running the CLI rather than the library. `--once`
+and a new `--drain` now exit when the queue empties, after a `--idle-grace` period so that a
+producer enqueueing the next job is not left for the next process.
+
+The common thread is that these are all *seams*: a document with no revision, a job type that is
+not translation, a process boundary, a command line. Unit tests exercise functions; they do not
+exercise a seam, because a seam is the place where one component's assumptions meet another's.
+`scripts/verify_live_acceptance.py` now starts both processes and asserts 37 of these behaviours
+over real sockets, and `tests/integration/test_failure_visibility.py` pins the six above.
+
+## 24. What is not yet wired into the parse stage
+
+The OCR engine (RapidOCR, offline, measured at CER 0.0484 / 0.0092 / 0.0334 on the clear scans)
+and the DOCX converter both exist and are tested. Neither is called by the parse stage:
+`SUPPORTED_FORMATS = {"pdf"}` in `rr_services/parsing.py`, and the code says so rather than
+falling through to an empty result.
+
+The consequence is visible and deliberate: a DOCX is refused with `unsupported_format`, and a
+scanned PDF **succeeds as a page listing with no blocks**, with `translatable = false` and a
+per-page warning. This is the honest description of what happens, but it is also a real gap
+against the specification, which requires OCR and DOCX import in P0. It is listed here so it
+cannot be mistaken for done.
+
+## 25. `BlockTextPatch` does not exist
+
+Specification 5.3 requires correcting OCR text on a block, bumping `ocr_revision` and
+invalidating the translations derived from it. There is no endpoint for this, and no column.
+Since OCR is not wired into the parse stage either (see §24), nothing currently produces OCR text
+that would need correcting.
+
 
 
 

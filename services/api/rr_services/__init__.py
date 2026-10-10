@@ -9,6 +9,7 @@ from __future__ import annotations
 from .documents import DocumentService, ImportResult
 from .formats import FileRejected, FormatProbe, verify
 from .parsing import PARSER_NAME, PARSER_VERSION, ParseOutcome, ParseService
+from .runtime import Runtime, open_runtime
 from .settings import DEFAULT_DATA_DIR, Settings
 from .translation import (
     GLOSSARY_VERSION_NONE,
@@ -34,6 +35,7 @@ __all__ = [
     "ParseOutcome",
     "ParseService",
     "PlannedUnit",
+    "Runtime",
     "Settings",
     "TranslationBudgetExceeded",
     "TranslationNotConfigured",
@@ -42,5 +44,6 @@ __all__ = [
     "TranslationService",
     "cache_key",
     "error_code_for",
+    "open_runtime",
     "verify",
 ]

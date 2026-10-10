@@ -55,6 +55,10 @@ rr_api = "services/api/rr_api"
 rr_adapters = "adapters/rr_adapters"
 rr_m0 = "benchmarks/rr_m0"
 
+[project.scripts]
+rr-api = "rr_api.app:main"
+rr-worker = "rr_worker.__main__:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

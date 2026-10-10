@@ -29,7 +29,7 @@ from typing import Any, Callable, Protocol
 
 from sqlalchemy.orm import Session
 
-from rr_contracts import ErrorCode, JobStatus, JobType
+from rr_contracts import ErrorCode, JobStatus, JobType, StageStatus
 from rr_services.parsing import ParseService
 from rr_services.translation import (
     TranslationBudgetExceeded,
@@ -40,6 +40,7 @@ from rr_services.translation import (
 )
 from rr_storage import (
     AttemptSuperseded,
+    Document,
     Job,
     JobQueue,
     LeaseExpired,
@@ -52,6 +53,45 @@ log = logging.getLogger("rr_worker")
 #: Blocks per translation batch.  The batch is what makes a long job cancellable and keeps the
 #: lease alive, so it is bounded by the lease duration rather than by the provider's throughput.
 DEFAULT_TRANSLATION_BATCH = 25
+
+#: Fallback error code per job type, for an exception the service layer did not classify.
+#: ``rr_services.translation.error_code_for`` falls back to ``translation_failed``, which is the
+#: right word for a translation and the wrong one for anything else.  A DOCX whose parse is not
+#: implemented was being recorded as a translation failure, which would send a reader looking for
+#: a problem with their API key.  Found by importing a DOCX through the running server.
+_FALLBACK_ERROR_CODE = {
+    JobType.PARSE.value: ErrorCode.PARSE_FAILED.value,
+    JobType.OCR.value: ErrorCode.OCR_FAILED.value,
+    JobType.TRANSLATE.value: ErrorCode.TRANSLATION_FAILED.value,
+    # The vocabulary has no export-specific code; producing the Markdown is a conversion step,
+    # and inventing a code that is not in the contract would give the UI a value it cannot map.
+    JobType.EXPORT.value: ErrorCode.CONVERSION_FAILED.value,
+    JobType.CONVERT.value: ErrorCode.CONVERSION_FAILED.value,
+}
+
+
+def _error_code_for(exc: BaseException, job_type: str) -> str:
+    """The error code for a failed job, in the vocabulary of that job's domain."""
+    if isinstance(exc, NotImplementedError):
+        # "parsing docx is not implemented yet" describes the format, not a fault.
+        return ErrorCode.UNSUPPORTED_FORMAT.value
+    code = error_code_for(exc)
+    if code != ErrorCode.TRANSLATION_FAILED.value:
+        # A classified error keeps its specific code whatever the job type.
+        return code
+    return _FALLBACK_ERROR_CODE.get(job_type, ErrorCode.PARSE_FAILED.value)
+
+
+#: Job status to document stage status.  The two vocabularies agree on every value the worker
+#: produces except that a job cancelled before it ran is not a stage failure.
+_STAGE_STATUS = {
+    JobStatus.SUCCEEDED.value: StageStatus.SUCCEEDED.value,
+    JobStatus.PARTIALLY_SUCCEEDED.value: StageStatus.PARTIALLY_SUCCEEDED.value,
+    JobStatus.FAILED.value: StageStatus.FAILED.value,
+    JobStatus.CANCELLED.value: StageStatus.CANCELLED.value,
+    JobStatus.RUNNING.value: StageStatus.RUNNING.value,
+    JobStatus.QUEUED.value: StageStatus.PENDING.value,
+}
 
 
 @dataclass(slots=True)
@@ -155,6 +195,7 @@ class Worker:
                 error_code=outcome.error_code,
                 error_message=outcome.error_message,
             )
+            self._settle_document(session, job, outcome)
         except (AttemptSuperseded, LeaseExpired):
             # Another attempt owns this job now.  Recording anything here would corrupt it.
             log.warning("job %s was taken over before it could be finished", lease.job_id)
@@ -162,6 +203,30 @@ class Worker:
             return WorkResult(lease.job_id, job.type, "superseded")
         session.commit()
         return WorkResult(lease.job_id, job.type, outcome.status, outcome.result)
+
+    def _settle_document(self, session: Session, job: Job, outcome: StageOutcome) -> None:
+        """Record the outcome on the document, not only on the job.
+
+        A document whose parse job failed kept ``parse_status="pending"`` forever, because only a
+        successful parse wrote to it.  A reader looking at the library saw a document that was
+        still waiting, with nothing left to wait for.  The status a reader sees has to reflect
+        what actually happened, so a failed or cancelled stage is written here too.
+
+        A ``partially_succeeded`` stage is recorded as partial: the spec requires partial
+        completion to be visible rather than rounded to success or failure.
+        """
+        if not job.document_id:
+            return
+        document = session.get(Document, job.document_id)
+        if document is None:
+            return
+        if job.type == JobType.PARSE.value:
+            document.parse_status = _STAGE_STATUS.get(outcome.status, outcome.status)
+            if outcome.status == JobStatus.FAILED.value:
+                # Nothing was parsed, so there is no active revision and no page count to show.
+                document.progress = 0.0
+        elif job.type == JobType.TRANSLATE.value:
+            document.translate_status = _STAGE_STATUS.get(outcome.status, outcome.status)
 
     def _dispatch(
         self, handler: Handler, session: Session, lease: LeaseInfo, job: Job
@@ -186,7 +251,7 @@ class Worker:
             log.exception("job %s failed", lease.job_id)
             return StageOutcome(
                 status=JobStatus.FAILED.value,
-                error_code=error_code_for(exc),
+                error_code=_error_code_for(exc, job.type),
                 error_message=f"{type(exc).__name__}: {exc}",
             )
 
@@ -213,15 +278,26 @@ class Worker:
         poll_seconds: float = 1.0,
         stop: Callable[[], bool] | None = None,
         max_jobs: int | None = None,
+        exit_when_idle: bool = False,
+        idle_grace: float = 1.0,
     ) -> int:
-        """Run jobs until ``stop`` returns True or ``max_jobs`` is reached.  Returns the count.
+        """Run jobs until ``stop`` returns True, ``max_jobs`` is reached, or the queue drains.
 
         Reclaims lease-expired jobs first: a worker that was killed mid-document leaves jobs in
         ``running`` with a dead attempt, and they would otherwise never be retried.
+
+        ``exit_when_idle`` is what makes this usable from a script.  ``max_jobs`` alone is not
+        enough: it means "stop after N jobs", so a command line that asks for one job and finds
+        an empty queue waits forever for work that is not coming.  That was a real hang, found by
+        running the CLI rather than the tests.  ``idle_grace`` is how long the queue must stay
+        empty before concluding that it has drained - a grace period, because a producer may
+        enqueue the next job while this one is finishing, and exiting immediately would leave it
+        for the next process.
         """
         if self.database is None:
             raise RuntimeError("serve() needs a database to open one session per job")
         done = 0
+        idle_since: float | None = None
         with self.database.session() as session:
             reclaimed = recover(session)
             session.commit()
@@ -234,6 +310,11 @@ class Worker:
             with self.database.session() as session:
                 result = self.run_once(session)
             if result is None:
+                if exit_when_idle:
+                    now = time.monotonic()
+                    idle_since = now if idle_since is None else idle_since
+                    if now - idle_since >= idle_grace:
+                        break
                 # An empty queue ends the loop when there is no poll interval.  Without this
                 # branch `poll_seconds=0` skips the sleep and spins on an empty queue forever,
                 # which is how a test of this function hung rather than failed.
@@ -241,6 +322,7 @@ class Worker:
                     time.sleep(poll_seconds)
                     continue
                 break
+            idle_since = None
             done += 1
             log.info("job %s (%s) -> %s", result.job_id, result.job_type, result.status)
         return done

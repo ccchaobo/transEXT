@@ -255,20 +255,30 @@ def get_document(request: Request, document_id: str) -> dict:
             ).all()
         ]
         translated = summary["translated_block_count"]
+        # The issues of the active revision, or none when nothing was ever parsed.  This was
+        # written as a comprehension filter - `for issue in (revision.issues or []) if revision`
+        # - which reads correctly and is wrong: the filter is applied to the values, but the
+        # iterable is evaluated first, so a document whose parse failed raised AttributeError on
+        # None and the endpoint returned 500.  A failed paste is exactly the case a reader has to
+        # be able to see, so the guard has to come before the iteration.
+        issue_rows: list[dict] = []
+        if revision is not None:
+            for issue in revision.issues or []:
+                issue = issue or {}
+                issue_rows.append(
+                    {
+                        "code": issue.get("code") or "parse_issue",
+                        "severity": issue.get("severity") or "warning",
+                        "message": issue.get("message") or "",
+                        "page_index": issue.get("page_index"),
+                        "block_id": issue.get("block_id"),
+                        "details": dict(issue.get("details") or {}),
+                    }
+                )
         return {
             **summary,
             "revisions": revisions,
-            "issues": [
-                {
-                    "code": (issue or {}).get("code") or "parse_issue",
-                    "severity": (issue or {}).get("severity") or "warning",
-                    "message": (issue or {}).get("message") or "",
-                    "page_index": (issue or {}).get("page_index"),
-                    "block_id": (issue or {}).get("block_id"),
-                    "details": dict((issue or {}).get("details") or {}),
-                }
-                for issue in (revision.issues or []) if revision
-            ],
+            "issues": issue_rows,
             "translations_summary": {
                 "translated": translated,
                 "total": summary["block_count"],
@@ -428,22 +438,28 @@ def start_translation(
     that — and the worker refuses an oversized plan before spending anything.
     """
     settings = _settings(request)
-    configuration = describe_configuration()
-    if not configuration["configured"]:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
-                "message": (
-                    "no translation provider is configured.  Set RR_TRANSLATION_API_KEY (and "
-                    "RR_TRANSLATION_BASE_URL if the default endpoint is wrong) and restart the "
-                    "server.  No placeholder or mock translation is produced."
-                ),
-            },
-        )
     with _session(request) as session:
+        # The document is looked up *before* the provider configuration is checked.  Checking
+        # configuration first meant a request for a document that does not exist - a typo, or one
+        # already deleted - came back as "no translation provider is configured", sending the
+        # reader off to set an API key for a document that was never there.  The more specific
+        # fact is the missing document, so it is reported first.
         document = _document(session, document_id)
         revision_id = _require_revision(session, document)
+
+        configuration = describe_configuration()
+        if not configuration["configured"]:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
+                    "message": (
+                        "no translation provider is configured.  Set RR_TRANSLATION_API_KEY (and "
+                        "RR_TRANSLATION_BASE_URL if the default endpoint is wrong) and restart "
+                        "the server.  No placeholder or mock translation is produced."
+                    ),
+                },
+            )
 
         # The contract expresses the target as a scope (document / pages / blocks).  It is
         # resolved to an explicit block list here rather than pushed down into the service, so

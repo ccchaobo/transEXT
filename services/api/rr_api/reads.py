@@ -94,6 +94,16 @@ def document_summary(session: Session, document: Document) -> dict[str, Any]:
         ).all()
     ]
     warnings = list(revision.warnings or []) if revision else []
+    if revision is not None:
+        # Page warnings count too.  A scanned page carries "no text layer on this page; OCR is
+        # required" on the page row, not on the revision, so a library card built from revision
+        # warnings alone showed **0 warnings** for a three-page scan whose every page was
+        # warning about missing text - the reader would have had no signal that anything was
+        # found wanting until they opened each page.
+        for page_warnings in session.scalars(
+            select(Page.warnings).where(Page.revision_id == revision.id)
+        ).all():
+            warnings.extend(page_warnings or [])
     return {
         "id": document.id,
         "filename": document.filename,
@@ -112,7 +122,9 @@ def document_summary(session: Session, document: Document) -> dict[str, Any]:
         "last_opened_at": document.last_opened_at,
         "labels": labels,
         "title": document.title,
-        # Not part of the frozen contract's summary, but the reader needs them and adding a
+        # block_count and translated_block_count are declared on the contract's DocumentSummary.
+        # They were being returned here before the contract knew about them, and FastAPI silently
+        # dropped them from the response - which is why a test now asserts they arrive.
         # second request to get them would be worse.  Reported under names of their own.
         "block_count": block_count or 0,
         "translated_block_count": translated or 0,

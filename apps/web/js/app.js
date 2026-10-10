@@ -395,6 +395,19 @@ function renderSource(payload) {
   state.boxes = new Map();
 
   const page = payload.page;
+
+  // Page warnings come first, above the image.  A scanned page carries "no text layer on this
+  // page; OCR is required" and that is the whole explanation for why there is nothing to
+  // translate: without it the reader sees an empty translation pane and no reason for it.
+  for (const warning of page.warnings || []) {
+    const notice = el("div", "notice", warning);
+    body.appendChild(notice);
+  }
+  if (page.ocr_applied) {
+    body.appendChild(el("div", "notice",
+      "这一页的文字由 OCR 识别得到，可能存在识别错误。标注与锚点按识别后的文本定位。"));
+  }
+
   const shell = el("div", "page-shell");
   // The shell's height comes from the page's own aspect ratio, not from the image.  That way
   // the overlays are correctly positioned even if the preview is missing, and a missing preview

@@ -9,15 +9,21 @@ The design and implementation plan is the authoritative specification; this
 repository implements it in milestones, and each milestone is closed with measured
 evidence rather than a status claim.
 
-## Current milestone: M0 (foundation) — complete, with two PENDING items
+## Where this is: M1 (the reader) usable, with named gaps
 
-M0 is the part that everything else depends on: the coordinate contract, the text
-cleaning rules, the corpus with recorded ground truth, the storage layer, the wire
-contract, and the measurements that fix the calibrated parameters.
+M0 is the foundation: the coordinate contract, the text cleaning rules, the corpus with recorded
+ground truth, the storage layer, the wire contract, and the measurements that fix the calibrated
+parameters.
 
-**What is implemented.** The table below is the short version; each row names the
-test or script that demonstrates it, and every one of them was run to produce the
-results in this document.
+M1 adds the product around it — an HTTP API, a separate worker process, and the reader itself —
+and it is usable today for text PDFs: import, read with the source and translation side by side,
+navigate by outline, look up an anchored block, annotate, and export bilingual Markdown. Three
+things are **not** done and are named here rather than left to be discovered: OCR and DOCX are
+engines without a wire into the parse stage ([limitations §24](docs/limitations.md)), real-call
+translation acceptance has no credential (§2), and `BlockTextPatch` does not exist (§25).
+
+The table below is the short version of what is implemented; each row names the test or script
+that demonstrates it, and every one of them was run to produce the results in this document.
 
 | Area | Implementation | Demonstrated by |
 | --- | --- | --- |
@@ -32,17 +38,21 @@ results in this document.
 | Storage | SQLite schema, WAL, leased and fenced job queue, retry accounting | `scripts/smoke_storage.py` |
 | Wire contract | Pydantic models, error taxonomy, generated OpenAPI | `tests/unit/test_contracts.py`, `tests/unit/test_openapi_artifact.py` |
 | Corpus | 35 labelled samples with draw-time ground truth | `benchmarks/rr_m0/corpus_generator.py`, `benchmarks/corpus/manifest.json` |
+| HTTP API | 22 routes over the frozen contract; loopback-only, same-origin guard, refusals with reasons | `tests/integration/test_api.py`, `scripts/verify_live_acceptance.py` |
+| Worker | Separate process; leased, fenced, cancellable jobs; per-stage and per-unit status | `tests/unit/test_worker.py`, `scripts/smoke_storage.py` |
+| Reader | Server-rendered page images with normalised-bbox overlays; four view modes; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py` |
 
-**What is PENDING, and why.** Two items cannot be closed in this environment, and
-both are recorded rather than worked around:
+**What is PENDING, and why.** These cannot be closed in this environment, and are recorded rather
+than worked around:
 
-* **Real-call translation acceptance.** No provider credential exists here. The
-  adapter interface and everything credential-independent is done; no mock
-  translation is used to claim completion, and no translation-quality figure is
-  reported. See [limitations §2](docs/limitations.md).
-* **A real-world document corpus.** Every sample is authored by this repository's
-  generator, so the measured layout and OCR figures describe this corpus, not
-  published papers. See [limitations §1](docs/limitations.md).
+* **Real-call translation acceptance.** No provider credential exists here. The adapter interface
+  and everything credential-independent is done; no mock translation is used to claim completion,
+  and no translation-quality figure is reported. See [limitations §2](docs/limitations.md).
+* **A real-world document corpus.** Every sample is authored by this repository's generator, so
+  the measured layout and OCR figures describe this corpus, not published papers. See
+  [limitations §1](docs/limitations.md).
+* **The three §12.2 thresholds** are still provisional. They are targets to calibrate and freeze;
+  none was lowered to make a measurement pass. See [limitations §16](docs/limitations.md).
 
 ## Requirements
 
@@ -69,13 +79,78 @@ and DOCX; a scanned document is then reported as unreadable rather than as empty
 > inventory, and it must be re-checked before any commercial or network-service
 > distribution.
 
+## Run it
+
+Two processes, both from the repository root. The API serves the reader and never
+runs a job; the worker runs jobs and serves nothing. They are separate so that a long
+parse can be cancelled, can outlive an HTTP request, and cannot take the reader down
+with it.
+
+```powershell
+# Terminal 1 - the reader itself, on http://127.0.0.1:8765
+python -m rr_api
+
+# Terminal 2 - the worker that executes parse and translation jobs
+python -m rr_worker
+```
+
+Then open **<http://127.0.0.1:8765>** and import a PDF. Both commands are also
+installed as `rr-api` and `rr-worker` after `pip install -e .`.
+
+Useful worker flags: `--once` processes one job and exits (it also exits when the
+queue is empty, so it is safe to call from a script); `--drain` stops once the queue
+empties instead of polling; `--quiet` silences the start-up line.
+
+Set `RR_PORT` to move the port and `RR_DATA_DIR` to move the database, uploaded
+originals and derived page images. The server binds `127.0.0.1` only — there is no
+option to bind a public interface, and state-changing requests are refused unless
+they come from the reader's own pages.
+
+**Data locations.** `RR_DATA_DIR` (default `var/`, git-ignored) holds
+`research_reader.sqlite3`, `originals/<document>/<sha256>.pdf` and
+`derived/<document>/<revision>/pages/NNNN.png`. Originals are written once and never
+modified; every derived artifact is addressed by revision.
+
+### Translation setup
+
+Translation is refused until a provider is configured, and **no placeholder text is
+ever produced in its place**. Copy the template and fill it in:
+
+```powershell
+Copy-Item .env.example .env
+# then set RR_TRANSLATION_API_KEY, and RR_TRANSLATION_BASE_URL / RR_TRANSLATION_MODEL
+# if the defaults are not what you are using
+```
+
+`.env` is git-ignored and is read by both processes; a variable already set in the
+environment wins over the file. The API reports only whether a key is present, never
+its value, and the key is never sent to the browser.
+
+> The default Ollama Cloud endpoint (`https://ollama.com/v1`) and model id are
+> **unverified**: this environment cannot reach the service to confirm them, so no
+> real translation call has been made. See
+> [limitations §2](docs/limitations.md).
+
+### What works today
+
+| Input | Reader | Translation |
+| --- | --- | --- |
+| Text PDF | reads, outline, anchored lookup, annotations, export | works once a provider is configured |
+| Scanned PDF / PNG / JPEG | page image renders; each page says **"no text layer; OCR is required"** | refused — nothing to translate |
+| DOCX | refused with `unsupported_format` | refused |
+
+The OCR and DOCX engines exist and are measured, but neither is wired into the parse
+stage yet, so the server declines those formats instead of pretending. A refusal is
+reported on the document (`parse_status = failed`), on the job (`error_code`), and in
+the reader — not as a server error and never as an empty success.
+
 ## Verify
 
 Every command below is runnable from the repository root and prints its own result.
 Nothing here depends on a service being started.
 
 ```powershell
-# Unit tests (343 tests)
+# Unit tests
 python -m pytest tests/unit -q
 
 # Coordinate contract: check all 16 corner mappings plus round-trip properties,
@@ -101,6 +176,28 @@ python scripts/check_openapi.py
 # Regenerate the corpus and the environment inventory
 python -m benchmarks.rr_m0.corpus_generator --clean --root benchmarks/corpus
 python scripts/env_inventory.py --out benchmarks/out/env_inventory.json
+```
+
+### Verifying the reader end to end
+
+These four are about the running product rather than a library. They need no
+credentials and no service of their own; the first two start their own.
+
+```powershell
+# Every field the frontend reads exists in the real payload, checked against a real
+# import and a real worker run rather than against the model definitions
+python scripts/verify_frontend_contract.py
+
+# That each overlay box really sits on the text it claims, measured on rendered
+# pixels: banded ink correlation against the source image, and a mirrored control
+# that must fail
+python scripts/verify_overlay_alignment.py
+
+# Live HTTP acceptance: start the API and the worker, import, read, refuse, export
+python scripts/verify_live_acceptance.py
+
+# The whole suite, unit and integration
+python -m pytest tests -q
 ```
 
 Artifacts are written to `benchmarks/out/`. The corpus (about 31 MiB of generated
@@ -273,13 +370,18 @@ page metrics the PDF file itself declares, which is an independent source.
 ## Repository layout
 
 ```
+apps/web/                 the reader: HTML, CSS and ES modules, served by the API
 packages/document_core/   domain logic: coordinates, cleaning, ids, layout, revision
 packages/contracts/       Pydantic wire models and the generated OpenAPI document
 adapters/rr_adapters/     PDF, DOCX and OCR engines - the licence-confined layer
-services/api/             storage, services, worker (M1)
+services/api/rr_api/      HTTP layer: routes, reads, exports, and the frontend mount
+services/api/rr_services/ application services: import, parse, translate, runtime assembly
+services/api/rr_storage/  SQLite schema, workspace, leased job queue
+services/api/rr_worker/   the worker process and its command line
 benchmarks/rr_m0/         corpus generator, OCR metrics, performance harness
 scripts/                  verification, calibration and diagnostic tooling
 tests/unit/               unit tests
+tests/integration/        API, worker and failure-visibility tests
 docs/adr/                 architecture decision records
 docs/limitations.md       what is not done and what is not verified
 ```

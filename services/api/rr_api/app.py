@@ -24,8 +24,8 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from rr_contracts import ErrorCode
-from rr_services import FileRejected, Settings
-from rr_storage import Database, JobQueue, Workspace, create_database
+from rr_services import FileRejected, Settings, open_runtime
+from rr_storage import Database, Workspace
 
 from . import reads
 from .routes import router
@@ -44,11 +44,13 @@ def create_app(
     database: Database | None = None,
     serve_frontend: bool = True,
 ) -> FastAPI:
-    settings = settings or Settings.from_env()
-    settings.data_dir.mkdir(parents=True, exist_ok=True)
-    database = database or create_database(settings.data_dir)
-    database.create_all()
-    workspace = workspace or Workspace(settings.workspace_root)
+    # One runtime builder, shared with the worker.  Building the database and workspace here and
+    # again in the worker is how the two processes come to disagree about which data directory
+    # they are using.
+    runtime = open_runtime(settings, database=database, workspace=workspace)
+    settings = runtime.settings
+    database = runtime.database
+    workspace = runtime.workspace
 
     app = FastAPI(
         title="research-reader",
@@ -65,7 +67,7 @@ def create_app(
     app.state.settings = settings
     app.state.database = database
     app.state.workspace = workspace
-    app.state.queue = JobQueue(lease_seconds=settings.lease_seconds)
+    app.state.queue = runtime.queue
 
     @app.middleware("http")
     async def same_origin(request: Request, call_next):

@@ -103,6 +103,14 @@ body {
 .progress > span { display: block; height: 100%; background: var(--accent); }
 .empty { color: var(--muted); padding: 30px 0; text-align: center; }
 
+/* A page-level explanation, shown above the page itself.  A scanned page has no text and the
+   only honest thing to say about it is why; the reader should not have to guess. */
+.notice {
+  margin: 0 0 8px; padding: 8px 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.45;
+  background: var(--warn-soft, #fef3c7); color: #78350f; border: 1px solid var(--warn-line, #fcd34d);
+}
+.notice code { font-size: 12px; }
+
 /* ---------- reader ---------- */
 
 .reader { display: flex; width: 100%; min-height: 0; }
