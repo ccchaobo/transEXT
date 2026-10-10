@@ -96,11 +96,36 @@ def main(argv: Sequence[str] | None = None) -> int:
                 # Not the main thread, or the platform does not allow it.  Ctrl-C still works.
                 pass
 
+    def _provider() -> object:
+        """Build the translation provider from the settings in force *now*.
+
+        Called once per translate job, not once per process.  This is the fix for a defect: the
+        worker used to be constructed with no provider at all, so a correct API key still ended
+        in ``TranslationNotConfigured`` for every job - the reader followed the error message's
+        own instructions, restarted, and got the identical failure with no explanation.  It is
+        also what lets a change made in the settings panel take effect without a restart.
+        """
+        from rr_adapters.translation import TranslationConfigError
+        from rr_services import provider_from_resolved, resolve_translation_config
+
+        assert runtime.database is not None
+        with runtime.database.session() as session:
+            resolved = resolve_translation_config(session)
+        try:
+            return provider_from_resolved(resolved)
+        except TranslationConfigError as exc:
+            # A half-filled configuration is a configuration error the job should report, not
+            # a crash that takes the worker down while other jobs wait.
+            if not args.quiet:
+                print(f"translation is misconfigured: {exc}", flush=True)
+            return None
+
     worker = Worker(
         runtime.settings,
         runtime.workspace,
         runtime.queue,
         database=runtime.database,
+        provider_factory=_provider,
     )
 
     max_jobs = 1 if args.once else args.max_jobs

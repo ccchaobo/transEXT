@@ -19,7 +19,7 @@
       "recognised_chars": 3314,
       "reference_lines": 46,
       "recognised_lines": 44,
-      "seconds": 9.43,
+      "seconds": 9.42,
       "mean_confidence": 0.923
      },
      {
@@ -32,13 +32,13 @@
       "recognised_chars": 2145,
       "reference_lines": 51,
       "recognised_lines": 48,
-      "seconds": 6.3,
+      "seconds": 6.34,
       "mean_confidence": 0.875
      }
     ],
     "cer": 0.0484,
     "reference_chars": 5724,
-    "seconds": 15.73,
+    "seconds": 15.75,
     "dpi": 250,
     "wall_seconds": 20.71
    },
@@ -55,7 +55,7 @@
       "recognised_chars": 3945,
       "reference_lines": 102,
       "recognised_lines": 96,
-      "seconds": 11.16,
+      "seconds": 10.21,
       "mean_confidence": 0.913
      },
      {
@@ -68,15 +68,15 @@
       "recognised_chars": 2544,
       "reference_lines": 82,
       "recognised_lines": 80,
-      "seconds": 7.53,
+      "seconds": 7.12,
       "mean_confidence": 0.892
      }
     ],
     "cer": 0.0338,
     "reference_chars": 6637,
-    "seconds": 18.69,
+    "seconds": 17.33,
     "dpi": 250,
-    "wall_seconds": 26.52
+    "wall_seconds": 24.98
    },
    {
     "document": "scan_c_skewed",
@@ -91,7 +91,7 @@
       "recognised_chars": 2659,
       "reference_lines": 56,
       "recognised_lines": 52,
-      "seconds": 7.99,
+      "seconds": 7.49,
       "mean_confidence": 0.889
      },
      {
@@ -104,15 +104,15 @@
       "recognised_chars": 2168,
       "reference_lines": 33,
       "recognised_lines": 35,
-      "seconds": 5.86,
+      "seconds": 5.69,
       "mean_confidence": 0.914
      }
     ],
     "cer": 0.0092,
     "reference_chars": 4795,
-    "seconds": 13.85,
+    "seconds": 13.19,
     "dpi": 250,
-    "wall_seconds": 18.23
+    "wall_seconds": 17.3
    },
    {
     "document": "scan_d_low_dpi",
@@ -127,7 +127,7 @@
       "recognised_chars": 3523,
       "reference_lines": 46,
       "recognised_lines": 46,
-      "seconds": 9.07,
+      "seconds": 8.96,
       "mean_confidence": 0.919
      },
      {
@@ -140,15 +140,15 @@
       "recognised_chars": 2182,
       "reference_lines": 51,
       "recognised_lines": 48,
-      "seconds": 5.6,
+      "seconds": 5.61,
       "mean_confidence": 0.872
      }
     ],
     "cer": 0.0061,
     "reference_chars": 5724,
-    "seconds": 14.67,
+    "seconds": 14.58,
     "dpi": 250,
-    "wall_seconds": 16.96
+    "wall_seconds": 16.82
    },
    {
     "document": "scan_e_grayscale",
@@ -163,7 +163,7 @@
       "recognised_chars": 3947,
       "reference_lines": 102,
       "recognised_lines": 97,
-      "seconds": 11.05,
+      "seconds": 9.71,
       "mean_confidence": 0.913
      },
      {
@@ -176,15 +176,15 @@
       "recognised_chars": 2544,
       "reference_lines": 82,
       "recognised_lines": 80,
-      "seconds": 9.32,
+      "seconds": 6.85,
       "mean_confidence": 0.89
      }
     ],
     "cer": 0.0334,
     "reference_chars": 6637,
-    "seconds": 20.37,
+    "seconds": 16.56,
     "dpi": 250,
-    "wall_seconds": 28.45
+    "wall_seconds": 23.72
    }
   ]
  }

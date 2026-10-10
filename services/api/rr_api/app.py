@@ -20,6 +20,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -104,10 +105,37 @@ def create_app(
             content={"error_code": ErrorCode.NOT_FOUND.value, "message": str(exc) or "not found"},
         )
 
+    @app.exception_handler(RequestValidationError)
+    async def invalid_body(_request: Request, exc: RequestValidationError):
+        """A malformed body, in the same shape as every other refusal.
+
+        FastAPI's own handler answers 422 with ``detail`` as a *list* of error objects, while
+        every refusal this API raises puts an ``{"error_code", "message"}`` object in
+        ``detail``.  The reader maps ``error_code``; given the list it has nothing to map and
+        falls back to something generic.  So a body with a mistyped field name - the ordinary
+        mistake - would be the one refusal the UI could not explain.
+        """
+        parts: list[str] = []
+        for error in exc.errors():
+            # loc is like ("body", "modle"); the first element names the request part and is
+            # not useful to a reader.
+            location = ".".join(str(item) for item in error.get("loc", ())[1:])
+            message = str(error.get("msg") or "invalid value")
+            parts.append(f"{location}: {message}" if location else message)
+        return JSONResponse(
+            status_code=400,
+            content={
+                "detail": {
+                    "error_code": ErrorCode.INVALID_REQUEST.value,
+                    "message": "; ".join(parts) or "the request body was not valid",
+                }
+            },
+        )
+
     @app.get("/health", tags=["meta"])
     def health() -> dict:
         """Liveness plus what this server is actually able to do."""
-        from rr_adapters.translation import describe_configuration
+        from rr_services import resolve_translation_config
 
         with database.session() as session:
             from sqlalchemy import func, select
@@ -116,16 +144,20 @@ def create_app(
 
             documents = session.scalar(select(func.count()).select_from(Document)) or 0
             blocks = session.scalar(select(func.count()).select_from(Block)) or 0
+            # Resolved, not merely read from the environment: the reader can configure a key in
+            # the settings panel, and health has to report that provider rather than the one the
+            # process started with.
+            described = resolve_translation_config(session).describe()
         return {
             "status": "ok",
             "version": VERSION,
             "documents": documents,
             "blocks": blocks,
             "data_dir": str(settings.data_dir),
-            "translation": describe_configuration(),
+            "translation": described,
             # Stated plainly so nothing downstream can imply otherwise: with no credentials the
             # reader works and translation does not, and no placeholder text is produced.
-            "translation_available": describe_configuration()["configured"],
+            "translation_available": described["configured"],
         }
 
     app.include_router(router)

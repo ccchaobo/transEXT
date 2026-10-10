@@ -312,7 +312,12 @@ class DocumentList(BaseModel):
 class TranslationRequest(BaseModel):
     """Request translation for pages, blocks or the whole document."""
 
-    scope: Literal["document", "pages", "blocks"] = "pages"
+    # Defaults to the whole document, which is what "translate this paper" means and what the
+    # reader's own button sends.  It used to default to "pages" and then reject a request that
+    # omitted page_indices with a 400 - so the most natural possible call, `{}`, failed with a
+    # validation error telling the caller to supply a field they had no reason to know about.
+    # A default that produces a 400 for the obvious request is not a default.
+    scope: Literal["document", "pages", "blocks"] = "document"
     page_indices: list[int] | None = None
     block_ids: list[str] | None = None
     target_language: str = "zh"

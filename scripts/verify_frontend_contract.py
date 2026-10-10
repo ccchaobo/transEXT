@@ -29,6 +29,7 @@ from rr_worker import Worker
 CORPUS = Path("benchmarks/corpus")
 DOCUMENT = "pdf_b_two_column"
 APP_JS = Path("apps/web/js/app.js")
+WEB_ROOT = Path("apps/web")
 
 failures: list[str] = []
 
@@ -182,7 +183,16 @@ def _check(data_dir: Path) -> int:
             print(f"  {status} pages/{index}/{kind}.png  {len(response.content)} bytes")
 
     print("\n[5] static assets the browser will fetch")
-    for path in ("/", "/styles.css", "/js/app.js", "/js/api.js"):
+    # Derived from the module graph rather than listed by hand, because a hand-written list is
+    # exactly how a new module goes unchecked: `settings.js` was added and fetched by
+    # `app.js`, and a missing one would have broken the page with no failing test - a 404 on an
+    # import is invisible until someone clicks the button that needs it.
+    assets = ["/", "/styles.css"]
+    modules = sorted((WEB_ROOT / "js").glob("*.js"))
+    assets += [f"/js/{module.name}" for module in modules]
+    if len(modules) < 2:
+        failures.append(f"expected several frontend modules, found {[m.name for m in modules]}")
+    for path in assets:
         response = client.get(path)
         status = "ok  " if response.status_code == 200 else "FAIL"
         if response.status_code != 200:

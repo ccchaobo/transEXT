@@ -114,7 +114,23 @@ modified; every derived artifact is addressed by revision.
 ### Translation setup
 
 Translation is refused until a provider is configured, and **no placeholder text is
-ever produced in its place**. Copy the template and fill it in:
+ever produced in its place**.
+
+Open the reader and click **翻译设置** in the top bar. Fill in the service root (the
+base URL, including its API version segment), the model id, and the API key, then press
+**测试连接**. That button sends one real request to whatever you configured and reports
+what came back — the HTTP status, the error code, the latency and a sample of the reply —
+which is the only way to find out whether a base URL, a model id and a key work together.
+Nothing is stored or cached by it.
+
+Saved settings live in `reader.sqlite3` and are read by **both** processes on the next
+job, so **no restart is needed**. The API key travels one way: it is sent from the page to
+this machine's own backend, stored, and never returned by any endpoint — every response
+reports only whether a key is present. See
+[limitations §31](docs/limitations.md) for what that costs.
+
+`.env` still works and is still the right tool for pinning a value for one command.
+Copy the template if you prefer it:
 
 ```powershell
 Copy-Item .env.example .env
@@ -122,13 +138,12 @@ Copy-Item .env.example .env
 # if the defaults are not what you are using
 ```
 
-`.env` is git-ignored and is read by both processes; a variable already set in the
-environment wins over the file. The API reports only whether a key is present, never
-its value, and the key is never sent to the browser.
+An environment variable **wins** over a stored setting. When that happens the panel names
+the fields being overridden rather than leaving you to wonder why a saved value did nothing.
 
 > The default Ollama Cloud endpoint (`https://ollama.com/v1`) and model id are
 > **unverified**: this environment cannot reach the service to confirm them, so no
-> real translation call has been made. See
+> real translation call has been made. Use **测试连接** to check yours. See
 > [limitations §2](docs/limitations.md).
 
 ### What works today
@@ -236,18 +251,18 @@ at the calibrated 250 dpi. Full data in
 
 | Stage | n | P50 | P95 | Max | Threshold | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| Open a PDF | 14 | 1.8 ms | 2.0 ms | 2.1 ms | — | — |
-| Extract text, one page | 31 | 2.3 ms | 5.2 ms | 7.6 ms | — | — |
-| First-screen preview render | 14 | 45.4 ms | 212.6 ms | 290.6 ms | ≤ 3 s | **PASS** |
-| Page-turn preview render | 48 | 40.4 ms | 212.1 ms | 283.0 ms | ≤ 300 ms | **PASS** |
-| Scan detection, one page | 31 | 1.2 ms | 4.1 ms | 4.3 ms | — | — |
-| DOCX conversion | 6 | 67.3 ms | 157.9 ms | 157.9 ms | — | — |
-| OCR engine load | 10 | 190.5 ms | 689.3 ms | 689.3 ms | — | — |
-| OCR render, one page | 13 | 170.5 ms | 179.5 ms | 183.0 ms | — | — |
-| **OCR recognition, one page** | 17 | **7.7 s** | **10.7 s** | **11.1 s** | — | **not interactive** |
+| Open a PDF | 14 | 1.8 ms | 1.9 ms | 2.0 ms | — | — |
+| Extract text, one page | 31 | 2.3 ms | 5.1 ms | 7.6 ms | — | — |
+| First-screen preview render | 14 | 45.5 ms | 211.2 ms | 284.7 ms | ≤ 3 s | **PASS** |
+| Page-turn preview render | 48 | 40.9 ms | 214.3 ms | 277.3 ms | ≤ 300 ms | **PASS** |
+| Scan detection, one page | 31 | 1.4 ms | 4.1 ms | 4.2 ms | — | — |
+| DOCX conversion | 6 | 76.0 ms | 155.5 ms | 155.5 ms | — | — |
+| OCR engine load | 10 | 184.3 ms | 679.3 ms | 679.3 ms | — | — |
+| OCR render, one page | 13 | 170.5 ms | 190.0 ms | 190.8 ms | — | — |
+| **OCR recognition, one page** | 17 | **7.5 s** | **10.7 s** | **10.7 s** | — | **not interactive** |
 
-These are single-run figures and the P95s carry visible run-to-run variation — across four runs of
-identical code the first-screen P95 was observed at 212.6, 212.7, 226.9 and 230.9 ms. The
+These are single-run figures and the P95s carry visible run-to-run variation — across five runs of
+identical code the first-screen P95 was observed at 211.2, 212.6, 212.7, 226.9 and 230.9 ms. The
 threshold verdicts hold in every run, because the margin is large; the individual milliseconds
 should be read as "about this", not as a fixed property of the code. The artifact in
 [`benchmarks/out/perf.json`](benchmarks/out/perf.json) is always the run it was written from, so
@@ -261,7 +276,7 @@ figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that do
 defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
 measurement cannot drift from it.
 
-Peak working set for the whole run: 1741 MiB, a batch figure across many documents
+Peak working set for the whole run: 1740 MiB, a batch figure across many documents
 rather than a per-document footprint ([limitations §14](docs/limitations.md)).
 
 OCR recognition is three orders of magnitude outside the interactive targets, and

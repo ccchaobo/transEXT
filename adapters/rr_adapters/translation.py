@@ -444,6 +444,97 @@ class OpenAIChatTranslationProvider:
 
     # -- the interface -----------------------------------------------------
 
+    def check(self) -> dict[str, Any]:
+        """Send one tiny request and report what actually came back.
+
+        This exists because the default endpoint for Ollama's cloud service could not be
+        verified in this environment - ``ollama.com`` resolves to a non-public address here -
+        and a wrong base URL, a wrong model id and a wrong key all look identical from the
+        outside: translation simply never succeeds.  Guessing which of the three is wrong
+        means reading log files.
+
+        So the reader can ask the service directly and get the answer in one round trip.  The
+        request is a real one and it is *not* saved anywhere: nothing is cached, no block is
+        touched, and no translation is recorded.  A successful check is evidence that the
+        credentials reach a working endpoint, not that any document has been translated.
+
+        Costs a few tokens.  Deliberately does **not** retry: a diagnostic that sits through
+        three backoffs before saying "unreachable" is a worse diagnostic.
+        """
+        started = time.monotonic()
+        report: dict[str, Any] = {
+            "ok": False,
+            "endpoint": self.config.endpoint(),
+            "model": self.config.model,
+            "provider": self.name,
+            "latency_ms": None,
+            "http_status": None,
+            "error_code": None,
+            "error_message": None,
+            "sample": None,
+            "usage": {},
+        }
+        unit = TranslationUnit(block_id="__check__", text="Reply with the single word: ok")
+        payload = {
+            "model": self.config.model,
+            "messages": [
+                {"role": "system", "content": "Reply with exactly one word."},
+                {"role": "user", "content": unit.text},
+            ],
+            "temperature": 0.0,
+            "stream": False,
+        }
+        payload.update(self.config.extra_body)
+
+        client = self._build_client()
+        try:
+            response = client.post(self.config.endpoint(), json=payload)
+        except httpx.TimeoutException as exc:
+            # An unreachable host usually surfaces as a connect timeout, which is
+            # indistinguishable here from a slow one, so both are reported as a timeout with
+            # the elapsed time attached.
+            report["latency_ms"] = round((time.monotonic() - started) * 1000.0, 1)
+            report["error_code"] = EXTERNAL_UNKNOWN_RESULT
+            report["error_message"] = (
+                f"no response within {self.config.timeout_seconds}s: {exc}"
+            )
+            return report
+        except httpx.HTTPError as exc:
+            report["latency_ms"] = round((time.monotonic() - started) * 1000.0, 1)
+            report["error_code"] = CODE_UNAVAILABLE
+            report["error_message"] = f"{type(exc).__name__}: {exc}"
+            return report
+
+        report["latency_ms"] = round((time.monotonic() - started) * 1000.0, 1)
+        report["http_status"] = response.status_code
+        if response.status_code >= 400:
+            report["error_code"] = code_for_status(response.status_code)
+            report["error_message"] = (response.text or "")[:400]
+            return report
+        try:
+            data = response.json()
+        except (json.JSONDecodeError, ValueError) as exc:
+            report["error_code"] = CODE_TRANSLATION_FAILED
+            report["error_message"] = (
+                "the endpoint answered, but not with JSON - this is usually the wrong base "
+                f"URL, for example a service root missing its /v1 segment ({exc})"
+            )
+            return report
+        text = self._extract_text(data)
+        if text is None:
+            report["error_code"] = CODE_TRANSLATION_FAILED
+            report["error_message"] = (
+                "the endpoint answered with JSON, but no chat message was in it - the URL "
+                f"is probably not a chat-completions endpoint ({json.dumps(data)[:200]})"
+            )
+            return report
+        usage = data.get("usage")
+        if isinstance(usage, dict):
+            report["usage"] = {k: v for k, v in usage.items() if isinstance(v, (int, float))}
+        report["ok"] = True
+        report["sample"] = text[:80]
+        return report
+
     def translate(
         self,
         units: Sequence[TranslationUnit],
@@ -529,46 +620,77 @@ ENV_TEMPERATURE = "RR_TRANSLATION_TEMPERATURE"
 DEFAULT_OLLAMA_CLOUD_BASE_URL = "https://ollama.com/v1"
 
 
-def config_from_env(env: dict[str, str] | None = None) -> OpenAITranslationConfig | None:
-    """Build a config from the environment, or ``None`` when no key is configured.
+#: Field name -> environment variable.  The settings layer resolves a value per field and then
+#: builds the config from a plain mapping, so an environment variable and a value typed into
+#: the reader travel the same code path and cannot drift apart in how they are parsed.
+SETTING_FIELDS: dict[str, str] = {
+    "base_url": ENV_BASE_URL,
+    "api_key": ENV_API_KEY,
+    "model": ENV_MODEL,
+    "name": ENV_NAME,
+    "timeout_seconds": ENV_TIMEOUT,
+    "max_concurrency": ENV_CONCURRENCY,
+    "max_attempts": ENV_MAX_ATTEMPTS,
+    "temperature": ENV_TEMPERATURE,
+}
 
-    Returning ``None`` rather than a placeholder provider is deliberate: a placeholder
-    would let a caller believe translation is available when it is not, and the spec
-    requires the real-call acceptance item to be reported as PENDING instead.
-    """
+#: Fields whose value must never be echoed.  Kept next to the field list so a new secret is
+#: added in one place.
+SECRET_FIELDS = frozenset({"api_key"})
+
+
+def values_from_env(env: dict[str, str] | None = None) -> dict[str, str]:
+    """The raw values the environment supplies, keyed by field name."""
     env = env if env is not None else dict(os.environ)
-    api_key = (env.get(ENV_API_KEY) or "").strip()
+    return {field: (env.get(name) or "").strip() for field, name in SETTING_FIELDS.items()}
+
+
+def config_from_values(values: dict[str, str]) -> OpenAITranslationConfig | None:
+    """Build a config from already-resolved values, or ``None`` when no key is configured.
+
+    Returning ``None`` rather than a placeholder provider is deliberate: a placeholder would
+    let a caller believe translation is available when it is not, and the spec requires the
+    real-call acceptance item to be reported as PENDING instead.
+    """
+    api_key = (values.get("api_key") or "").strip()
     if not api_key:
         return None
-    model = (env.get(ENV_MODEL) or "").strip()
+    model = (values.get("model") or "").strip()
     if not model:
         raise TranslationConfigError(
             f"{ENV_MODEL} is not set. Set it to the model id you want to use."
         )
-    base_url = (env.get(ENV_BASE_URL) or "").strip() or DEFAULT_OLLAMA_CLOUD_BASE_URL
+    base_url = (values.get("base_url") or "").strip() or DEFAULT_OLLAMA_CLOUD_BASE_URL
 
-    def _float(name: str, default: float) -> float:
-        raw = (env.get(name) or "").strip()
+    def _float(field: str, default: float) -> float:
+        raw = (values.get(field) or "").strip()
         if not raw:
             return default
         try:
             return float(raw)
         except ValueError as exc:
-            raise TranslationConfigError(f"{name} is not a number: {raw!r}") from exc
+            raise TranslationConfigError(
+                f"{SETTING_FIELDS.get(field, field)} is not a number: {raw!r}"
+            ) from exc
 
-    def _int(name: str, default: int) -> int:
-        return int(_float(name, float(default)))
+    def _int(field: str, default: int) -> int:
+        return int(_float(field, float(default)))
 
     return OpenAITranslationConfig(
         base_url=base_url,
         api_key=api_key,
         model=model,
-        name=(env.get(ENV_NAME) or "ollama-cloud").strip(),
-        timeout_seconds=_float(ENV_TIMEOUT, 120.0),
-        max_concurrency=max(1, _int(ENV_CONCURRENCY, 4)),
-        max_attempts=max(1, _int(ENV_MAX_ATTEMPTS, 3)),
-        temperature=_float(ENV_TEMPERATURE, 0.2),
+        name=(values.get("name") or "ollama-cloud").strip(),
+        timeout_seconds=_float("timeout_seconds", 120.0),
+        max_concurrency=max(1, _int("max_concurrency", 4)),
+        max_attempts=max(1, _int("max_attempts", 3)),
+        temperature=_float("temperature", 0.2),
     )
+
+
+def config_from_env(env: dict[str, str] | None = None) -> OpenAITranslationConfig | None:
+    """Build a config from the environment alone, or ``None`` when no key is configured."""
+    return config_from_values(values_from_env(env))
 
 
 def provider_from_env(
@@ -648,15 +770,19 @@ __all__ = [
     "OpenAITranslationConfig",
     "PROMPT_VERSION",
     "RETRYABLE_STATUS",
+    "SECRET_FIELDS",
+    "SETTING_FIELDS",
     "TranslationConfigError",
     "TranslationOutcome",
     "TranslationProvider",
     "TranslationResult",
     "TranslationUnit",
     "config_from_env",
+    "config_from_values",
     "code_for_status",
     "describe_configuration",
     "language_name",
     "load_env_file",
     "provider_from_env",
+    "values_from_env",
 ]

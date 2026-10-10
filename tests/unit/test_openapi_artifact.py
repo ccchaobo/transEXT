@@ -142,29 +142,97 @@ class TestImplementationHonesty:
         schema = responses["BusinessError"]["content"]["application/json"]["schema"]
         assert schema["$ref"].endswith("ErrorResponse")
 
-    def test_provider_keys_are_not_part_of_the_client_contract(self, document: dict) -> None:
-        # The frontend must never receive or send a provider key (spec 11).
-        #
-        # This checks *field names* rather than a substring search of the whole
-        # document: the security scheme is legitimately an apiKey type (it is the
-        # local session token), and the description legitimately says that provider
-        # keys are never sent to the client.  A substring search flagged both of
-        # those, which would have made the test fail for stating the rule.
+    def test_provider_keys_are_never_returned_by_any_response(self, document: dict) -> None:
+        """A credential may be *sent* to this service.  It may never be sent back.
+
+        **This test replaced a stricter one, deliberately, at the owner's direction.**  The
+        previous version asserted that no field named ``api_key`` appeared anywhere in
+        ``components.schemas`` - which enforced the spec 11 rule that the frontend neither
+        receives nor sends a provider key.  The reader asked to be able to enter a base URL, a
+        model id and an API key in the settings panel, and a key typed into a panel is a key the
+        browser sends.  The two cannot both hold, and the owner chose the panel.
+
+        So the rule is now the one that actually protects something, and it is checked more
+        precisely than before:
+
+        * a secret-named field is allowed **only** in a schema reachable from a ``requestBody``;
+        * it must not appear in any schema a client can *receive* - not in a success response,
+          not in the error envelope, not in any other declared response;
+        * and it may not be required, because requiring a key would make "leave it unchanged"
+          impossible to express.
+
+        A blanket name search could not tell those cases apart.  This can, and it fails if the
+        redaction in the settings layer ever lets a value into a response model.
+        """
         forbidden_names = {
             "provider_key", "provider_api_key", "openai_api_key",
             "api_key", "apikey", "access_token", "client_secret",
         }
-        offenders: list[str] = []
-        for schema_name, schema in document["components"]["schemas"].items():
-            for field_name in (schema.get("properties") or {}):
-                if field_name.lower() in forbidden_names:
-                    offenders.append(f"{schema_name}.{field_name}")
-            for required in schema.get("required", []):
-                if required.lower() in forbidden_names:
-                    offenders.append(f"{schema_name}.{required} (required)")
-        assert offenders == [], (
-            f"provider credentials must stay server-side: {offenders}"
+        schemas = document["components"]["schemas"]
+
+        def ref_name(node: dict) -> str | None:
+            ref = node.get("$ref")
+            return ref.rsplit("/", 1)[-1] if ref else None
+
+        def names_in_schema(name: str) -> list[str]:
+            schema = schemas.get(name) or {}
+            found = [f for f in (schema.get("properties") or {}) if f.lower() in forbidden_names]
+            found += [
+                f"{r} (required)"
+                for r in schema.get("required", [])
+                if r.lower() in forbidden_names
+            ]
+            return found
+
+        # Every schema a client can receive.
+        received: dict[str, set[str]] = {}
+        for path, operations in document["paths"].items():
+            for method, operation in operations.items():
+                if method not in {"get", "post", "put", "patch", "delete"}:
+                    continue
+                for status, response in (operation.get("responses") or {}).items():
+                    for media in (response.get("content") or {}).values():
+                        name = ref_name(media.get("schema") or {})
+                        if name:
+                            received.setdefault(name, set()).add(f"{method.upper()} {path} {status}")
+
+        leaks: list[str] = []
+        for name, where in received.items():
+            for field_name in names_in_schema(name):
+                leaks.append(f"{name}.{field_name} reachable from {sorted(where)}")
+        # Components registered as reusable *responses* count too.
+        for name, response in (document["components"].get("responses") or {}).items():
+            for media in (response.get("content") or {}).values():
+                schema_name = ref_name(media.get("schema") or {})
+                for field_name in (names_in_schema(schema_name) if schema_name else []):
+                    leaks.append(f"{schema_name}.{field_name} in components.responses/{name}")
+        assert leaks == [], f"a provider credential can be read back: {leaks}"
+
+        # And the other half of the rule, so this is not satisfied by declaring nothing: the
+        # write path must exist and must not require the key.
+        write_schemas: set[str] = set()
+        for operations in document["paths"].values():
+            for method, operation in operations.items():
+                if method not in {"post", "put", "patch"}:
+                    continue
+                for media in ((operation.get("requestBody") or {}).get("content") or {}).values():
+                    name = ref_name(media.get("schema") or {})
+                    if name:
+                        write_schemas.add(name)
+        assert write_schemas, "no request body schemas found; the scan above proved nothing"
+        declared = [
+            name for name in write_schemas if any(
+                f.lower() in forbidden_names for f in (schemas.get(name, {}).get("properties") or {})
+            )
+        ]
+        assert declared, (
+            "no write-only credential field is declared; if key entry was removed, this test "
+            "and the settings panel must be removed together rather than left asserting nothing"
         )
+        for name in declared:
+            assert "api_key" not in {
+                r for r in schemas[name].get("required", [])
+            }, f"{name} requires an api_key, so a reader could not edit other fields without resending it"
 
     def test_no_security_scheme_claims_auth_that_is_not_implemented(self, document: dict) -> None:
         """An earlier revision of this test asserted the opposite, and it was wrong.

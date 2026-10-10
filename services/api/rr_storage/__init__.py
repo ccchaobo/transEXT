@@ -15,6 +15,7 @@ from .models import (  # noqa: F401
     Page,
     ParseRevision,
     ReadingStateRow,
+    Setting,
     SourceSpanRow,
     Term,
     Translation,
@@ -27,6 +28,13 @@ from .queue import (  # noqa: F401
     LeaseInfo,
     reconcile_stale_jobs,
     worker_identity,
+)
+from .settings_store import (  # noqa: F401
+    all_settings,
+    delete_setting,
+    get_setting,
+    secret_keys,
+    set_setting,
 )
 from .workspace import StoredFile, Workspace  # noqa: F401
 
@@ -49,13 +57,19 @@ __all__ = [
     "Page",
     "ParseRevision",
     "ReadingStateRow",
+    "Setting",
     "SourceSpanRow",
     "StoredFile",
     "Term",
     "Translation",
     "Workspace",
+    "all_settings",
     "create_database",
+    "delete_setting",
+    "get_setting",
     "reconcile_stale_jobs",
+    "secret_keys",
+    "set_setting",
     "utcnow",
     "worker_identity",
 ]

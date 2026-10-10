@@ -306,5 +306,74 @@ def run_checks(live: Live, client: httpx.Client) -> None:
             check("a scanned PDF is accepted", False, f"HTTP {created.status_code}")
 
 
+    # ---- the settings panel, over real HTTP -----------------------------------------------
+    # Deliberately the **last** section, and that placement is load-bearing.  Storing settings
+    # makes the translate endpoint succeed, so the check below queues a real translation job -
+    # and the sections after this one run the worker as `--once`, which means exactly one job.
+    # An earlier revision of this block sat above them and the leftover job was claimed instead
+    # of the parse job each of them was waiting for, so a scanned PDF appeared to have no pages.
+    # The same failure the harness exists to catch: state left by one step breaking the next.
+    settings = client.get("/api/v1/settings/translation")
+    check("the translation settings are readable",
+          settings.status_code == 200, f"HTTP {settings.status_code}")
+    panel = settings.json()
+    check("the panel reports the effective value and the stored one separately",
+          "effective" in panel and "stored" in panel and "fields" in panel, "")
+    check("it names the fields that may be set",
+          {entry["field"] for entry in panel["fields"]} >= {"base_url", "api_key", "model"}, "")
+    check("nothing stored yet, and the environment is not overriding anything",
+          panel["stored"] == {} and panel["env_overrides"] == [])
+
+
+    secret = "sk-live-acceptance-must-not-echo"
+    untestable = client.post("/api/v1/settings/translation/test")
+    check("the check call refuses when there is no key to test",
+          untestable.status_code == 409 and
+          untestable.json()["detail"]["error_code"] == "translation_not_configured",
+          f"HTTP {untestable.status_code}")
+
+    stored = client.put(
+        "/api/v1/settings/translation",
+        json={"api_key": secret, "model": "live-check-model", "base_url": "http://127.0.0.1:9/v1"},
+    )
+    check("a reader can store a key, a model and an endpoint", stored.status_code == 200,
+          f"HTTP {stored.status_code}")
+
+    # The key travels one way.  Check every response a browser can reach, not just this one.
+    leaked = [
+        path for path in (
+            "/health",
+            "/api/v1/settings/translation",
+            "/api/v1/translation/configuration",
+            "/api/v1/documents",
+            f"/api/v1/documents/{document_id}",
+        )
+        if secret in client.get(path).text
+    ]
+    check("the key is stored but never echoed by any endpoint", leaked == [], f"leaked via {leaked}")
+
+    check("health now reports translation as available",
+          client.get("/health").json()["translation_available"] is True, "")
+    check("the document view agrees that translation is configured",
+          client.get(f"/api/v1/documents/{document_id}").json()["capabilities"][
+              "translation_configured"
+          ] is True, "")
+    check("the same settings are now usable, so the 409 is gone",
+          client.post(f"/api/v1/documents/{document_id}/translate", json=body).status_code == 202, "")
+
+    typo = client.put("/api/v1/settings/translation", json={"modle": "m1"})
+    check("a mistyped field name is refused rather than silently dropped",
+          typo.status_code == 400 and
+          typo.json()["detail"]["error_code"] == "invalid_request",
+          f"HTTP {typo.status_code}")
+
+    cleared = client.delete("/api/v1/settings/translation")
+    check("clearing the panel settings restores the refusal",
+          cleared.status_code == 200 and
+          client.post(f"/api/v1/documents/{document_id}/translate", json=body).status_code == 409,
+          f"HTTP {cleared.status_code}")
+
+
+
 if __name__ == "__main__":
     sys.exit(main())

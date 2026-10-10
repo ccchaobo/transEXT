@@ -609,6 +609,81 @@ between runs of identical code (212.7 → 230.9 ms observed on the first-screen 
 verdicts are unaffected because the margin is large, but the individual millisecond figures are
 single-run observations and the README now says so rather than presenting them as fixed.
 
+## 30. A configured API key did nothing, because the worker never built a provider
+
+The API's own refusal told the reader exactly what to do:
+
+```
+no translation provider is configured.  Set RR_TRANSLATION_API_KEY (and
+RR_TRANSLATION_BASE_URL if the default endpoint is wrong) and restart the server.
+```
+
+Doing that did not work. `rr_worker/__main__.py` constructed the worker as
+`Worker(runtime.settings, runtime.workspace, runtime.queue, database=runtime.database)` — with no
+`provider` argument and no way to supply one. `worker.provider` was therefore `None` for the whole
+run, `TranslationService.plan()` reported `provider='unconfigured'`, and **every** translate job
+ended in the same `TranslationNotConfigured` the reader had just resolved. Following the
+instruction produced a second, identical failure with nothing to explain it.
+
+`tests/unit/test_worker.py` could not catch this. It builds `Worker` itself and passes a provider
+explicitly — correct for a unit test, and exactly why the defect survived: the only broken wiring
+was the CLI's, and the CLI is the one thing those tests do not construct.
+`scripts/evidence_translation.py` also passed `provider=provider_from_env()` by hand, so the
+evidence that translation worked was evidence about a path the product did not use.
+
+The fix gives `Worker` a `provider_factory`, resolved **once per job** rather than once per
+process, and the CLI supplies one that reads the settings in force. A provider built at startup
+would pin the process to whatever the environment said when it began, which is the behaviour that
+made a file on disk the only way in. `tests/integration/test_translation_settings.py` now builds
+the worker the way the CLI does and runs a whole translation through it, so the missing wire
+cannot come back unnoticed.
+
+Two smaller defects surfaced while building this, both in the same direction — an error the reader
+could not act on:
+
+* **`TranslationRequest.scope` defaulted to `"pages"`** and then rejected a request that omitted
+  `page_indices` with `400 scope='pages' needs page_indices`. The most natural call there is,
+  `{}`, failed with a validation error naming a field the caller had no reason to know about. It
+  now defaults to `"document"`, which is what "translate this paper" means and what the reader's
+  own button already sent.
+
+* **A malformed body produced FastAPI's own 422**, whose `detail` is a *list* of error objects
+  while every refusal this API raises puts an `{"error_code", "message"}` object there. The reader
+  maps `error_code`; given a list it had nothing to map, so a request with a mistyped field name
+  was the one refusal the UI could not explain. There is now a `RequestValidationError` handler
+  answering 400 in the contract's shape, and the settings model uses `extra="forbid"` — Pydantic
+  drops unknown keys silently by default, so `{"modle": "m1"}` was accepted, stored as nothing and
+  reported as a success.
+
+## 31. The settings panel changes specification 11, at the owner's direction
+
+Specification 11 says the frontend must never receive **or send** a provider key. The reader asked
+to be able to enter a base URL, a model id and an API key in the settings panel, and a key typed
+into a panel is a key the browser sends. The two cannot both hold. The owner chose the panel.
+
+This is recorded as a deliberate deviation rather than an oversight, and the test that guarded the
+old rule was **replaced, not deleted**. It now asserts something narrower and stronger:
+
+* a secret-named field is permitted **only** in a schema reachable from a `requestBody`;
+* it must not appear in any schema a client can receive — not in a success response, not in the
+  error envelope, and not in `components.responses`;
+* it may not be `required`, because a required key would make "leave it unchanged" impossible to
+  express and editing only the model would resend the key;
+* and the write path must still exist, so the test cannot be satisfied by declaring nothing.
+
+The previous version searched `components.schemas` for forbidden *names*, which cannot tell a
+request field from a response field. The new one walks the document, resolves `$ref`s from both
+directions, and names the exact `METHOD path status` that can read a credential back. It was
+checked against a negative control — `api_key` added to `DocumentSummary` — and it failed with
+`DocumentDetail.api_key reachable from ['GET /api/v1/documents/{document_id} 200']`. A rule that
+cannot fail on the thing it forbids is not a rule.
+
+What is given up: the key now exists in a browser form, so a cross-site scripting flaw anywhere in
+this application could read what the reader typed into it. What is not given up: the key is never
+returned by any endpoint, it is stored with an `is_secret` flag that redacts it at the single place
+the table is read whole, and it is reported only as a boolean. For a single-user reader bound to
+loopback that trade was accepted knowingly.
+
 
 
 

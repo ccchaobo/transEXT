@@ -50,6 +50,17 @@ export const api = {
   health: () => request("/health"),
   translationConfiguration: () => request(`${BASE}/translation/configuration`),
 
+  /* Translation settings.  The key travels one way: the reader types it, the browser sends it
+     to this machine's own backend, and no endpoint ever sends it back.  `getTranslationSettings`
+     therefore always reports the key as a boolean. */
+  getTranslationSettings: () => request(`${BASE}/settings/translation`),
+  putTranslationSettings: (payload) =>
+    request(`${BASE}/settings/translation`, { method: "PUT", body: payload }),
+  clearTranslationSettings: () =>
+    request(`${BASE}/settings/translation`, { method: "DELETE" }),
+  testTranslationSettings: () =>
+    request(`${BASE}/settings/translation/test`, { method: "POST" }),
+
   listDocuments: () => request(`${BASE}/documents`),
   getDocument: (id) => request(`${BASE}/documents/${id}`),
   deleteDocument: (id) => request(`${BASE}/documents/${id}?confirm=true`, { method: "DELETE" }),

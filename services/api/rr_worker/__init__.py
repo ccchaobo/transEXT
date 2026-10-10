@@ -144,19 +144,40 @@ class Worker:
         *,
         database: Any = None,
         provider: Any = None,
+        provider_factory: Callable[[], Any] | None = None,
         handlers: dict[str, Handler] | None = None,
     ) -> None:
         self.settings = settings
         self.workspace = workspace
         self.queue = queue or JobQueue(lease_seconds=getattr(settings, "lease_seconds", 120))
         self.database = database
+        # A fixed ``provider`` is for tests, which inject a stub and want exactly that stub.
+        # ``provider_factory`` is for the real worker, and it exists because of a defect: the
+        # CLI constructed ``Worker(...)`` without either, so ``self.provider`` was None for the
+        # whole run and *every* translate job ended in ``TranslationNotConfigured`` even with a
+        # correct API key in the environment.  Following the 409 message's own instructions
+        # produced a second, identical failure, and nothing said why.
+        #
+        # Resolving per job rather than once at startup is the point of the factory: the reader
+        # can change the model or the endpoint in the settings panel, and the next job uses it.
+        # A provider built at startup would pin the process to whatever the environment said
+        # when the worker began, which is the behaviour that made ``.env`` the only way in.
         self.provider = provider
+        self.provider_factory = provider_factory
         self.handlers: dict[str, Handler] = {
             JobType.PARSE.value: _parse_document,
             JobType.TRANSLATE.value: _translate_document,
         }
         if handlers:
             self.handlers.update(handlers)
+
+    def resolve_provider(self) -> Any:
+        """The provider to use for the job about to run, or ``None`` when unconfigured."""
+        if self.provider is not None:
+            return self.provider
+        if self.provider_factory is None:
+            return None
+        return self.provider_factory()
 
     # -- one job ----------------------------------------------------------
 
@@ -395,7 +416,7 @@ def _translate_document(worker: Worker, session: Session, lease: LeaseInfo, job:
         return StageOutcome.cancelled()
 
     service = TranslationService(
-        worker.settings, worker.workspace, worker.queue, provider=worker.provider
+        worker.settings, worker.workspace, worker.queue, provider=worker.resolve_provider()
     )
     plan = service.plan(
         session,

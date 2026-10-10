@@ -22,6 +22,16 @@ from .translation import (
     cache_key,
     error_code_for,
 )
+from .translation_config import (
+    SETTING_PREFIX,
+    ResolvedTranslationConfig,
+    clear_translation_settings,
+    describe_translation_configuration,
+    provider_from_resolved,
+    read_translation_settings,
+    resolve_translation_config,
+    write_translation_settings,
+)
 
 __all__ = [
     "DEFAULT_DATA_DIR",
@@ -35,7 +45,9 @@ __all__ = [
     "ParseOutcome",
     "ParseService",
     "PlannedUnit",
+    "ResolvedTranslationConfig",
     "Runtime",
+    "SETTING_PREFIX",
     "Settings",
     "TranslationBudgetExceeded",
     "TranslationNotConfigured",
@@ -43,7 +55,13 @@ __all__ = [
     "TranslationRun",
     "TranslationService",
     "cache_key",
+    "clear_translation_settings",
+    "describe_translation_configuration",
     "error_code_for",
     "open_runtime",
+    "provider_from_resolved",
+    "read_translation_settings",
+    "resolve_translation_config",
     "verify",
+    "write_translation_settings",
 ]

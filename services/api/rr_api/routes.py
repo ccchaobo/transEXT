@@ -17,10 +17,10 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Body, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 
-from rr_adapters.translation import describe_configuration
+from rr_adapters.translation import TranslationConfigError
 from rr_contracts import (
     AnnotationCreate,
     AnnotationPatch,
@@ -36,7 +36,16 @@ from rr_contracts import (
     TermWire,
     TranslationRequest,
 )
-from rr_services import DocumentService, Settings, TranslationService
+from rr_services import (
+    DocumentService,
+    Settings,
+    TranslationService,
+    clear_translation_settings,
+    provider_from_resolved,
+    read_translation_settings,
+    resolve_translation_config,
+    write_translation_settings,
+)
 from rr_storage import (
     Annotation,
     Block,
@@ -290,7 +299,7 @@ def get_document(request: Request, document_id: str) -> dict:
                 "readable": revision is not None,
                 "translatable": bool(revision and summary["block_count"]),
                 "has_outline": len(reads.outline(session, revision.id)) > 1 if revision else False,
-                "translation_configured": describe_configuration()["configured"],
+                "translation_configured": resolve_translation_config(session).configured,
             },
             "source_url": f"/api/v1/documents/{document_id}/original",
         }
@@ -408,16 +417,190 @@ def get_outline(request: Request, document_id: str) -> dict:
 
 
 @router.get("/translation/configuration", tags=["translation"])
-def translation_configuration() -> dict:
+def translation_configuration(request: Request) -> dict:
     """What translation would use.  The API key is reported as a boolean and never echoed."""
-    described = describe_configuration()
+    with _session(request) as session:
+        described = resolve_translation_config(session).describe()
     described["target_languages"] = list(TARGET_LANGUAGES)
     if not described["configured"]:
         described["note"] = (
             "no translation provider is configured, so translation is unavailable.  Reading, "
-            "anchoring and export all work.  No placeholder text is ever produced."
+            "anchoring and export all work.  No placeholder text is ever produced.  Set a base "
+            "URL, a model id and an API key below; no restart is needed."
         )
     return described
+
+
+# ---------------------------------------------------------------------------
+# settings: the reader's own way in
+# ---------------------------------------------------------------------------
+
+
+class TranslationSettingsPatch(BaseModel):
+    """A partial update.  Omitted fields are left alone; an empty string clears a field."""
+
+    # ``forbid``, not the default.  Pydantic drops unknown keys silently, so a mistyped field
+    # name would be accepted, stored as nothing, and reported as a success - the reader would
+    # save "modle", see no error, and watch translation keep failing with no explanation.  A
+    # typo that appears to save is worse than an error.
+    model_config = ConfigDict(extra="forbid")
+
+    base_url: str | None = None
+    api_key: str | None = None
+    model: str | None = None
+    provider_name: str | None = None
+    timeout_seconds: float | None = None
+    max_concurrency: int | None = None
+    max_attempts: int | None = None
+    temperature: float | None = None
+
+
+#: The API's field names for the adapter's field names.  ``provider_name`` rather than ``name``
+#: because "name" next to "model" reads as another identifier for the model, and the two are
+#: different things: the name is a label shown in the UI, the model is what is sent.
+_FIELD_ALIASES = {"provider_name": "name"}
+
+
+@router.get("/settings/translation", tags=["settings"])
+def get_translation_settings(request: Request) -> dict:
+    """Everything needed to render the settings panel, and nothing secret.
+
+    Reports the effective value, the stored value separately, and where the effective one came
+    from.  The stored value is separate on purpose: when the environment is overriding a stored
+    setting, the reader must be able to see the value they typed *and* the value in force, or
+    the panel looks broken.
+    """
+    with _session(request) as session:
+        resolved = resolve_translation_config(session)
+        described = resolved.describe()
+        stored = read_translation_settings(session)
+    return {
+        "effective": described,
+        "stored": stored,
+        "env_overrides": described["env_overrides"],
+        "writable": True,
+        "fields": [
+            {
+                "field": "base_url",
+                "label": "服务地址（Base URL）",
+                "help": "服务根地址，必须包含 API 版本段，例如 https://ollama.com/v1",
+                "secret": False,
+            },
+            {
+                "field": "api_key",
+                "label": "API Key",
+                "help": "只保存在本机数据库里，接口从不回显，也不会出现在浏览器响应中",
+                "secret": True,
+            },
+            {
+                "field": "model",
+                "label": "模型 ID",
+                "help": "发送给服务端的模型名，例如 gpt-oss:120b",
+                "secret": False,
+            },
+            {
+                "field": "provider_name",
+                "label": "显示名称",
+                "help": "只是界面上的标签，不影响请求内容",
+                "secret": False,
+            },
+        ],
+    }
+
+
+@router.put("/settings/translation", tags=["settings"])
+def put_translation_settings(
+    request: Request, payload: TranslationSettingsPatch = Body(...)
+) -> dict:
+    """Store settings.  Takes effect on the next job; neither process needs restarting."""
+    changes: dict[str, str | None] = {}
+    for api_name, value in payload.model_dump(exclude_unset=True).items():
+        if value is None:
+            continue
+        changes[_FIELD_ALIASES.get(api_name, api_name)] = str(value)
+    try:
+        with _session(request) as session:
+            write_translation_settings(session, changes)
+            resolved = resolve_translation_config(session)
+            stored = read_translation_settings(session)
+    except TranslationConfigError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"error_code": ErrorCode.INVALID_REQUEST.value, "message": str(exc)},
+        ) from exc
+    return {
+        "effective": resolved.describe(),
+        "stored": stored,
+        "env_overrides": resolved.env_overrides,
+    }
+
+
+@router.delete("/settings/translation", tags=["settings"])
+def delete_translation_settings(request: Request) -> dict:
+    """Forget every stored translation setting, falling back to the environment and defaults."""
+    with _session(request) as session:
+        removed = clear_translation_settings(session)
+        resolved = resolve_translation_config(session)
+    return {"removed": removed, "effective": resolved.describe()}
+
+
+@router.post("/settings/translation/test", tags=["settings"])
+def test_translation_settings(request: Request) -> dict:
+    """Send one real request with the settings currently in force and report what came back.
+
+    This is the only way to find out whether a base URL, a model id and a key work together,
+    and it is why this endpoint exists rather than leaving the reader to guess from job
+    failures.  It sends a few tokens to the configured service - that is a real outbound
+    request, and the caller is told so in the response.
+
+    Nothing is stored, cached or recorded: a check that writes a translation would poison the
+    cache with a fake unit.
+    """
+    with _session(request) as session:
+        resolved = resolve_translation_config(session)
+    described = resolved.describe()
+    if not described["has_api_key"]:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
+                "message": (
+                    "no API key is set, so there is nothing to test.  Enter one in the "
+                    "translation settings, or set RR_TRANSLATION_API_KEY."
+                ),
+            },
+        )
+    if not described["model"]:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
+                "message": "no model id is set, so there is nothing to send.  Enter one.",
+            },
+        )
+    try:
+        provider = provider_from_resolved(resolved)
+    except TranslationConfigError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"error_code": ErrorCode.INVALID_REQUEST.value, "message": str(exc)},
+        ) from exc
+    if provider is None:  # pragma: no cover - guarded by the two checks above
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
+                "message": "translation is not configured",
+            },
+        )
+    report = provider.check()
+    report["outbound_request"] = True
+    report["note"] = (
+        "this was one real request to the configured service.  Nothing was stored.  A "
+        "successful check shows the credentials and endpoint work; it is not a translation of "
+        "any document."
+    )
+    return report
 
 
 @router.post(
@@ -447,16 +630,23 @@ def start_translation(
         document = _document(session, document_id)
         revision_id = _require_revision(session, document)
 
-        configuration = describe_configuration()
-        if not configuration["configured"]:
+        configuration = resolve_translation_config(session)
+        if not configuration.configured:
+            missing = (
+                "no API key is set"
+                if not configuration.has_api_key
+                else "no model id is set"
+            )
             raise HTTPException(
                 status_code=409,
                 detail={
                     "error_code": ErrorCode.TRANSLATION_NOT_CONFIGURED.value,
                     "message": (
-                        "no translation provider is configured.  Set RR_TRANSLATION_API_KEY (and "
-                        "RR_TRANSLATION_BASE_URL if the default endpoint is wrong) and restart "
-                        "the server.  No placeholder or mock translation is produced."
+                        f"no translation provider is configured: {missing}.  Open the "
+                        "translation settings and fill it in, or set RR_TRANSLATION_API_KEY "
+                        "and RR_TRANSLATION_MODEL.  No placeholder or mock translation is "
+                        "produced, because a mock would make an unverified pipeline look "
+                        "finished."
                     ),
                 },
             )

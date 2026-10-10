@@ -11,6 +11,7 @@
   <a class="brand" href="#/" id="brand">科研文献对照阅读器</a>
   <nav class="topbar-actions">
     <span id="translation-badge" class="badge badge-unknown" title="翻译服务状态">翻译：检查中</span>
+    <button id="settings-button" class="button" type="button" title="配置翻译服务">翻译设置</button>
     <label class="field">
       目标语言
       <select id="target-language">
@@ -31,6 +32,25 @@
 </header>
 
 <div id="banner" class="banner" hidden></div>
+
+<dialog id="settings-dialog" class="settings-dialog">
+  <h2>翻译设置</h2>
+  <p class="settings-intro">
+    在这里填的服务地址、模型和 API Key 保存在本机数据库里，<strong>两个进程都不需要重启</strong>，
+    下一个任务就会生效。API Key 只会从浏览器发到本机后端一次，任何接口都不会把它读回来。
+  </p>
+  <div id="settings-status" class="settings-status"></div>
+  <div id="settings-body" class="settings-body"></div>
+  <p id="settings-message" class="settings-message" hidden></p>
+  <div class="settings-actions">
+    <button id="settings-save" class="button primary" type="button">保存</button>
+    <button id="settings-test" class="button" type="button" title="向配置的服务地址发一次真实请求">
+      测试连接
+    </button>
+    <button id="settings-clear" class="button danger" type="button">清除面板设置</button>
+    <button id="settings-close" class="button" type="button">关闭</button>
+  </div>
+</dialog>
 
 <main id="view" class="view"></main>
 

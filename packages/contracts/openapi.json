@@ -2272,7 +2272,7 @@
         "description": "Request translation for pages, blocks or the whole document.",
         "properties": {
           "scope": {
-            "default": "pages",
+            "default": "document",
             "enum": [
               "document",
               "pages",
@@ -2784,6 +2784,102 @@
           "provider"
         ],
         "title": "TranslationPlanView"
+      },
+      "TranslationSettingsPatch": {
+        "properties": {
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Url"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "timeout_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeout Seconds"
+          },
+          "max_concurrency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Concurrency"
+          },
+          "max_attempts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Attempts"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "TranslationSettingsPatch",
+        "description": "A partial update.  Omitted fields are left alone; an empty string clears a field."
       },
       "UploadAccepted": {
         "properties": {
@@ -3339,6 +3435,118 @@
         }
       }
     },
+    "/api/v1/settings/translation": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Translation Settings",
+        "description": "Everything needed to render the settings panel, and nothing secret.\n\nReports the effective value, the stored value separately, and where the effective one came\nfrom.  The stored value is separate on purpose: when the environment is overriding a stored\nsetting, the reader must be able to see the value they typed *and* the value in force, or\nthe panel looks broken.",
+        "operationId": "get_translation_settings_api_v1_settings_translation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Translation Settings Api V1 Settings Translation Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Put Translation Settings",
+        "description": "Store settings.  Takes effect on the next job; neither process needs restarting.",
+        "operationId": "put_translation_settings_api_v1_settings_translation_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslationSettingsPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Put Translation Settings Api V1 Settings Translation Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Delete Translation Settings",
+        "description": "Forget every stored translation setting, falling back to the environment and defaults.",
+        "operationId": "delete_translation_settings_api_v1_settings_translation_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Delete Translation Settings Api V1 Settings Translation Delete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings/translation/test": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Test Translation Settings",
+        "description": "Send one real request with the settings currently in force and report what came back.\n\nThis is the only way to find out whether a base URL, a model id and a key work together,\nand it is why this endpoint exists rather than leaving the reader to guess from job\nfailures.  It sends a few tokens to the configured service - that is a real outbound\nrequest, and the caller is told so in the response.\n\nNothing is stored, cached or recorded: a check that writes a translation would poison the\ncache with a fake unit.",
+        "operationId": "test_translation_settings_api_v1_settings_translation_test_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Test Translation Settings Api V1 Settings Translation Test Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/documents/{document_id}/translate": {
       "post": {
         "tags": [
@@ -3364,7 +3572,7 @@
               "schema": {
                 "$ref": "#/components/schemas/TranslationRequest",
                 "default": {
-                  "scope": "pages",
+                  "scope": "document",
                   "target_language": "zh",
                   "force": false,
                   "preserve_human_edits": true
@@ -4418,7 +4626,7 @@
     "implemented": [
       "the component schemas below, enforced by tests",
       "the error taxonomy and its HTTP status mapping",
-      "22 path objects, served by the FastAPI application",
+      "24 path objects, served by the FastAPI application",
       "import, parse, page images, outline, annotations, terms, reading state, jobs and the bilingual Markdown export"
     ],
     "not_yet_implemented": [

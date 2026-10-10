@@ -17,6 +17,7 @@
       block has no content" rather than "this block has not been translated". */
 
 import { api, ApiError } from "./api.js";
+import { createSettingsPanel } from "./settings.js";
 
 const state = {
   route: { name: "library" },
@@ -723,7 +724,20 @@ function setTranslationBadge(configuration) {
   } else {
     badge.className = "badge badge-warn";
     badge.textContent = "翻译：未配置";
-    badge.title = "设置 RR_TRANSLATION_API_KEY 后重启服务即可启用翻译。阅读、锚定与导出不受影响。";
+    badge.title = "点“翻译设置”填入服务地址、模型和 API Key。不需要重启服务，阅读、锚定与导出本来就不受影响。";
+  }
+}
+
+/** Re-read the configuration and repaint the badge.  Called after the settings panel saves, so
+ *  the topbar cannot keep saying "未配置" while the service is configured. */
+async function refreshTranslationStatus() {
+  try {
+    const configuration = await api.translationConfiguration();
+    state.translation = configuration;
+    setTranslationBadge(configuration);
+  } catch {
+    els.badge.className = "badge badge-unknown";
+    els.badge.textContent = "翻译：无法确认";
   }
 }
 
@@ -767,6 +781,10 @@ async function boot() {
     els.badge.className = "badge badge-unknown";
     els.badge.textContent = "翻译：无法确认";
   }
+
+  // The settings panel owns the translation configuration.  Saving there must repaint the
+  // topbar, or the reader would configure the service and still be told it is 未配置.
+  createSettingsPanel({ onChanged: refreshTranslationStatus });
 
   window.addEventListener("hashchange", () => { route(); });
   await route();

@@ -238,3 +238,48 @@ body {
   .panes { flex-direction: column; }
   .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
 }
+
+/* --------------------------------------------------------------- settings panel */
+
+.settings-dialog {
+  width: min(620px, 92vw);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+  color: var(--ink);
+  background: var(--panel);
+}
+.settings-dialog::backdrop { background: rgba(16, 24, 40, .35); }
+.settings-dialog h2 { margin: 0 0 6px; font-size: 16px; }
+.settings-intro { margin: 0 0 14px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.settings-status {
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: 10px 12px; margin-bottom: 14px; background: var(--bg);
+}
+.settings-row { display: flex; gap: 12px; font-size: 12.5px; padding: 2px 0; }
+.settings-key { width: 120px; color: var(--muted); flex: none; }
+.settings-value { font-weight: 600; }
+.settings-warning {
+  margin: 8px 0 0; font-size: 12.5px; line-height: 1.6;
+  color: var(--warn); background: var(--warn-soft, #fef3c7);
+  border: 1px solid var(--warn-line, #fcd34d); border-radius: 6px; padding: 8px 10px;
+}
+.settings-field { margin-bottom: 12px; }
+.settings-label { display: block; font-size: 12.5px; color: var(--muted); }
+.settings-input {
+  display: block; width: 100%; margin-top: 4px; box-sizing: border-box;
+  font: inherit; font-size: 13px; padding: 6px 9px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel); color: var(--ink);
+}
+.settings-input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.settings-help { margin: 4px 0 0; font-size: 11.5px; color: var(--muted); line-height: 1.55; }
+.settings-message {
+  margin: 4px 0 0; font-size: 12.5px; line-height: 1.6;
+  white-space: pre-wrap; border-radius: 6px; padding: 8px 10px;
+}
+.settings-message.ok { color: var(--ok); background: var(--ok-soft); }
+.settings-message.error { color: var(--bad); background: var(--bad-soft); }
+.settings-message.info { color: var(--muted); background: var(--bg); }
+.settings-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }

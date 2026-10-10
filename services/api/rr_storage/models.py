@@ -452,5 +452,30 @@ class JobEvent(Base):
     job: Mapped[Job] = relationship(back_populates="events")
 
 
+class Setting(Base):
+    """One stored configuration value, written by the reader rather than by the environment.
+
+    One row per key rather than one row per feature, so adding a knob later does not need a
+    migration, and so the same store can hold non-translation settings when they arrive.
+
+    It lives in the database rather than in ``.env`` for one decisive reason: **the worker
+    process must see a change without being restarted.**  ``.env`` is read once at startup, so
+    a key written to it is invisible to a worker that is already running - the reader would
+    configure a key, see the reader still refuse to translate, and have no way to tell why.
+    Both processes open this database, so both see the value on the next job.
+    """
+
+    __tablename__ = "settings"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[str] = mapped_column(Text, default="")
+    #: Set for values that must never be echoed back.  A flag rather than a naming convention,
+    #: so a secret added later cannot leak by being forgotten in a redaction list.
+    is_secret: Mapped[bool] = mapped_column(Boolean, default=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+
+
 def dumps(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, default=_json_default)
