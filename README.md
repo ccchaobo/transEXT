@@ -44,7 +44,7 @@ that demonstrates it, and every one of them was run to produce the results in th
 | Corpus | 35 labelled samples with draw-time ground truth | `benchmarks/rr_m0/corpus_generator.py`, `benchmarks/corpus/manifest.json` |
 | HTTP API | 22 routes over the frozen contract; loopback-only, same-origin guard, refusals with reasons | `tests/integration/test_api.py`, `scripts/verify_live_acceptance.py` |
 | Worker | Separate process; leased, fenced, cancellable jobs; per-stage and per-unit status | `tests/unit/test_worker.py`, `scripts/smoke_storage.py` |
-| Reader | Server-rendered page images with normalised-bbox overlays; five view modes; linked scrolling; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py` |
+| Reader | Server-rendered page images with normalised-bbox overlays; five view modes; a toolbar that no view mode can hide; linked scrolling; per-block re-translation; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py`, `scripts/verify_checks_can_fail.py` |
 
 **What is PENDING, and why.** These cannot be closed in this environment, and are recorded rather
 than worked around:
@@ -57,8 +57,11 @@ than worked around:
 * **Cost attribution.** The service reports tokens per call; the job records `usage: {}`, so the
   cost of a document cannot be stated. The pre-flight count of blocks to send is now correct.
 * **The new browser features are unexecuted.** There is no browser automation here, so the overlay
-  view and the linked scrolling have never been run on a page. See
-  [limitations §34](docs/limitations.md).
+  view and the linked scrolling have never been run on a page. Everything about them that can be
+  checked without a browser is asserted in `verify_frontend_contract.py` §[5], and each of those
+  assertions has been reverted and confirmed to fail. What cannot be checked is whether they are
+  *usable* — and the first round of that came back from the person using it, as a bug report. See
+  [limitations §34](docs/limitations.md), [§36](docs/limitations.md) and [§37](docs/limitations.md).
 * **A real-world document corpus.** Every sample is authored by this repository's generator, so
   the measured layout and OCR figures describe this corpus, not published papers. See
   [limitations §1](docs/limitations.md).
@@ -190,21 +193,36 @@ be right. Snapping to the paragraph nearest the top of the viewport is the only 
 survives that.
 
 **译文覆盖** removes the correspondence problem instead of managing it. The translated text is
-drawn into the area the original occupied, so there is only one place to look. Four things it
-deliberately does not pretend:
+drawn into the area the original occupied, so there is only one place to look. It is deliberately
+plain: no border, no scrollbar, no badge — just the translation where the original was. Four things
+it does not pretend:
 
 * It is a **reading view, not an export**, and it is not a translated file. Filling an English
   paragraph with Chinese is a layout problem this does not attempt, and the bilingual Markdown
   export does not come from here.
 * Formulas, figures and tables are **never covered** — the classifier marks them and they stay
   verbatim.
-* Where the translation is longer than the space the original used (English into German, French or
-  Russian grows; Chinese into English grows), the panel **scrolls and shows an 溢出 badge**. The
-  type is never shrunk to fit, because text shrunk until it fits is text nobody can read, which is
-  the failure this view exists to avoid.
+* Where the translation is longer than the space the original used, the panel **grows downward and
+  may cover the paragraph below**. The type is never shrunk to fit, because text shrunk until it
+  fits is text nobody can read, which is the failure this view exists to avoid — and it is not put
+  in a scroll box, because a scroll box around every paragraph stops the page reading as a page.
+  In this direction (English into Chinese) the translation is almost always shorter, so this is
+  rare. The panel's tooltip says so when it happens.
 * The panel's area is the union of the block's line boxes, which is the paragraph's own area in
-  almost every case but not by construction. Hovering a panel lets the original show through, so
-  you can always check whether it is covering something that is not its own.
+  almost every case but not by construction. Hovering a panel drops its background to 40% so the
+  original shows through, and you can always check whether it is covering something that is not
+  its own.
+
+Every control — 上一页 / 下一页, the page label, the view selector, 联动, 重新翻译本块 and 翻译全文 —
+sits in a toolbar **above both panes**, not inside either one. That is not cosmetic: those controls
+used to live in the translation pane's header, and choosing 译文覆盖 or 仅原文 hides that pane, so
+the control that gets you back out was hidden by the mode it had just switched to. See
+[limitations §36](docs/limitations.md).
+
+**重新翻译本块** sends one paragraph back to the service and replaces what is stored for it, using
+`scope: "blocks"` with `force`. It acts on whatever you last clicked, so it works in the overlay and
+single-pane modes too, where there is no card to put a button on. A machine translation that is
+wrong is not a reason to re-translate a page.
 
 A block with no translation is left showing its original, marked so you can tell "not translated"
 from "translated to something empty".
@@ -299,31 +317,35 @@ Measured by `python -m benchmarks.rr_m0.perf_harness` over the 24 normal samples
 at the calibrated 250 dpi. Full data in
 [`benchmarks/out/perf.json`](benchmarks/out/perf.json).
 
-| Stage | n | P50 | P95 | Max | Threshold | Verdict |
-| --- | --- | --- | --- | --- | --- | --- |
-| Open a PDF | 14 | 1.7 ms | 2.3 ms | 2.7 ms | — | — |
-| Extract text, one page | 31 | 2.3 ms | 5.5 ms | 7.5 ms | — | — |
-| First-screen preview render | 14 | 46.6 ms | 218.8 ms | 322.3 ms | ≤ 3 s | **PASS** |
-| Page-turn preview render | 48 | 40.5 ms | 215.6 ms | 293.6 ms | ≤ 300 ms | **PASS** |
-| Scan detection, one page | 31 | 1.3 ms | 4.1 ms | 4.4 ms | — | — |
-| DOCX conversion | 6 | 66.9 ms | 160.2 ms | 160.2 ms | — | — |
-| OCR engine load | 10 | 182.3 ms | 673.4 ms | 673.4 ms | — | — |
-| OCR render, one page | 13 | 171.8 ms | 181.6 ms | 184.0 ms | — | — |
-| **OCR recognition, one page** | 17 | **7.5 s** | **11.0 s** | **11.0 s** | — | **not interactive** |
+| Stage | n | Typical (P50 → P95) | Threshold | Verdict |
+| --- | --- | --- | --- | --- |
+| Open a PDF | 14 | ~1.7 → ~2 ms | — | — |
+| Extract text, one page | 31 | ~2.4 → ~6 ms | — | — |
+| First-screen preview render | 14 | ~46 → ~215 ms | ≤ 3 s | **PASS**, ~14× margin |
+| Page-turn preview render | 48 | ~40 → ~210 ms | ≤ 300 ms | **PASS**, ~1.4× margin |
+| Scan detection, one page | 31 | ~1.2 → ~4 ms | — | — |
+| DOCX conversion | 6 | ~67 → ~155 ms | — | — |
+| OCR engine load | 10 | ~185 → ~665 ms | — | — |
+| OCR render, one page | 13 | ~170 → ~180 ms | — | — |
+| **OCR recognition, one page** | 17 | **~7.4 s → ~10.4 s** | — | **not interactive** |
 
-These are one run's numbers, from the artifact committed alongside this file
-([`benchmarks/out/perf.json`](benchmarks/out/perf.json)), so the table and the artifact always
-agree at any given commit. **They are not stable to the millisecond.** Across the runs made while
-building this, the first-screen P95 was seen at 211.2, 212.6, 212.7, 218.8, 226.9, 230.9 and
-235.0 ms — a spread of about ±5% around the middle, with individual maxima moving further
-(282.6 to 322.3 ms). Treat the P95s as accurate to roughly ±10%; they are reported to the
-millisecond only because that is what the harness printed.
+**These are rounded on purpose.** The exact P50 / P95 / max for every stage is in
+[`benchmarks/out/perf.json`](benchmarks/out/perf.json), which the harness rewrites on every run;
+the figures above are the shape of it, not a single run's output. The reason is that the numbers
+move more than they look like they should: across runs of identical code the first-screen P95 was
+observed at 211.2, 212.6, 212.7, 213.3, 218.8, 226.9, 230.9 and 235.0 ms, and its maxima between
+274.1 and 322.3 ms. A table reported to the millisecond went stale every time the harness ran, and
+chasing it was both futile and a temptation to re-measure until the numbers looked good. Read the
+artifact when the third digit matters.
 
-The **verdicts** are not affected. Every run passed every threshold, and the margins are large:
-the first screen has a factor of 14 in hand against its 3 s budget, and the page turn has 1.4×
-against its 300 ms one. Re-running the harness rewrites the artifact, so the table above will be
-stale afterwards — that is expected, and the fix is to re-read the artifact rather than to
-re-measure until the numbers look better.
+The **verdicts** do not move. Every run passed every threshold, and the margins are large: the
+first screen has a factor of ~14 in hand against its 3 s budget, and the page turn ~1.4× against
+its 300 ms one. No threshold has been adjusted to make a measurement pass.
+
+Peak working set for the whole run: **~1740 MiB**, a batch figure across many documents rather than
+a per-document footprint ([limitations §14](docs/limitations.md)). This one is stable — 1739.9,
+1740, 1741.1 and 1742.4 MiB across the runs — except when the harness was measuring at the
+rejected 300 dpi, where it read 2055 MiB.
 
 **The harness must be run at the calibrated OCR resolution**, and this is a correction rather
 than a description. `--ocr-dpi` used to default to a literal 300, which is the value the OCR
@@ -332,11 +354,6 @@ adapter's own calibration rejected: at 300 dpi recognition is slower *and* sligh
 figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that does not ship. It now
 defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
 measurement cannot drift from it.
-
-Peak working set for the whole run: 1741 MiB, a batch figure across many documents rather than a
-per-document footprint ([limitations §14](docs/limitations.md)). This one is stable — 1739.9,
-1740, 1741.1 and 1742.4 MiB across the runs — except when the harness was measuring at the
-rejected 300 dpi, where it read 2055 MiB.
 
 OCR recognition is three orders of magnitude outside the interactive targets, and
 no tuning changes that. The reader therefore shows the page image first and fills

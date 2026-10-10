@@ -220,7 +220,135 @@ def _check(data_dir: Path) -> int:
         failures.append("no block on any page would be covered, so the check proved nothing")
         print("  FAIL no block would be covered, so the check proved nothing")
 
-    print("\n[5] the linked scrolling switch is stored, not just accepted")
+    print("\n[5] no control can be hidden by the mode it switches away from")
+
+    # -- structural invariants that no payload can show -----------------------------------------
+    #
+    # These are the checks for the defect I put in myself: the view-mode selector lived in the
+    # translation pane's head, and choosing "译文覆盖" or "仅原文" hides that pane - so the control
+    # that gets you back out was hidden by the mode it had just switched to, and the reader was
+    # stuck with no exit.  "仅译文" had the same defect with the page buttons.  Nothing above would
+    # have caught it, because every field it reads does exist and every request it makes succeeds;
+    # the bug is in where the elements sit.  So the invariants are stated directly.
+    css_text = (WEB_ROOT / "styles.css").read_text(encoding="utf-8")
+
+    def function_body(name: str) -> str:
+        """The text of one top-level `function name(...)` in app.js, braces balanced."""
+        start = source_text.index(f"function {name}(")
+        depth = 0
+        for position in range(start, len(source_text)):
+            if source_text[position] == "{":
+                depth += 1
+            elif source_text[position] == "}":
+                depth -= 1
+                if depth == 0:
+                    return source_text[start : position + 1]
+        raise AssertionError(f"function {name} is not brace-balanced")
+
+    toolbar_body = function_body("buildToolbar")
+    panes_body = function_body("buildPanes")
+
+    # Every control, in the toolbar and not in a pane.  The ids are the ones looked up by
+    # `getElementById` somewhere else in the file, which is what makes them controls.
+    controls = ("page-label", "view-mode", "link-scrolling", "retranslate-block", "translate-button")
+    misplaced = [c for c in controls if f'"{c}"' not in toolbar_body]
+    buried = [c for c in controls if f'"{c}"' in panes_body]
+    if misplaced:
+        failures.append(f"controls not reachable in every mode, missing from the toolbar: {misplaced}")
+        print(f"  FAIL {len(misplaced)} control(s) are not in the toolbar: {misplaced}")
+    elif buried:
+        failures.append(f"controls built inside a pane, where a mode can hide them: {buried}")
+        print(f"  FAIL {len(buried)} control(s) are built inside a pane: {buried}")
+    else:
+        print(f"  ok   all {len(controls)} controls are built in the toolbar, none inside a pane")
+
+    # ...and the toolbar really is outside `.panes`, which is the only reason the above is enough.
+    if not re.search(
+        r"main\.appendChild\(buildToolbar\([^)]*\)\);\s*\n\s*main\.appendChild\(buildPanes\(",
+        source_text,
+    ):
+        failures.append("the toolbar may not be outside .panes, so a mode can still hide it")
+        print("  FAIL the toolbar is not built outside .panes")
+    else:
+        print("  ok   the toolbar is built outside .panes")
+
+    # A mode rule that touches the toolbar, or the column containing it, would restore the trap.
+    # These hide three panes in a single rule with three selectors, so this looks for the
+    # combination anywhere inside one selector list rather than trying to parse rules apart.
+    hiding_modes = [
+        mode
+        for mode in ("overlay", "source_only", "target_only")
+        if re.search(rf'\.reader\[data-mode="{mode}"\][^{{}}]*\.pane-(source|target)', css_text)
+    ]
+    trap = re.findall(r'\.reader\[data-mode="[a-z_]+"\][^{}]*\.(reader-bar|reader-main)', css_text)
+    if len(hiding_modes) < 3:
+        failures.append(f"only {hiding_modes} hide a pane, so the checks above proved nothing")
+        print(f"  FAIL only {hiding_modes} hide a pane, so these checks proved nothing")
+    elif trap:
+        failures.append(f"a view mode styles the toolbar or its column: {sorted(set(trap))}")
+        print(f"  FAIL a mode rule touches the toolbar: {sorted(set(trap))}")
+    else:
+        print(
+            "  ok   no mode rule touches the toolbar;"
+            f" {len(hiding_modes)} modes hide a pane and none takes the controls with it"
+        )
+
+    # The pane has to be able to scroll.  `min-height: 0` is what lets a flex item shrink below its
+    # content; without it the body grows past the pane and the pane's own `overflow: hidden` cuts
+    # the bottom of a long translation off with no way to reach it.
+    if not re.search(r"\.pane-body\s*\{[^}]*min-height:\s*0", css_text):
+        failures.append("the pane body cannot shrink, so a long translation cannot be scrolled to")
+        print("  FAIL .pane-body has no min-height: 0, so it cannot scroll")
+    else:
+        print("  ok   the pane body can shrink below its content, so it scrolls")
+
+    # The overlay is drawn where the original was, and is not a widget: no border, no scrollbar,
+    # a minimum height rather than a fixed one.  The reader asked for that after using the version
+    # that had a box and a scrollbar around every paragraph.
+    overlay_css = re.search(r"\.overlay-panel\s*\{([^}]*)\}", css_text)
+    if overlay_css is None:
+        failures.append("the overlay panel has no style rule at all")
+        print("  FAIL .overlay-panel is not styled")
+    else:
+        block = overlay_css.group(1)
+        # Read the declarations rather than searching the text: `border: 0` is the *absence* of a
+        # border and a plain substring test for "border:" flagged it, which is how this check
+        # first reported a failure that was not there.
+        boxed = []
+        for prop, value in re.findall(r"([a-z-]+)\s*:\s*([^;]+)", block):
+            value = value.strip()
+            if prop == "overflow" and value not in ("visible", "initial"):
+                boxed.append(f"overflow: {value}")
+            elif prop == "border" and re.search(r"\b[1-9]\d*(\.\d+)?px", value):
+                boxed.append(f"border: {value}")
+            elif prop == "border-radius" and value not in ("0", "0px"):
+                boxed.append(f"border-radius: {value}")
+        if boxed:
+            failures.append(f"the overlay panel is still a box: {boxed}")
+            print(f"  FAIL the overlay panel is still a box: {boxed}")
+        elif not re.search(r"panel\.style\.minHeight", source_text) or re.search(
+            r"panel\.style\.height", source_text
+        ):
+            failures.append("the overlay panel is not sized by min-height alone")
+            print("  FAIL the overlay panel has a fixed height or no minimum")
+        elif '"overlay-overflow"' in source_text or "overlay-overflow" in css_text:
+            failures.append("the overlay still draws an overflow badge")
+            print("  FAIL the overflow badge is still there")
+        else:
+            text = " ".join(block.split())
+            print(f"  ok   the overlay panel is plain text in place ({text[:58]}...)")
+
+    # Re-translating one block: the API has taken `scope: "blocks"` with `force` since it was
+    # written and nothing ever called it, so the call site is the thing to assert.
+    if not re.search(
+        r'scope:\s*"blocks"[^}]*force:\s*true', source_text, re.DOTALL
+    ):
+        failures.append("nothing asks for a single block to be re-translated")
+        print("  FAIL no call re-translates one block")
+    else:
+        print("  ok   a single block can be re-translated, forcing the call")
+
+    print("\n[6] the linked scrolling switch is stored, not just accepted")
     # `link_scrolling` was written on every page turn and read by nothing, so the two panes never
     # followed each other.  Now that a control writes it and the reader obeys it, it has to
     # actually persist - otherwise the checkbox silently does nothing on the next visit.
@@ -260,7 +388,7 @@ def _check(data_dir: Path) -> int:
     annotations = client.get(f"/api/v1/documents/{document_id}/annotations").json()
     check("annotation listing", annotations, ["annotations", "needs_relocation"])
 
-    print("\n[6] the pages the frontend requests must exist")
+    print("\n[7] the pages the frontend requests must exist")
     for index in range(detail["page_count"] or 0):
         for kind in ("preview", "thumbnail"):
             response = client.get(f"/api/v1/documents/{document_id}/pages/{index}/{kind}.png")
@@ -269,7 +397,7 @@ def _check(data_dir: Path) -> int:
                 failures.append(f"{kind}.png page {index}: HTTP {response.status_code}")
             print(f"  {status} pages/{index}/{kind}.png  {len(response.content)} bytes")
 
-    print("\n[7] static assets the browser will fetch")
+    print("\n[8] static assets the browser will fetch")
     # Derived from the module graph rather than listed by hand, because a hand-written list is
     # exactly how a new module goes unchecked: `settings.js` was added and fetched by
     # `app.js`, and a missing one would have broken the page with no failing test - a 404 on an

@@ -210,7 +210,16 @@ async function openReader(documentId) {
   reader.dataset.mode = (saved.reading_state && saved.reading_state.view_mode) || "side_by_side";
   state.linkScrolling = !saved.reading_state || saved.reading_state.link_scrolling !== false;
   reader.appendChild(buildSidebar(doc, outlinePayload));
-  reader.appendChild(buildPanes(doc, reader.dataset.mode));
+
+  // The toolbar sits outside both panes, and it has to.  It used to live in the translation pane's
+  // head, which meant that choosing "译文覆盖" or "仅原文" - modes that hide that pane - hid the
+  // control that gets you back out, and the reader was stuck in a mode with no exit.  "仅译文" had
+  // the same defect with the page buttons: they were in the source pane.  Controls that act on one
+  // pane belong to neither pane.
+  const main = el("div", "reader-main");
+  main.appendChild(buildToolbar(doc, reader.dataset.mode));
+  main.appendChild(buildPanes(doc, reader.dataset.mode));
+  reader.appendChild(main);
   els.view.appendChild(reader);
 
   await loadPage(state.pageIndex);
@@ -299,11 +308,6 @@ function buildPanes(doc, viewMode) {
   const source = el("section", "pane pane-source");
   const sourceHead = el("div", "pane-head");
   sourceHead.appendChild(el("strong", null, "原文"));
-  const sourceSpacer = el("span", "spacer");
-  sourceHead.appendChild(sourceSpacer);
-  const pageLabel = el("span", null, "…");
-  pageLabel.id = "page-label";
-  sourceHead.appendChild(pageLabel);
   source.appendChild(sourceHead);
 
   const sourceBody = el("div", "pane-body");
@@ -314,16 +318,40 @@ function buildPanes(doc, viewMode) {
   const target = el("section", "pane pane-target");
   const targetHead = el("div", "pane-head");
   targetHead.appendChild(el("strong", null, "译文"));
-  targetHead.appendChild(el("span", "spacer"));
+  target.appendChild(targetHead);
+
+  const targetBody = el("div", "pane-body");
+  targetBody.id = "target-body";
+  target.appendChild(targetBody);
+
+  panes.appendChild(source);
+  panes.appendChild(target);
+  linkPanes(sourceBody, targetBody);
+  return panes;
+}
+
+/** The controls that belong to the reader rather than to either pane.
+ *
+ *  Everything here stays reachable in every view mode, which is the property the previous
+ *  arrangement lacked.
+ */
+function buildToolbar(doc, viewMode) {
+  const bar = el("div", "reader-bar");
 
   const prev = el("button", "button", "上一页");
   prev.addEventListener("click", () => gotoPage(state.pageIndex - 1));
   const next = el("button", "button", "下一页");
   next.addEventListener("click", () => gotoPage(state.pageIndex + 1));
-  targetHead.appendChild(prev);
-  targetHead.appendChild(next);
+  const pageLabel = el("span", "bar-label", "…");
+  pageLabel.id = "page-label";
+  const nav = el("div", "bar-group");
+  nav.appendChild(prev);
+  nav.appendChild(pageLabel);
+  nav.appendChild(next);
+  bar.appendChild(nav);
 
   const mode = el("select");
+  mode.id = "view-mode";
   for (const [value, label] of [
     ["side_by_side", "左右对照"], ["stacked", "上下对照"], ["overlay", "译文覆盖"],
     ["source_only", "仅原文"], ["target_only", "仅译文"],
@@ -344,7 +372,7 @@ function buildPanes(doc, viewMode) {
       link_scrolling: state.linkScrolling,
     }).catch(() => {});
   });
-  targetHead.appendChild(mode);
+  bar.appendChild(labelled("视图", mode));
 
   // The switch for `link_scrolling`.  It was stored and round-tripped through the API while
   // nothing read it; giving it a control is what makes the stored value mean something.  Both
@@ -366,22 +394,32 @@ function buildPanes(doc, viewMode) {
   });
   linkLabel.appendChild(linkBox);
   linkLabel.appendChild(document.createTextNode("联动"));
-  targetHead.appendChild(linkLabel);
+  bar.appendChild(linkLabel);
+
+  // Re-translating one block.  The API has accepted `scope: "blocks"` with `force` since the
+  // beginning and nothing ever called it.  It acts on the selection, so it also works in the
+  // overlay and single-pane modes, where there is no card to put a button on.
+  const again = el("button", "button", "重新翻译本块");
+  again.id = "retranslate-block";
+  again.disabled = true;
+  again.title = "先点一个段落（左侧原文的框，或右侧译文的卡片），再按这里";
+  again.addEventListener("click", () => retranslateBlock(doc.id, state.selectedBlockId));
+  bar.appendChild(again);
 
   const translateButton = el("button", "button primary", "翻译全文");
   translateButton.id = "translate-button";
   translateButton.addEventListener("click", () => startTranslation(doc.id));
-  targetHead.appendChild(translateButton);
+  bar.appendChild(translateButton);
 
-  target.appendChild(targetHead);
-  const targetBody = el("div", "pane-body");
-  targetBody.id = "target-body";
-  target.appendChild(targetBody);
+  return bar;
+}
 
-  panes.appendChild(source);
-  panes.appendChild(target);
-  linkPanes(sourceBody, targetBody);
-  return panes;
+/** A labelled control, so the toolbar reads as labels rather than as a row of unlabelled widgets. */
+function labelled(text, control) {
+  const wrapper = el("label", "bar-field");
+  wrapper.appendChild(el("span", "bar-label", text));
+  wrapper.appendChild(control);
+  return wrapper;
 }
 
 /* ------------------------------------------------------------------ page load */
@@ -419,7 +457,10 @@ async function loadPage(index) {
     page_index: index,
     view_mode: document.querySelector(".reader").dataset.mode,
     zoom: 1,
-    link_scrolling: true,
+    // It said `true` here for every page turn, which quietly switched the reader's own choice of
+    // "联动" back on: turning the checkbox off lasted until the next page.  The stored value is a
+    // preference, not a per-page decision.
+    link_scrolling: state.linkScrolling,
   }).catch(() => {});
 }
 
@@ -574,7 +615,10 @@ function renderOverlay(payload, shell) {
     panel.style.left = `${x0 * 100}%`;
     panel.style.top = `${y0 * 100}%`;
     panel.style.width = `${(x1 - x0) * 100}%`;
-    panel.style.height = `${(y1 - y0) * 100}%`;
+    // Only a minimum.  The original must be covered, so the panel is never shorter than the space
+    // it is replacing; if the translation needs more room it takes it, and the overflow is
+    // reported on the panel's tooltip rather than by a scrollbar or a badge.
+    panel.style.minHeight = `${(y1 - y0) * 100}%`;
     panel.dataset.blockId = block.id;
     panel.title = `${blockLabel(block)}：译文覆盖原文。悬停可看到下面的原文。`;
 
@@ -586,14 +630,6 @@ function renderOverlay(payload, shell) {
       panel.classList.add("is-stale");
       text.title = "原文在该译文生成后发生过变化，译文可能已过期。";
     }
-
-    // The overflow badge.  A translated paragraph that does not fit is the normal case in the
-    // other direction - English into German, French or Russian grows - and it must be *visible*.
-    // Shrinking the type until it fits would produce text nobody can read, which is the failure
-    // this view exists to avoid; silently clipping it would be worse, because it would look fine.
-    const badge = el("span", "overlay-overflow", "溢出");
-    badge.title = "译文比原文的位置长，框内可以滚动查看其余部分";
-    panel.appendChild(badge);
 
     panel.addEventListener("mouseenter", () => {
       panel.classList.add("is-peeking");
@@ -612,15 +648,23 @@ function renderOverlay(payload, shell) {
   measureOverflow(shell);
 }
 
-/** Flag the panels whose text does not fit, and re-flag them when the window changes size. */
+/** Note, on the panel's own tooltip, the panels whose translation needed more room than the
+ *  original had.  Nothing is drawn for it and nothing scrolls: the reader asked for the text to
+ *  be put where the original was, so when it does not fit it is allowed to spill and the fact is
+ *  recorded where a reader who wonders why can find it.  Silently clipping would be worse, because
+ *  a clipped paragraph looks like a complete one.
+ */
 function measureOverflow(shell) {
   const measure = () => {
     for (const panel of state.overlayPanels) {
       if (!panel.isConnected) continue;
       const text = panel.firstElementChild;
       if (!text) continue;
-      const overflows = text.scrollHeight > text.clientHeight + 1;
-      panel.classList.toggle("is-overflowing", overflows);
+      const overflows = text.getBoundingClientRect().height > panel.clientHeight + 1;
+      if (overflows) {
+        panel.dataset.overflowing = "1";
+        panel.title = `${panel.title.replace(/（译文超出原文位置.*?）/, "")}（译文超出原文位置，已向下延伸，可能盖住下一段）`;
+      }
     }
   };
   // Twice: once now, and once after layout has settled.  Container queries mean the font size is
@@ -640,6 +684,7 @@ function renderTarget(payload) {
   const body = document.getElementById("target-body");
   body.innerHTML = "";
   state.cards = new Map();
+  const documentId = payload.document_id;
 
   for (const block of payload.blocks) {
     const card = el("article", "card");
@@ -705,6 +750,19 @@ function renderTarget(payload) {
         } catch (error) { reportError(error); }
       });
       card.appendChild(edit);
+
+      // A machine translation that is wrong is not a reason to re-translate a whole page.  This is
+      // the same action as the toolbar button, given a home on the card it applies to.
+      const again = el("button", "button", "重新翻译");
+      again.style.marginTop = "6px";
+      again.style.marginLeft = "6px";
+      again.title = "丢掉这一段已有的译文，重新向服务请求一次";
+      again.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectBlock(block.id, { scroll: false, scrollOther: false });
+        retranslateBlock(documentId, block.id);
+      });
+      card.appendChild(again);
     }
 
     if (translation) {
@@ -749,6 +807,9 @@ function highlight(blockId, on) {
 function selectBlock(blockId, { scroll = true, scrollOther = true } = {}) {
   const previous = state.selectedBlockId;
   state.selectedBlockId = blockId;
+
+  const again = document.getElementById("retranslate-block");
+  if (again) again.disabled = !blockId;
 
   if (previous) {
     const oldBoxes = state.boxes ? state.boxes.get(previous) : null;
@@ -874,6 +935,35 @@ async function startTranslation(documentId) {
   }
 }
 
+/** Translate one block again, replacing whatever is stored for it.
+ *
+ *  `force` is what makes this different from asking for the document: without it the plan reuses
+ *  the stored translation and nothing is sent, which is exactly what a reader who is pressing
+ *  this button does not want.  The old translation stays readable until the new one lands, so a
+ *  failure here leaves the page no worse than it was.
+ */
+async function retranslateBlock(documentId, blockId) {
+  if (!blockId) {
+    showBanner("先点一个段落（左侧原文的框，或右侧译文的卡片），再按“重新翻译本块”。", "warn");
+    return;
+  }
+  const button = document.getElementById("retranslate-block");
+  if (button) button.disabled = true;
+  clearBanner();
+  try {
+    const plan = await api.startTranslation(documentId, {
+      scope: "blocks", block_ids: [blockId], target_language: state.targetLanguage, force: true,
+    });
+    showBanner(`已排队重新翻译这一段（${plan.would_be_sent} 块将发送）。`, "info");
+    await refreshJobs();
+    startJobPolling();
+  } catch (error) {
+    reportError(error);
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
 async function refreshJobs() {
   const box = document.getElementById("jobs-box");
   if (!box || !state.document) return;
@@ -974,7 +1064,7 @@ function setTranslationBadge(configuration) {
   if (configuration.configured) {
     badge.className = "badge badge-ok";
     badge.textContent = `翻译：已配置（${configuration.model || configuration.provider}）`;
-    badge.title = `端点 ${configuration.base_url}${configuration.base_url_is_default ? "（默认值，未经验证）" : ""}`;
+    badge.title = `端点 ${configuration.base_url}${configuration.base_url_is_default ? "（默认值，已实测可达）" : ""}`;
   } else {
     badge.className = "badge badge-warn";
     badge.textContent = "翻译：未配置";

@@ -115,6 +115,22 @@ body {
 
 .reader { display: flex; width: 100%; min-height: 0; }
 
+/* The column beside the sidebar: the toolbar, then the panes.  The toolbar is outside `.panes` so
+   that a mode which hides a pane cannot hide the control that leaves that mode. */
+.reader-main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+.reader-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 6px 14px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.bar-group { display: flex; align-items: center; gap: 6px; }
+.bar-field { display: flex; align-items: center; gap: 5px; }
+.bar-label { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.reader-bar select {
+  font: inherit; font-size: 13px; padding: 3px 6px;
+  border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink);
+}
+
 .sidebar {
   width: 250px; flex: 0 0 250px; background: var(--panel);
   border-right: 1px solid var(--line); overflow-y: auto; padding: 14px;
@@ -141,7 +157,12 @@ body {
   position: sticky; top: 0; z-index: 5; font-size: 13px;
 }
 .pane-head .spacer { margin-left: auto; }
-.pane-body { flex: 1; overflow: auto; padding: 14px; }
+/* `min-height: 0` is load-bearing and was missing.  A flex item's `min-height` defaults to
+   `auto`, so the body refused to shrink below its content, grew past the pane, and was then cut
+   off by the pane's own `overflow: hidden` - which meant a translation longer than the pane could
+   not be scrolled to at all.  The reader said the right-hand pane "would ideally scroll"; it did
+   not scroll, and the bottom of every long translation was unreachable. */
+.pane-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 14px; }
 
 .reader[data-mode="source_only"] .pane-target,
 .reader[data-mode="target_only"] .pane-source,
@@ -197,38 +218,39 @@ body {
 /* ---------- the overlay view ---------- */
 
 /* The translation, drawn where the original is. This is a reading view, not a translated
-   document: the panels cover the source glyphs and scroll independently, they are never
-   composited into a file, and the export does not come from here. */
+   document: the panels cover the source glyphs, they are never composited into a file, and the
+   export does not come from here.
+
+   It is deliberately not a box.  An earlier revision gave each panel a border, a scrollbar and an
+   overflow badge, which turned every paragraph into a small widget and made the page read as a
+   form rather than as a translated page.  What it is now: white behind the text, no border, no
+   scrollbar, no badge, text starting exactly where the original started.
+
+   The panel has no `height`, only a `min-height` of the original's area, so the original is always
+   covered and a translation that needs more room simply takes it.  In this direction - English
+   into Chinese - the translation is almost always shorter, so that is rare; when it happens the
+   panel grows over whatever is below it.  That is the trade this makes, and it is the right one:
+   text that cannot be read is worse than text that is in the wrong place, and the reader can move
+   it out of the way by hovering, which drops the background to .55 and lets the original show. */
 .overlay-panel {
-  position: absolute; overflow: auto; box-sizing: border-box;
-  padding: 1px 3px 2px;
+  position: absolute; box-sizing: border-box;
+  padding: 0;
   background: rgba(255, 255, 255, .965);
-  border: 1px solid rgba(37, 99, 235, .55);
-  border-radius: 2px;
+  border: 0;
   color: var(--ink);
-  line-height: 1.22;
+  line-height: 1.2;
   font-size: 11px;
   font-size: 1.68cqw;
   cursor: text;
-  scrollbar-width: thin;
 }
-.overlay-panel.is-selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 /* Hovering lifts the panel enough to read what it is covering, without moving anything.  The
    reader can always check whether a panel has hidden a line that was not its own. */
-.overlay-panel.is-peeking { background: rgba(255, 255, 255, .55); border-style: dashed; }
-.overlay-panel.is-stale { border-color: rgba(180, 83, 9, .8); border-style: dashed; }
+.overlay-panel.is-peeking { background: rgba(255, 255, 255, .4); }
+/* The only chrome that survives, and only for the panel the reader clicked: without some mark
+   there is no way to tell which paragraph "重新翻译本块" would act on. */
+.overlay-panel.is-selected { box-shadow: 0 0 0 2px var(--accent); }
+.overlay-panel.is-stale { color: #92400e; }
 .overlay-text { white-space: pre-wrap; }
-/* Shown only when the translation is longer than the space the original occupied.  The panel
-   itself scrolls; this says why it can be scrolled.  Shrinking the type to fit instead would
-   produce text nobody can read, which is the failure this view exists to avoid. */
-.overlay-overflow {
-  display: none;
-  position: sticky; bottom: 0; float: right;
-  font-size: 9px; font-size: .62rem; line-height: 1.4;
-  padding: 0 3px; border-radius: 3px;
-  background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn-line, #fcd34d);
-}
-.overlay-panel.is-overflowing .overlay-overflow { display: inline-block; }
 
 /* ---------- translation cards ---------- */
 

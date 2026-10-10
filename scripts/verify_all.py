@@ -138,6 +138,12 @@ ENTRIES: tuple[Entry, ...] = (
           "overlay boxes against rendered pixels, with a mirrored control"),
     Entry("verify_live_acceptance", ("scripts/verify_live_acceptance.py",), "product", 1800,
           "both processes as real processes, everything over HTTP"),
+    Entry("verify_checks_can_fail", ("scripts/verify_checks_can_fail.py",), "product", 1800,
+          "each new frontend check, reverted, and confirmed to fail"),
+    # NOTE: that one edits `apps/web/js/app.js` and `styles.css` for the length of its run, so it
+    # must never be run in parallel with `verify_frontend_contract`.  This tuple is executed in
+    # order and it is listed after that entry; running the product group with more than one worker
+    # would make both of them lie.
 
     # ---- measurement ------------------------------------------------------------------------
     Entry("perf_harness", ("-m", "benchmarks.rr_m0.perf_harness",), "perf", 2400,

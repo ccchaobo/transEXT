@@ -783,10 +783,25 @@ What *is* checked, and what it is worth:
 
 The check in the previous bullet was written, run, and **failed** for that reason before it was
 fixed, which is the only evidence that it can fail at all. Everything past "the data is
-well-formed" is PENDING and belongs to the person who can open a page. The three things most
-likely to be wrong, in order: whether the panels land where they belong; whether the linked
-scrolling settles instead of oscillating; and whether the overflow badge appears on the paragraphs
-that need it and not on the ones that do not.
+well-formed" is PENDING and belongs to the person who can open a page. The three things most likely
+to be wrong, in order: whether the panels land where they belong; whether the linked scrolling
+settles instead of oscillating; and whether a panel whose translation did not fit covers something
+it should not.
+
+**This section was overtaken by use.** The reader ran the overlay and asked for it to be different:
+no box, no scrollbar, no badge — "直接按照原文位置覆盖即可". What was a bordered, independently
+scrolling panel per paragraph was, in their words, a text box on every paragraph rather than a
+page. The panel is now plain text in place: white behind the text, no border, no scrollbar, no
+badge, and a `min-height` of the original's area rather than a fixed height, so a translation
+needing more room takes it and spills over whatever is below. The three earlier decisions this
+reverses — the visible border, the in-panel scroll, and the overflow badge — were made by me for
+defensibility, and each was defensible; all three together made the reading view read as a form.
+That is the kind of thing only the person reading can settle, and it is why the paragraph above
+says this cannot be verified here.
+
+Still PENDING, now including the new shape: whether the panels land where they belong, whether the
+text is legible at `1.68cqw` on the pages they actually read, and whether the linked scrolling
+settles instead of oscillating. Neither the panel placement nor the spilling has been seen.
 
 ## 35. The pre-flight estimate described a different job than the one that would run
 
@@ -821,6 +836,55 @@ This is the third defect of the same shape found in this area — after `page_co
 for is any field that is *derived* somewhere other than where the work happens. The provider is
 resolved per job by design, which is right; what was wrong was letting a second, different
 resolution leak into a user-facing number.
+
+## 36. The control that hid itself, and the one that switched itself back on
+
+The reader used the 译文覆盖 view and could not get out of it. They were right, and it was my
+defect, and the shape of it is worth recording because it is a class rather than an incident.
+
+The view-mode selector, the 联动 checkbox and the 翻译全文 button were built inside the
+**translation pane's header** — `buildPanes` put them in `targetHead`. Three of the five view modes
+hide a pane: `overlay` and `source_only` hide the translation pane, `target_only` hides the source
+pane. So choosing 译文覆盖 hid the very control that switches back, and the reader was left in a
+mode with no exit. `target_only` had the mirror of the same defect: 上一页 / 下一页 and the page
+label were in the **source** pane's header, so the mode that shows only the translation also lost
+page navigation.
+
+**The fix is not a back button.** Adding an exit to each pane-hiding mode would have left the
+invariant — *a control must be reachable in every mode* — unstated and unenforced, and the next
+mode would have reintroduced it. The controls now live in a toolbar outside `.panes` entirely, in a
+`.reader-main` column beside the sidebar, and each pane's header holds only its own label. A pane
+can then be hidden without any control being hidden with it, because no control is inside one.
+
+`verify_frontend_contract.py` §[5] now states the invariants directly, since no payload can show
+them: every control id is built in `buildToolbar` and none in `buildPanes`; the toolbar is appended
+outside `.panes`; no `.reader[data-mode=...]` rule touches `.reader-bar` or `.reader-main`; and
+three modes do hide a pane, so the check is not vacuous. **Each of those was reverted in turn and
+confirmed to fail** by the new `scripts/verify_checks_can_fail.py`, registered in `verify_all.py`
+as the 28th entry point.
+
+The same reading turned up a second defect of the "stored but not obeyed" family, which this
+project has now hit four times. `loadPage` sent `link_scrolling: true` on **every page turn**,
+hard-coded. The 联动 checkbox wrote the reader's choice and the next page turn silently overrode
+it, so the switch appeared to work and then did not — and it would have looked like a flaky
+control rather than a bug. A stored reading preference is a preference, not a per-page decision.
+
+## 37. The pane that could not scroll, because a flex item will not shrink
+
+The reader asked for the translation pane to scroll, which read at first as a feature request. It
+was a bug report. `.pane-body` was `flex: 1; overflow: auto` and the pane was `overflow: hidden`,
+which looks right and does not work: a flex item's `min-height` defaults to `auto`, so the body
+refused to shrink below its content, grew past the pane's box, and was then **clipped** by the
+pane. Every translation longer than the pane was truncated with no way to reach the rest of it —
+not "hard to scroll", unreachable. Adding `min-height: 0` is the whole fix.
+
+This one is worth a note because of how it hid. Nothing failed: the response was correct, the DOM
+was correct, the text was all present in the document, and a check on the data would pass. The
+only symptom was that a person could not see the bottom of a paragraph, and the correct diagnosis
+was available only from a person using it. `verify_frontend_contract.py` §[5] now asserts
+`.pane-body` has `min-height: 0`, which is a one-line CSS property being pinned by a test — worth
+it, because the failure mode is silence.
+
 
 
 
