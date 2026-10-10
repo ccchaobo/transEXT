@@ -885,6 +885,47 @@ was available only from a person using it. `verify_frontend_contract.py` §[5] n
 `.pane-body` has `min-height: 0`, which is a one-line CSS property being pinned by a test — worth
 it, because the failure mode is silence.
 
+## 38. The worker ignored the two spend controls, and I explained the evidence away
+
+`POST /translate` has accepted `scope: "blocks"` with a block list, and `force`, since it was
+written. It resolves them into `only_block_ids` and `force`, checks them against the budget, stores
+both in the job request — and `_translate_document` in the worker read **neither**. It re-planned
+the whole document every time.
+
+Measured, by reverting each in turn:
+
+```
+request: scope="blocks", block_ids=[one block], force=true
+  plan says would_be_sent=1
+  worker, with only_block_ids dropped   -> sent 53 requests for one block
+  worker, with only_block_ids honoured, force dropped -> forcing a cached block sent 0 requests
+```
+
+Two different defects with two different costs:
+
+* **Ignoring the block list spends more than was asked for.** A reader who asks to translate one
+  page, or one paragraph, gets the whole paper billed. Nothing is refused and nothing is reported:
+  the job succeeds and says `translatable_blocks: 53`, which is true and does not answer the
+  question they asked.
+* **Ignoring `force` makes the button a no-op.** The job re-plans, finds everything cached, sends
+  nothing, and returns `succeeded` with `requested: 0`. That is exactly how 重新翻译本块 would have
+  shipped looking broken rather than being broken.
+
+**I had already seen this and talked myself out of it.** In §2 the first real translation was
+requested for page 0 only, and the job reported `translatable_blocks: 53, reused: 53` — the whole
+document, not the sixteen blocks of page 0. I noticed the discrepancy and explained it entirely by
+the provider-less cache key of §35, which was also real, and stopped there. Two defects produced one
+symptom, the first explanation covered it, and I did not ask why the *count* differed. The lesson is
+specific: when a number is wrong, explain the whole number, not the part of it that the first
+plausible cause accounts for.
+
+Both are fixed, and both are pinned by tests that fail when either is reverted —
+`TestTheJobDoesWhatThePlanSaid` asserts one request for one block, and one *more* request when a
+cached block is forced. `scripts/verify_checks_can_fail.py` reverts each and requires the specific
+measured failure, which is where the `53` above comes from: I first wrote `0` as the expected
+message, the harness reported `DID NOT FAIL`, and the truth was both wrong and worse.
+
+
 
 
 

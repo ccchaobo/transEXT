@@ -625,3 +625,105 @@ class TestThePlanDescribesTheJobThatWillRun:
             assert second["model"] == "cache-key-model", second
             assert second["already_cached"] == second["planned_blocks"], second
             assert second["would_be_sent"] == 0, second
+
+
+class TestTheJobDoesWhatThePlanSaid:
+    """The job must honour the block list and `force`, not re-plan the whole document.
+
+    `POST /translate` stores `only_block_ids` and `force` in the job request.  The worker read
+    neither: a request for one page translated the whole document, and `force` - the switch that
+    means "send this again even though it is cached" - did nothing.  Both are spend controls.
+    Sending more than was asked for costs money the reader did not agree to; silently reusing makes
+    the button they pressed a no-op, which is how "重新翻译本块" would have shipped looking broken.
+    """
+
+    def test_a_one_block_job_sends_exactly_one_request(self, client, parsed_document) -> None:
+        with ChatDouble() as double:
+            configure(
+                client,
+                api_key=SECRET,
+                model="one-block-model",
+                base_url=double.base_url,
+                provider_name="one-block",
+            )
+
+            page = client.get(
+                f"/api/v1/documents/{parsed_document}/pages/0?target_language=zh"
+            ).json()
+            block = next(b for b in page["blocks"] if b["translatable"])
+
+            asked = client.post(
+                f"/api/v1/documents/{parsed_document}/translate",
+                json={
+                    "scope": "blocks",
+                    "block_ids": [block["id"]],
+                    "target_language": "zh",
+                    "force": True,
+                },
+            )
+            assert asked.status_code == 202, asked.text
+            assert asked.json()["would_be_sent"] == 1, asked.json()
+
+            app = client.app
+            worker = Worker(
+                app.state.settings,
+                app.state.workspace,
+                app.state.queue,
+                database=app.state.database,
+                provider_factory=lambda: _cli_style_provider(app.state.database),
+            )
+            assert worker.serve(poll_seconds=0, max_jobs=4, exit_when_idle=True, idle_grace=0.0) >= 1
+
+            # The whole point: one block asked for, one block sent.  Before the fix this was 0,
+            # because the job re-planned the document, matched nothing, and reported success.
+            assert len(double.requests) == 1, f"sent {len(double.requests)} requests for one block"
+
+            stored = client.get(
+                f"/api/v1/documents/{parsed_document}/translations?target_language=zh"
+            ).json()
+            assert stored["count"] == 1, stored
+
+    def test_force_sends_a_block_that_is_already_translated(self, client, parsed_document) -> None:
+        with ChatDouble() as double:
+            configure(
+                client,
+                api_key=SECRET,
+                model="force-model",
+                base_url=double.base_url,
+                provider_name="force",
+            )
+            body = {"scope": "document", "target_language": "zh"}
+
+            client.post(f"/api/v1/documents/{parsed_document}/translate", json=body)
+            app = client.app
+            worker = Worker(
+                app.state.settings,
+                app.state.workspace,
+                app.state.queue,
+                database=app.state.database,
+                provider_factory=lambda: _cli_style_provider(app.state.database),
+            )
+            worker.serve(poll_seconds=0, max_jobs=6, exit_when_idle=True, idle_grace=0.0)
+            first_pass = len(double.requests)
+            assert first_pass > 0, "the first pass sent nothing, so this test proves nothing"
+
+            page = client.get(
+                f"/api/v1/documents/{parsed_document}/pages/0?target_language=zh"
+            ).json()
+            block = next(b for b in page["blocks"] if b["translatable"])
+
+            # Without `force` this is a cache hit and nothing is sent - the assertion below would
+            # then be satisfied by a no-op, which is exactly the defect.  So it is asked for.
+            planned = client.post(
+                f"/api/v1/documents/{parsed_document}/translate",
+                json={
+                    "scope": "blocks", "block_ids": [block["id"]],
+                    "target_language": "zh", "force": True,
+                },
+            ).json()
+            assert planned["would_be_sent"] == 1, planned
+
+            worker.serve(poll_seconds=0, max_jobs=4, exit_when_idle=True, idle_grace=0.0)
+            assert len(double.requests) == first_pass + 1, (
+                f"forcing a cached block sent {len(double.requests) - first_pass} requests"
+            )

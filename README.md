@@ -224,6 +224,11 @@ the control that gets you back out was hidden by the mode it had just switched t
 single-pane modes too, where there is no card to put a button on. A machine translation that is
 wrong is not a reason to re-translate a page.
 
+Both of those fields were accepted by the API and **ignored by the worker** until recently: asking
+for one block translated the whole document, and `force` sent nothing at all. They are spend
+controls, and they are now pinned by tests that fail when either is reverted. See
+[limitations §38](docs/limitations.md).
+
 A block with no translation is left showing its original, marked so you can tell "not translated"
 from "translated to something empty".
 

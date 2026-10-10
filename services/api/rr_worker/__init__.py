@@ -412,6 +412,16 @@ def _translate_document(worker: Worker, session: Session, lease: LeaseInfo, job:
     source_language = request.get("source_language") or "en"
     batch_size = max(1, int(request.get("batch_units") or DEFAULT_TRANSLATION_BATCH))
 
+    # What the caller asked for, which is not the same as "the whole document".  `POST /translate`
+    # puts both of these in the job request, and this function did not read either of them: a
+    # request for one page translated the entire document, and `force` - the switch that means
+    # "translate this again, I know it is cached" - silently did nothing.  Both are spend controls.
+    # Sending more than was asked for costs the reader money they did not agree to; silently
+    # reusing means the button they pressed does nothing at all.
+    only_block_ids = request.get("only_block_ids")
+    only_block_ids = list(only_block_ids) if only_block_ids else None
+    force = bool(request.get("force"))
+
     if not worker.beat(session, lease, "plan"):
         return StageOutcome.cancelled()
 
@@ -423,6 +433,8 @@ def _translate_document(worker: Worker, session: Session, lease: LeaseInfo, job:
         job.document_id,
         source_language=source_language,
         target_language=target_language,
+        only_block_ids=only_block_ids,
+        force=force,
     )
     session.commit()
 
@@ -434,6 +446,10 @@ def _translate_document(worker: Worker, session: Session, lease: LeaseInfo, job:
         "glossary_version": plan.glossary_version,
         "provider": plan.provider,
         "model": plan.model,
+        # Recorded so the job explains itself: without these a one-block job and a whole-document
+        # job are indistinguishable in the record, and "why did this send 53 blocks" has no answer.
+        "restricted_to_blocks": len(only_block_ids) if only_block_ids else None,
+        "forced": force,
     }
     if plan.is_empty:
         return StageOutcome(status=JobStatus.SUCCEEDED.value, result={**summary, "requested": 0})
