@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -47,7 +48,20 @@ def keys_of(payload: dict) -> set[str]:
 
 
 def main() -> int:
-    settings = Settings(data_dir=Path("var/_frontend_contract"))
+    # A fresh data directory *per run*.  This used to be the fixed path
+    # ``var/_frontend_contract``, which made the script pass on a clean checkout and fail on the
+    # second run: the document was already imported, the content hash matched, no new job was
+    # created, and the assertion below that exactly one job ran failed.  A verification that
+    # depends on what the previous run left behind is not a verification.  It also stops the
+    # script writing into the repository, and into the ``var/`` a running server may be using.
+    with tempfile.TemporaryDirectory(
+        prefix="rr-frontend-contract-", ignore_cleanup_errors=True
+    ) as tmp:
+        return _check(Path(tmp) / "data")
+
+
+def _check(data_dir: Path) -> int:
+    settings = Settings(data_dir=data_dir)
     # serve_frontend must be on: the point of the last check is that the browser's asset
     # requests actually resolve, and a TestClient built with it off would 404 them all.
     app = create_app(settings, serve_frontend=True)

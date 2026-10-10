@@ -505,6 +505,110 @@ invalidating the translations derived from it. There is no endpoint for this, an
 Since OCR is not wired into the parse stage either (see §24), nothing currently produces OCR text
 that would need correcting.
 
+## 26. Two of the verification entry points were not verification
+
+`scripts/verify_all.py` runs every script that decides something and reported **26 of 28**
+passing on its first full run. Both failures were faults in the scripts, not in the product — but
+in each case the script would have convinced a reader that the product was broken, so both are
+recorded and both were fixed rather than dropped quietly.
+
+**26.1 `verify_rotation.py` reported six failures for a correct transform.** It drew a marker with
+`page.draw_rect`, which takes the media frame (top-left origin, y down), and then passed that
+point to `PageGeometry.raw_to_norm` as if it were raw PDF space (y up). The two frames differ by
+exactly the flip the script was meant to be checking, so every case failed with mirrored numbers.
+Its printed column headings also did not match its own format string - the column labelled
+`pixel` held the geometry result and the one labelled `geometry` held the pixel measurement - so
+the output read as the opposite of what it was. Both faults are now fixed.
+
+The rewrite does something the repository did not have. Position agreement alone cannot detect
+the defect this project actually shipped twice: a vertical mirror still puts all four corners on
+all four corners of the image, still distinct, still inside the unit square. What a mirror breaks
+is **handedness** - the winding direction of top-left, top-right, bottom-right, bottom-left - and
+no rotation can reverse it. The script now checks positions *and* handedness for all four
+rotations, and then runs the handedness test against a deliberately mirrored prediction and
+requires it to fail. A mirror-detector that has never been shown a mirror is not evidence.
+
+**26.2 `verify_order_by_eye.py` had no verdict at all.** It returns 0 whatever it prints, which its
+own docstring states; listing it as verification was a category error in the harness, and it is
+now excluded there. It also read `LayoutResult.bands_by_page`, an attribute that has never existed
+on the current `LayoutResult`, so it raised `AttributeError` for anyone who ran it. It now reads
+the per-page band summary the layout actually records. The general lesson is the same one §23
+ends on: a script that cannot fail will be believed, and a script that crashes on a stale
+attribute reads as a broken product rather than as a stale script.
+
+## 27. `page_columns` was always 1, and has been removed
+
+`LayoutResult.page_columns` reported the maximum number of columns across the page's bands. But
+`segment_bands` is an XY-cut, so it has already separated the columns *before* `detect_columns`
+runs; every band therefore contains exactly one column, and the figure is 1. Measured on the
+corpus, it is 1 for every page of every document — for the two-column papers and the
+single-column ones alike.
+
+Nothing consumed it except two diagnostic prints and the `measure_layout.py` JSON artifact, and
+no test referenced it, so it was removed along with its three usages rather than left in place
+looking like data. The per-page band summary (`bands_per_page`, `columns_per_band`) replaces it.
+A number that cannot vary is not a measurement, and the failure mode it invites — reading a
+constant as a finding, or explaining a real defect away as an artefact of the constant — is one
+this project has already been through once (§3).
+
+## 28. Two verification scripts only passed on a clean checkout
+
+`verify_frontend_contract.py` and `verify_overlay_alignment.py` each built their application
+against a fixed directory inside the repository — `var/_frontend_contract` and `var/_overlay_check`.
+The first full run of `verify_all.py` passed both. The second run failed the first of them:
+
+```
+File "scripts/verify_frontend_contract.py", line 71, in main
+    assert worker.serve(poll_seconds=0, max_jobs=1) == 1
+AssertionError
+```
+
+The reason is worth stating because it is not a flake. On the second run the corpus PDF was
+already imported, so the content-hash deduplication returned the existing document and **created no
+new job**; the assertion that exactly one job ran was therefore false. The script was asserting a
+property of an empty data directory while appearing to assert a property of the product.
+
+Both scripts now create a fresh temporary data directory per run, which also stops them writing
+into the `var/` that a running server uses. This is recorded rather than quietly fixed because the
+signature is general: **a verification whose result depends on what the previous run left behind
+will pass once and fail afterwards**, and the temptation is to read the second failure as a
+regression in the product.
+
+Two smaller things came out of the same session. `TemporaryDirectory` needs
+`ignore_cleanup_errors=True` on Windows, because the SQLite engine still holds the database file
+open when the directory is removed — the checks pass and then the cleanup raises. And the README
+named the database `research_reader.sqlite3`; it is `reader.sqlite3`. Both are corrected.
+
+## 29. The performance harness measured a configuration that does not ship
+
+`benchmarks/rr_m0/perf_harness.py` declared `--ocr-dpi` with a default of **300**, while
+`rr_adapters/ocr.py` fixes the calibrated resolution at **250** — and rejects 300 in as many words:
+
+```
+#: 250    0.0247    5.76
+#: 300    0.0298    6.19
+#: 250 dpi is chosen because it halves the error of 200 dpi for about one second
+#: per page, whereas 300 dpi costs more than 250 *and* recognises slightly worse.
+OCR_RENDER_DPI = 250
+```
+
+So `python -m benchmarks.rr_m0.perf_harness`, the command the README documents, measured a
+resolution the project had explicitly decided against. The recorded artifact said `"ocr_dpi": 250`
+only because it had originally been produced with an explicit `--ocr-dpi 250`; running the
+documented command again **overwrote** it with 300-dpi numbers, and because recognition is the
+dominant cost, the headline figure moved too — peak working set from 1743 MiB to 2055 MiB. Nothing
+warned, and the new artifact looked exactly as authoritative as the old one.
+
+Found by diffing the regenerated artifacts during a full verification run, not by reading either
+file: both are internally consistent, and only the pair disagrees. The default is now
+`OCR_RENDER_DPI` itself, so the calibration has a single definition and a measurement cannot drift
+from it. The artifact has been regenerated at 250 dpi and the README's table updated to match it.
+
+The related weakness is that the table's P95s come from 14 and 48 samples and move by up to 9%
+between runs of identical code (212.7 → 230.9 ms observed on the first-screen row). The threshold
+verdicts are unaffected because the margin is large, but the individual millisecond figures are
+single-run observations and the README now says so rather than presenting them as fixed.
+
 
 
 

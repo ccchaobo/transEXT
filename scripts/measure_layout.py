@@ -246,7 +246,14 @@ def measure_document(extractor: PdfTextExtractor, name: str) -> dict:
         "paragraphs": len(result.paragraphs),
         "furniture": len(result.furniture),
         "warnings": result.warnings,
-        "page_columns": {str(k): v for k, v in result.page_columns.items()},
+        # "page_columns" was recorded here for every document.  It was the maximum number of
+        # columns within a single band after the XY-cut had already separated the columns, so it
+        # was 1 on every page of every document and is not a measurement of anything.  The
+        # per-page band summary below carries the real information.
+        "bands_per_page": {p: v.get("n_bands") for p, v in sorted(result.evidence.items())},
+        "columns_per_band": {
+            p: v.get("columns_per_band") for p, v in sorted(result.evidence.items())
+        },
         "blocks_total": sum(1 for b in blocks if b.page_index in text_pages),
         "blocks_body": sum(
             1
@@ -304,7 +311,8 @@ def main(argv: list[str] | None = None) -> int:
             f"  blocks={result['blocks_total']} body={result['blocks_body']} "
             f"paragraphs={result['paragraphs']} furniture={result['furniture']}"
         )
-        print(f"  page_columns detected: {result['page_columns']}")
+        print(f"  bands per page: {result['bands_per_page']}")
+        print(f"  columns per band: {result['columns_per_band']}")
         if result["scanned_pages"]:
             print(
                 f"  pages judged: {result['text_pages']}   "

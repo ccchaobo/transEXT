@@ -30,7 +30,13 @@ def main() -> int:
               f"pages={len(truth['pages'])}")
         print(f"  extracted lines per page: "
               f"{ {p: len(l) for p, l in sorted(extraction.lines_by_page.items())} }")
-        print(f"  page_columns detected: {result.page_columns}")
+        # page_columns was printed here.  It read 1 on every page of every document, so it said
+        # nothing about the page while looking like it did; the field is gone.  The per-page band
+        # summary is the informative replacement.
+        print(f"  bands per page: "
+              f"{ {p: v.get('n_bands') for p, v in sorted(result.evidence.items())} }")
+        print(f"  columns per band: "
+              f"{ {p: v.get('columns_per_band') for p, v in sorted(result.evidence.items())} }")
         print(f"  paragraphs={len(result.paragraphs)} furniture={len(result.furniture)} "
               f"warnings={len(result.warnings)}")
         for warning in result.warnings[:4]:

@@ -1,5 +1,10 @@
 """Reference reading order versus the pipeline's, side by side, with no matcher.
 
+**This is an inspection tool, not a verification.** It returns 0 whatever it prints: there is no
+threshold here and no assertion, because the whole point is that a human reads the two sequences
+and judges. It is therefore deliberately absent from ``scripts/verify_all.py`` - listing a script
+that cannot fail would pad a verification report with a line that means nothing.
+
 Every alignment metric can be wrong; this one is not a metric.  It prints the reference
 blocks for one page in the order the corpus generator drew them, and the pipeline's
 paragraphs for the same page in the order it emitted them, so the two sequences can be
@@ -49,13 +54,23 @@ def main() -> int:
     print("\n=== column extents actually used on this page ===")
     xs = sorted({round(p.bbox.x0, 3) for p in paras})
     print(f"  distinct x0 values: {xs}")
-    print(f"  page_columns detected: {result.page_columns}")
-    for band in result.bands_by_page.get(PAGE, []):
-        print(
-            f"  band {band.index}: lines={len(band.line_indices)} "
-            f"y={band.y0:.3f}..{band.y1:.3f} columns={len(band.columns)} "
-            f"full_width={band.full_width}"
-        )
+
+    # The bands themselves are local to the per-page loop in document_core.layout and are not kept
+    # on LayoutResult; what it does keep is their summary, keyed by page index.  This script used
+    # to read ``result.bands_by_page``, which has never existed on the current LayoutResult - it
+    # raised AttributeError for anyone who ran it.  A stale attribute is worse than a missing
+    # feature: it reads as a broken product.
+    print("\n=== layout bands for this page (from the pipeline's own evidence) ===")
+    summary = result.evidence.get(str(PAGE), {})
+    if not summary:
+        print(f"  no band summary recorded for page {PAGE}")
+    else:
+        columns = summary.get("columns_per_band") or []
+        full_width = set(summary.get("full_width_bands") or [])
+        print(f"  bands: {summary.get('n_bands')}")
+        for index, count in enumerate(columns):
+            span = "full width" if index in full_width else f"{count} column(s)"
+            print(f"    band {index}: {span}")
     return 0
 
 

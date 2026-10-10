@@ -189,7 +189,6 @@ class LayoutResult:
 
     paragraphs: list["Paragraph"]
     furniture: list["Paragraph"]
-    page_columns: dict[int, int]
     evidence: dict = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
@@ -1041,6 +1040,13 @@ def analyse(
             band.full_width = len(band.columns) == 1 and _band_spans_width(band, page_ordered)
         plans[page_index] = ColumnPlan(
             bands=bands,
+            # Per band, not per page.  This used to be surfaced as ``LayoutResult.page_columns``,
+            # and because ``segment_bands`` is an XY-cut it has already separated the columns
+            # before ``detect_columns`` runs, so every band holds one column and the page-level
+            # figure read 1 for every page of every document - including two-column papers and
+            # single-column ones alike.  A number that never changes carries no information and
+            # invites a wrong conclusion, so the page-level field was removed rather than left
+            # there looking like data.  See docs/limitations.md.
             n_columns=max((len(b.columns) for b in bands), default=1),
             gutter=None,
             evidence={
@@ -1081,7 +1087,6 @@ def analyse(
     return LayoutResult(
         paragraphs=paragraphs,
         furniture=furniture,
-        page_columns={p: plan.n_columns for p, plan in plans.items()},
         evidence={str(p): plan.evidence for p, plan in plans.items()},
         warnings=warnings,
     )

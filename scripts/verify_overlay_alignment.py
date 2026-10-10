@@ -51,6 +51,7 @@ from __future__ import annotations
 
 import io
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -137,7 +138,19 @@ def correlation(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def main() -> int:
-    settings = Settings(data_dir=Path("var/_overlay_check"))
+    # A fresh data directory per run, for the same reason as in verify_frontend_contract.py: a
+    # fixed path under the repository makes the result depend on what the previous run left
+    # behind, and writes into the ``var/`` a running server may be using.  ``ignore_cleanup_errors``
+    # because the SQLite engine keeps the file open on Windows and the unlink would fail after the
+    # checks had already passed.
+    with tempfile.TemporaryDirectory(
+        prefix="rr-overlay-check-", ignore_cleanup_errors=True
+    ) as tmp:
+        return _check(Path(tmp) / "data")
+
+
+def _check(data_dir: Path) -> int:
+    settings = Settings(data_dir=data_dir)
     app = create_app(settings, serve_frontend=False)
     client = TestClient(app)
 

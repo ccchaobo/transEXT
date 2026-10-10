@@ -107,7 +107,7 @@ option to bind a public interface, and state-changing requests are refused unles
 they come from the reader's own pages.
 
 **Data locations.** `RR_DATA_DIR` (default `var/`, git-ignored) holds
-`research_reader.sqlite3`, `originals/<document>/<sha256>.pdf` and
+`reader.sqlite3`, `originals/<document>/<sha256>.pdf` and
 `derived/<document>/<revision>/pages/NNNN.png`. Originals are written once and never
 modified; every derived artifact is addressed by revision.
 
@@ -200,6 +200,24 @@ python scripts/verify_live_acceptance.py
 python -m pytest tests -q
 ```
 
+### All of it at once
+
+```powershell
+python scripts/verify_all.py            # every entry point, one table, ~15 minutes
+python scripts/verify_all.py --list     # what runs, and why each one counts as verification
+python scripts/verify_all.py --group product
+```
+
+`verify_all.py` runs 27 entry points, each in its own process with its own data
+directory, and reports the exit code, the wall time and the verdict line for each.
+The list is written out by hand and never globbed: the repository also holds about
+fifty `diagnose_*` and `probe_*` scripts, which print what they found while chasing
+one defect and assert nothing. Running those and reporting their exit codes as
+verification would be the same mistake as a metric that cannot fail on the bug it
+was written for — which is why `verify_order_by_eye.py` is deliberately excluded,
+and why `verify_rotation.py` asserts handedness as well as position and requires its
+own mirror test to fail.
+
 Artifacts are written to `benchmarks/out/`. The corpus (about 31 MiB of generated
 files and ground truth) is committed so that measurements can be reproduced
 without regenerating it.
@@ -218,17 +236,32 @@ at the calibrated 250 dpi. Full data in
 
 | Stage | n | P50 | P95 | Max | Threshold | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| Open a PDF | 14 | 1.7 ms | 2.1 ms | 2.2 ms | — | — |
-| Extract text, one page | 31 | 2.4 ms | 5.2 ms | 7.8 ms | — | — |
-| First-screen preview render | 14 | 45.8 ms | 212.7 ms | 292.1 ms | ≤ 3 s | **PASS** |
-| Page-turn preview render | 48 | 40.6 ms | 214.5 ms | 278.5 ms | ≤ 300 ms | **PASS** |
+| Open a PDF | 14 | 1.8 ms | 2.0 ms | 2.1 ms | — | — |
+| Extract text, one page | 31 | 2.3 ms | 5.2 ms | 7.6 ms | — | — |
+| First-screen preview render | 14 | 45.4 ms | 212.6 ms | 290.6 ms | ≤ 3 s | **PASS** |
+| Page-turn preview render | 48 | 40.4 ms | 212.1 ms | 283.0 ms | ≤ 300 ms | **PASS** |
 | Scan detection, one page | 31 | 1.2 ms | 4.1 ms | 4.3 ms | — | — |
-| DOCX conversion | 6 | 69.7 ms | 154.1 ms | 154.1 ms | — | — |
-| OCR engine load | 10 | 191.0 ms | 718.1 ms | 718.1 ms | — | — |
-| OCR render, one page | 13 | 169.8 ms | 173.6 ms | 182.1 ms | — | — |
-| **OCR recognition, one page** | 17 | **7.6 s** | **10.7 s** | **10.7 s** | — | **not interactive** |
+| DOCX conversion | 6 | 67.3 ms | 157.9 ms | 157.9 ms | — | — |
+| OCR engine load | 10 | 190.5 ms | 689.3 ms | 689.3 ms | — | — |
+| OCR render, one page | 13 | 170.5 ms | 179.5 ms | 183.0 ms | — | — |
+| **OCR recognition, one page** | 17 | **7.7 s** | **10.7 s** | **11.1 s** | — | **not interactive** |
 
-Peak working set for the whole run: 1743 MiB, a batch figure across many documents
+These are single-run figures and the P95s carry visible run-to-run variation — across four runs of
+identical code the first-screen P95 was observed at 212.6, 212.7, 226.9 and 230.9 ms. The
+threshold verdicts hold in every run, because the margin is large; the individual milliseconds
+should be read as "about this", not as a fixed property of the code. The artifact in
+[`benchmarks/out/perf.json`](benchmarks/out/perf.json) is always the run it was written from, so
+regenerating it will move these numbers slightly and the table should then be updated to match.
+
+**The harness must be run at the calibrated OCR resolution**, and this is a correction rather
+than a description. `--ocr-dpi` used to default to a literal 300, which is the value the OCR
+adapter's own calibration rejected: at 300 dpi recognition is slower *and* slightly worse than at
+250. Running the harness with no arguments therefore rewrote this table — and the peak-memory
+figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that does not ship. It now
+defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
+measurement cannot drift from it.
+
+Peak working set for the whole run: 1741 MiB, a batch figure across many documents
 rather than a per-document footprint ([limitations §14](docs/limitations.md)).
 
 OCR recognition is three orders of magnitude outside the interactive targets, and

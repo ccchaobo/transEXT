@@ -31,6 +31,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
+from rr_adapters.ocr import OCR_RENDER_DPI
+
 REPO = Path(__file__).resolve().parent.parent.parent
 
 __all__ = ["Measurement", "run", "main", "summarise"]
@@ -454,7 +456,14 @@ def run(
     corpus: Path,
     *,
     preview_dpi: int = 120,
-    ocr_dpi: int = 300,
+    # The calibrated resolution, imported rather than repeated.  This was a literal 300, which is
+    # the value the adapter's own calibration rejected: at 300 dpi recognition is both slower and
+    # slightly worse than at 250.  Running the harness with no arguments therefore rewrote the
+    # recorded performance evidence - including peak memory, 1743 MiB becoming 2055 MiB - with
+    # numbers from a resolution the project had explicitly decided against, and nothing said so.
+    # A measurement that does not use the calibrated parameter is measuring a configuration that
+    # does not ship.
+    ocr_dpi: int = OCR_RENDER_DPI,
     only: str | None = None,
     scratch: Path | None = None,
 ) -> dict[str, Any]:
@@ -575,7 +584,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--corpus", type=Path, default=REPO / "benchmarks" / "corpus")
     parser.add_argument("--out", type=Path, default=REPO / "benchmarks" / "out" / "perf.json")
     parser.add_argument("--preview-dpi", type=int, default=120)
-    parser.add_argument("--ocr-dpi", type=int, default=300)
+    parser.add_argument(
+        "--ocr-dpi",
+        type=int,
+        default=OCR_RENDER_DPI,
+        help=f"render resolution for OCR (default {OCR_RENDER_DPI}, the calibrated value)",
+    )
     parser.add_argument("--only", default=None, help="substring filter on the file name")
     args = parser.parse_args(argv)
 
