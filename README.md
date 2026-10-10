@@ -303,20 +303,27 @@ at the calibrated 250 dpi. Full data in
 | --- | --- | --- | --- | --- | --- | --- |
 | Open a PDF | 14 | 1.7 ms | 2.3 ms | 2.7 ms | — | — |
 | Extract text, one page | 31 | 2.3 ms | 5.5 ms | 7.5 ms | — | — |
-| First-screen preview render | 14 | 45.8 ms | 235.0 ms | 282.6 ms | ≤ 3 s | **PASS** |
-| Page-turn preview render | 48 | 41.4 ms | 224.2 ms | 277.8 ms | ≤ 300 ms | **PASS** |
+| First-screen preview render | 14 | 46.6 ms | 218.8 ms | 322.3 ms | ≤ 3 s | **PASS** |
+| Page-turn preview render | 48 | 40.5 ms | 215.6 ms | 293.6 ms | ≤ 300 ms | **PASS** |
 | Scan detection, one page | 31 | 1.3 ms | 4.1 ms | 4.4 ms | — | — |
-| DOCX conversion | 6 | 69.0 ms | 171.7 ms | 171.7 ms | — | — |
-| OCR engine load | 10 | 190.1 ms | 667.0 ms | 667.0 ms | — | — |
-| OCR render, one page | 13 | 171.9 ms | 187.6 ms | 194.1 ms | — | — |
-| **OCR recognition, one page** | 17 | **7.6 s** | **10.6 s** | **10.7 s** | — | **not interactive** |
+| DOCX conversion | 6 | 66.9 ms | 160.2 ms | 160.2 ms | — | — |
+| OCR engine load | 10 | 182.3 ms | 673.4 ms | 673.4 ms | — | — |
+| OCR render, one page | 13 | 171.8 ms | 181.6 ms | 184.0 ms | — | — |
+| **OCR recognition, one page** | 17 | **7.5 s** | **11.0 s** | **11.0 s** | — | **not interactive** |
 
-These are single-run figures and the P95s carry visible run-to-run variation — across six runs of
-identical code the first-screen P95 was observed at 211.2, 212.6, 212.7, 226.9, 230.9 and 235.0 ms.
-The threshold verdicts hold in every run, because the margin is large; the individual milliseconds
-should be read as "about this", not as a fixed property of the code. The artifact in
-[`benchmarks/out/perf.json`](benchmarks/out/perf.json) is always the run it was written from, so
-regenerating it will move these numbers slightly and the table should then be updated to match.
+These are one run's numbers, from the artifact committed alongside this file
+([`benchmarks/out/perf.json`](benchmarks/out/perf.json)), so the table and the artifact always
+agree at any given commit. **They are not stable to the millisecond.** Across the runs made while
+building this, the first-screen P95 was seen at 211.2, 212.6, 212.7, 218.8, 226.9, 230.9 and
+235.0 ms — a spread of about ±5% around the middle, with individual maxima moving further
+(282.6 to 322.3 ms). Treat the P95s as accurate to roughly ±10%; they are reported to the
+millisecond only because that is what the harness printed.
+
+The **verdicts** are not affected. Every run passed every threshold, and the margins are large:
+the first screen has a factor of 14 in hand against its 3 s budget, and the page turn has 1.4×
+against its 300 ms one. Re-running the harness rewrites the artifact, so the table above will be
+stale afterwards — that is expected, and the fix is to re-read the artifact rather than to
+re-measure until the numbers look better.
 
 **The harness must be run at the calibrated OCR resolution**, and this is a correction rather
 than a description. `--ocr-dpi` used to default to a literal 300, which is the value the OCR
@@ -326,8 +333,10 @@ figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that do
 defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
 measurement cannot drift from it.
 
-Peak working set for the whole run: 1742 MiB, a batch figure across many documents
-rather than a per-document footprint ([limitations §14](docs/limitations.md)).
+Peak working set for the whole run: 1741 MiB, a batch figure across many documents rather than a
+per-document footprint ([limitations §14](docs/limitations.md)). This one is stable — 1739.9,
+1740, 1741.1 and 1742.4 MiB across the runs — except when the harness was measuring at the
+rejected 300 dpi, where it read 2055 MiB.
 
 OCR recognition is three orders of magnitude outside the interactive targets, and
 no tuning changes that. The reader therefore shows the page image first and fills
