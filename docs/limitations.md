@@ -381,5 +381,54 @@ section — sits near the top of page one, so position alone cannot separate it 
 `looks_like_title` now refuses a numbered section heading, which took the heading score from
 70/78 to 78/78.
 
+## 21. The outline column is never written
+
+`reads.outline` used to select blocks with `level IS NOT NULL`, and returned **nothing for the
+whole corpus**. The layout stage never writes that column: it tracks sections in `section_path`,
+which is what made the translation context correct, but leaves `Block.level` null.
+
+An outline that silently came back empty is worse than a missing feature, because an empty
+outline and a document with no sections look identical. Two things were changed:
+
+* the outline is now built from the block **type** — `title` and `heading`, which the classifier
+  produces and which is measured at 235/235 on the corpus — with `section_path` depth used for
+  nesting when `level` is absent;
+* `GET /documents/{id}/outline` returns an explicit `note` when fewer than two headings were
+  recognised, so a one-entry outline is never presented as navigation.
+
+`Block.level` remains unwritten. Nesting therefore comes from the length of the section path,
+which is one level coarser than a real heading hierarchy: a document with `2` and `2.1` headings
+gets depth from that path rather than from the numbering, so a sub-section is not necessarily
+distinguished from its parent.
+
+## 22. A redundant child DELETE on document deletion, left visible
+
+Deleting a document through the API emits a SQLAlchemy warning:
+
+```
+SAWarning: DELETE statement on table 'source_spans' expected to delete 185 row(s);
+0 were matched.
+SAWarning: DELETE statement on table 'blocks' expected to delete 57 row(s); 0 were matched.
+```
+
+The rows are gone and the deletion is correct — an integration test asserts that blocks, pages,
+parse revisions and translations all count zero afterwards, and that the stored original is
+removed from disk. What the warning says is that the ORM asked the database to delete rows the
+database had already removed through the `ON DELETE CASCADE` the schema declares.
+
+The documented remedy is `passive_deletes=True` on the document's child relationships, telling
+the ORM to let the database do the work. **That was tried and reverted.** It broke import: three
+existing deletion tests began failing with `FOREIGN KEY constraint failed` while inserting a job
+event, before any deletion had happened at all. Reverting restored them, so the change was the
+cause; the mechanism was not established in the time spent.
+
+The choice was therefore to silence a warning whose behaviour was not understood, or to leave it
+visible. It is visible. The cost is a redundant DELETE per child table on an operation that runs
+once per document, and the warning is a correct signal about duplicated work rather than a
+defect in the result. Anyone revisiting it should first explain why a relationship-level flag on
+`Document` changes the insert ordering of `job_events`, which is the part that does not follow
+from the documentation.
+
+
 
 

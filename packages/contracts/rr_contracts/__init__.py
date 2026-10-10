@@ -97,6 +97,13 @@ class StageStatus(str, Enum):
     PENDING = "pending"
     RUNNING = "running"
     SUCCEEDED = "succeeded"
+    #: Some of the work was done and some was not — for a parse, typically a page whose text
+    #: layer was unusable so only part of the document was recognised.  The spec requires a
+    #: partial completion to be reported rather than rounded to success or failure, and without
+    #: this value a partially parsed document cannot be described by ``DocumentSummary`` at all:
+    #: ``ParseStatus.PARTIAL`` is exactly this string, so serialising one raised a validation
+    #: error and became a 500.
+    PARTIALLY_SUCCEEDED = "partially_succeeded"
     FAILED = "failed"
     SKIPPED = "skipped"
     #: A stage stopped because the user asked it to.  Cancelled is not failed: reporting a
@@ -279,6 +286,12 @@ class DocumentSummary(BaseModel):
     last_opened_at: datetime | None = None
     labels: list[str] = []
     title: str | None = None
+    #: How many blocks the active revision holds, and how many of them have a translation.  A
+    #: library view needs both to show progress, and deriving them from a second request would
+    #: be a round trip per row.  ``FastAPI`` drops any response field the model does not
+    #: declare, so leaving these out silently removed them from the API rather than failing.
+    block_count: int = 0
+    translated_block_count: int = 0
 
 
 class DocumentDetail(DocumentSummary):

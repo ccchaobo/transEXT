@@ -228,8 +228,13 @@ class TranslationService:
         target_language: str = DEFAULT_TARGET_LANGUAGE,
         params: dict[str, Any] | None = None,
         only_block_ids: Iterable[str] | None = None,
+        force: bool = False,
     ) -> TranslationPlan:
-        """Decide what would be sent.  Reads only; makes no network call."""
+        """Decide what would be sent.  Reads only; makes no network call.
+
+        ``force`` re-translates even where a current cached result exists.  It only affects the
+        reuse decision, never the cache key.
+        """
         document = session.get(Document, document_id)
         if document is None:
             raise LookupError(f"no such document: {document_id}")
@@ -300,7 +305,11 @@ class TranslationService:
         # One query for every candidate key, rather than one per block.
         keys = {u.cache_key for u in candidates}
         existing: dict[str, Translation] = {}
-        if keys:
+        # A forced re-translation skips the reuse lookup but still stores under the NORMAL cache
+        # key, so the new result becomes the current one instead of creating a parallel cache
+        # entry that a later unforced job would ignore.  Changing the key to force a miss would
+        # have been the easy way to do this and the wrong one.
+        if keys and not force:
             rows = session.scalars(
                 select(Translation).where(
                     Translation.cache_key.in_(keys),

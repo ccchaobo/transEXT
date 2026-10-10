@@ -40,6 +40,7 @@ packages = [
     "rr_storage",
     "rr_services",
     "rr_worker",
+    "rr_api",
     "rr_adapters",
     "rr_m0",
 ]
@@ -50,6 +51,7 @@ rr_contracts = "packages/contracts/rr_contracts"
 rr_storage = "services/api/rr_storage"
 rr_services = "services/api/rr_services"
 rr_worker = "services/api/rr_worker"
+rr_api = "services/api/rr_api"
 rr_adapters = "adapters/rr_adapters"
 rr_m0 = "benchmarks/rr_m0"
 
