@@ -128,6 +128,70 @@ class TestTheUpperBoundFiresOnRealParagraphGaps:
         assert flows(above, below, LayoutParams(paragraph_gap_factor=1.55)) is True
 
 
+class TestATypeSizeChangeStartsANewBlock:
+    """How a section heading is separated from the paragraph under it.
+
+    The gap tests cannot do it: a heading's box is taller than a body line, so the gap to the
+    next line comes out negative and the overlap tolerance accepts it.  Measured in
+    `scripts/calibrate_heading_split.py`: within a block the size ratio is a constant 1.000
+    across 501 pairs, and across all 86 heading-to-next-block pairs it is at most 0.926.
+    """
+
+    def sized(self, y0_pt: float, size: float, text: str = "text") -> TextLine:
+        return TextLine(
+            text=text,
+            bbox=BBox(point(80.0), point(y0_pt), point(300.0), point(y0_pt + size)),
+            font_size=size,
+        )
+
+    def test_a_heading_then_body_text_breaks(self) -> None:
+        # The corpus sizes: a 12.5 pt heading over 10 pt body, ratio 0.800.
+        above = self.sized(100.0, 12.5, "1. Introduction")
+        below = self.sized(112.40, 10.0, "Reading order and evidence tracking")
+        assert flows(above, below) is False
+
+    def test_the_tightest_measured_heading_pair_breaks(self) -> None:
+        # 10.8 pt subheading over 10 pt body, ratio 0.926 — the narrowest case present.
+        above = self.sized(100.0, 10.8, "2.1 Translation of scientific text")
+        below = self.sized(112.40, 10.0, "Scientific translation differs")
+        assert flows(above, below) is False
+
+    def test_a_title_then_the_author_line_breaks(self) -> None:
+        above = self.sized(100.0, 17.0, "Reading Order Recovery")
+        below = self.sized(112.40, 10.5, "D. Researcher and E. Scholar")
+        assert flows(above, below) is False
+
+    def test_a_heading_absorbed_from_above_is_also_split(self) -> None:
+        # The same defect seen from the other side: body text then a larger heading.  The rule
+        # is symmetric on purpose, so a heading is never absorbed into the paragraph before it.
+        above = self.sized(100.0, 10.0, "previous paragraph")
+        below = self.sized(112.40, 12.5, "2. Related Work")
+        assert flows(above, below) is False
+
+    def test_uniform_body_text_never_splits(self) -> None:
+        above = self.sized(100.0, 10.0)
+        below = self.sized(112.40, 10.0)
+        assert flows(above, below) is True
+
+    def test_a_rounding_difference_does_not_split(self) -> None:
+        # Two per cent is inside the tolerance, so a font reported as 9.8 in one line and 10.0
+        # in the next does not chop a paragraph in half.
+        above = self.sized(100.0, 10.0)
+        below = self.sized(112.40, 9.8)
+        assert flows(above, below) is True
+
+    def test_the_tolerance_is_smaller_than_the_narrowest_measured_change(self) -> None:
+        params = LayoutParams()
+        assert params.paragraph_size_tolerance < 1.0 - 0.926
+
+    def test_no_font_information_falls_back_to_the_gap_tests(self) -> None:
+        # Without a size the rule cannot speak, and staying silent is the only safe option:
+        # guessing a size would split paragraphs that were never a heading.
+        above = TextLine(text="a", bbox=BBox(0.1, point(100.0), 0.4, point(112.40)))
+        below = TextLine(text="b", bbox=BBox(0.1, point(112.40), 0.4, point(124.80)))
+        assert flows(above, below) is True
+
+
 class TestTheOtherGuardsStillApply:
     def test_lines_in_different_columns_do_not_flow(self) -> None:
         above = line(100.0, 80.0, 300.0)

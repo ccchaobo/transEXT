@@ -310,6 +310,13 @@ def looks_like_title(
     # Measured: all 7 multi-author corpus lines were typed as titles before this guard.
     if has_author_shape(stripped):
         return False
+    # A numbered section heading is also short, is also set larger than the body, and — for
+    # the first section — also sits near the top of page one, so `position` cannot separate
+    # them.  Measured: "1. Introduction" was typed as the title in all 8 corpus documents
+    # once the heading was split off from the paragraph under it, which is what made the
+    # heading score 70/78.
+    if _SECTION_NUMBER_RE.match(stripped):
+        return False
     # Top of the first page, in normalised units.
     if paragraph.bbox.y0 > TITLE_ZONE:
         return False

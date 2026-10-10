@@ -346,6 +346,23 @@ class TestAuthorIsNotTheTitle:
         para = make_para(CORPUS_TITLE, y0=0.05, font_size=16.0)
         assert classify(para, position=0) is BlockType.TITLE
 
+    @pytest.mark.parametrize(
+        "text",
+        ["1. Introduction", "2. Related Work", "3.1 Data and annotation", "IV. Method"],
+    )
+    def test_a_numbered_section_heading_is_not_the_title(self, text: str) -> None:
+        # A numbered heading is short, is set larger than the body, and — for the first
+        # section — sits near the top of page one, so `position` cannot separate them.
+        # Measured: once the heading was split off from the paragraph under it, "1.
+        # Introduction" was typed as the title in all 8 corpus documents, which is what made
+        # the heading score 70/78.
+        para = make_para(text, y0=0.30, font_size=12.5, kind="heading", level=1)
+        assert classify(para, position=3) is BlockType.HEADING
+
+    def test_an_unnumbered_heading_near_the_top_is_still_not_the_title(self) -> None:
+        para = make_para("Acknowledgements", y0=0.60, font_size=12.5, kind="heading", level=1)
+        assert classify(para, position=3) is not BlockType.TITLE
+
     def test_a_title_with_a_comma_is_not_mistaken_for_authors(self) -> None:
         # The veto must use the narrow shape test.  The looser author rule fires on any comma
         # plus two capitalised words, which would refuse a real title like this one.

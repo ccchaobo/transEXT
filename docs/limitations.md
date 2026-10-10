@@ -240,19 +240,33 @@ The denominator of the segmentation measure moved from 76 to 175 because with co
 paragraphs *more* corpus blocks find a paragraph to match at all; 76 was the number that
 matched while blocks were being absorbed, not the number that exists.
 
-**What is still not fixed:** the remaining 0.497 are blocks whose text is a proper part of a
-longer paragraph. The corpus's own blocks are finer than any threshold can recover — a
-caption, a heading and the paragraph under it are one visual run of text — so closing this
-needs structure the layout stage does not currently produce, not a better threshold. The
-0.497 is also a lower bound on the current split quality: the measure's "merged" bucket
-cannot distinguish "this block was absorbed into the paragraph that follows" from "this
-block's paragraph is correct but the matcher paired it with a neighbour".
+**The heading was then separated from the paragraph under it** (ADR 0015). That was the last
+piece: a heading's box is taller than a body line, so the gap to the next line came out
+negative and the overlap tolerance accepted it, and neither gap test could see the boundary.
+A type-size change can. Measured over 8 documents and 17 pages, same-column pairs only: within
+a block the ratio below/above is a **constant 1.000** over 501 pairs, and across all 86
+heading-to-next-block pairs it is at most 0.926. The rule breaks when the size changes by more
+than 3%, which sits in the middle of that valley and is symmetric, so a heading absorbed into
+the paragraph *above* it is caught too.
 
-**Calibration caveat.** This corpus has a *constant* 12.40 pt leading and a 10.00 pt line box,
-so its within-paragraph gap is a single point rather than a distribution. The valley is
-therefore wider here than it will be on real papers with mixed leading, and 0.25 is calibrated
-against this corpus, not against published articles. Re-calibration on real papers is
-required before the number can be called settled.
+| measure | after ADR 0014 | after ADR 0015 |
+| --- | --- | --- |
+| corpus blocks addressable on their own | 87/175 (0.4971) | **235/246 (0.9553)** |
+| block-type accuracy | 87/87 | **235/235** |
+| page+region accuracy | 1.0000 (333 blocks) | **1.0000 (409 blocks)** |
+| adjacent-block order | 0.9969 | **0.9975** |
+| line-level order | 1.0000 | 1.0000 |
+
+Only **10 of 246** corpus blocks are still absorbed into a longer paragraph, and 1 is a
+matcher error. The earlier note here that "the corpus's own blocks are finer than any threshold
+can recover" was **wrong** — the heading was recoverable from the type size, and the claim that
+it needed new structure was an assumption rather than a measurement.
+
+**Calibration caveat.** This corpus has a *constant* 12.40 pt leading, a 10.00 pt line box and
+two or three type sizes, so both valleys are wider here than they will be on real papers with
+mixed leading and footnotes. Both 0.25 and 0.03 are calibrated against this corpus, not against
+published articles. Re-calibration on real papers is required before either can be called
+settled.
 
 **The old reading-order measure could not see the ordering defect.** It scored
 these pages at 0.9733 and passed. Word-LCS finds the longest common subsequence, so
@@ -339,26 +353,33 @@ and the spec's own wording is the reason it is not relaxed here. If re-parsing b
 to make the key configurable, and either is a decision to take deliberately with the cost
 measured rather than a silent change.
 
-## 20. The section path is currently the document title
+## 20. The section path is the document title — resolved
 
-Measured in `scripts/evidence_translation.py`: every block of `pdf_b_two_column` carries
-`section_path == ["Reading Order Recovery in Two-Column Layouts"]`, the paper's title. The
-layout stage pushes the title onto the section stack because a title is short and set larger
-than the body, which is its test for a heading; the real section headings never reach the
-stack, because they are still merged into the paragraph below them (section 15).
+This section used to record that every block of `pdf_b_two_column` carried
+`section_path == ["Reading Order Recovery in Two-Column Layouts"]`, the paper's title, because
+the layout stage pushed the title onto the section stack — a title is short and set larger than
+the body, which is its test for a heading — while the real section headings never reached the
+stack, having been merged into the paragraph below them (section 15).
 
-Two consequences, both real:
+That is fixed by ADR 0015. Measured in `scripts/evidence_translation.py`, the context sent for
+each block is now its real section:
 
-* The outline the reader will navigate by has one level and one entry, so it is useless.
-* The context sent to the translation provider is the title for every block, which resolves
-  nothing. A context that already appears in the block's own text is now dropped, so the title
-  block no longer sends itself as its own context, but the rest still receive a title that
-  says nothing about their section.
+```
+heading   '1. Introduction'
+paragraph 'Reading order and evidence tracking are prerequisites for '  ctx='1. Introduction'
+heading   '2. Related Work'
+paragraph 'Layout analysis for two-column articles has a long history'  ctx='2. Related Work'
+```
 
-Both are fixed by the same change — separating a heading from the paragraph under it — which
-is therefore the next thing to fix, not a cosmetic one. Until then the outline is withheld
-rather than shown with one entry, since a single-entry outline presented as navigation would
-misrepresent what the reader knows about the document.
+So the outline the reader navigates by now has real entries at real levels, and the context
+passed to the provider names the section a block is in. Neither was true before.
+
+One further guard was needed and is recorded because it was found by measuring rather than by
+reasoning: once the headings were split off, `"1. Introduction"` was typed as the **title** in
+all 8 documents. A numbered heading is short, is set larger than the body, and — for the first
+section — sits near the top of page one, so position alone cannot separate it from the title.
+`looks_like_title` now refuses a numbered section heading, which took the heading score from
+70/78 to 78/78.
 
 
 

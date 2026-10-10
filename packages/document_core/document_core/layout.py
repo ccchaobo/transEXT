@@ -104,6 +104,17 @@ class LayoutParams:
     #: all at exactly -0.94 pt.  The case that test meant to catch, the reading order
     #: stepping backwards out of a column, is a gap of about -700 pt.
     line_overlap_tolerance: float = 0.15
+    #: A run of text is set in one type size, so any real change of size starts a new block.
+    #: This is what separates a section heading from the paragraph under it, which the gap
+    #: test cannot do: the heading's box is taller than a body line, so the gap between them
+    #: comes out negative and the overlap tolerance accepts it.  Calibrated in
+    #: ``scripts/calibrate_heading_split.py`` over 8 documents and 17 pages, same-column pairs
+    #: only: within a block the ratio below/above is a **constant 1.000** across 501 pairs,
+    #: and across all 86 heading-to-next-block pairs it is at most 0.926.  The valley is
+    #: therefore (0.926, 1.000) and this takes the middle of it, so a heading is split off
+    #: while a paragraph set uniformly is never split.  Symmetric on purpose: a heading
+    #: absorbed into the paragraph *above* it is the same defect seen from the other side.
+    paragraph_size_tolerance: float = 0.03
     #: A paragraph break is a *large* step, so this is small on purpose.  It used to be
     #: 1.55, i.e. 15.5 pt of gap, which is larger than the median paragraph gap actually
     #: present in the corpus (6.9 pt) — so it could never fire, and only the (inverted)
@@ -776,6 +787,14 @@ def _same_column_flow(
         return False
     if gap > params.paragraph_gap_factor * typical_height:
         return False
+    # A change of type size starts a new block.  A heading is set larger than the body, and its
+    # taller box makes the gap to the next line negative, so the gap tests above cannot see the
+    # boundary at all — measured on this corpus, within a block the size ratio is a constant
+    # 1.000 and every heading-to-paragraph pair is at most 0.926.
+    if above.font_size and below.font_size:
+        larger = max(above.font_size, below.font_size)
+        if abs(above.font_size - below.font_size) > params.paragraph_size_tolerance * larger:
+            return False
     # A large horizontal offset between the two lines' left edges can mean a
     # different column; but within a column, an indent also shifts the left
     # edge.  Require vertical proximity plus either column overlap or a small

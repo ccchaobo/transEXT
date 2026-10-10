@@ -210,8 +210,8 @@ better result 43% of the time, below chance. See
 | Adjacent-block order ≥ 95% | **PASS** | **0.9969** (323/324 pairs); `scripts/measure_layout.py` |
 | Reading order (matcher-independent) ≥ 95% | **PASS** | **0.9983** pooled word-LCS over 17 pages; every page ≥ 0.95; `scripts/measure_reading_order.py`. Two-column pages were **0.53–0.54** before the XY-cut fix |
 | Reading order (line-level, merge-independent) ≥ 95% | **PASS** | **1.0000** — 0 inverted pairs of 32964 over 928 matched lines, every document at 1.0000; `scripts/measure_line_order.py`. See [ADR 0013](docs/adr/0013-placing-the-crossing-group.md) |
-| ≥ 200 sampled blocks ≥ 95% correct page and region | **PASS** | **1.0000** (333/333 blocks). Was 0.8952 FAIL; that figure was the paragraph over-merging of [limitations §15](docs/limitations.md), not the matcher artefact this README previously claimed. See [ADR 0014](docs/adr/0014-calibrating-the-paragraph-break.md) |
-| Corpus blocks addressable on their own | **PARTIAL, not a spec item** | **87/175 = 0.4971**, up from 11/76. Reported because anchoring is what the reader is built on; `scripts/measure_segmentation.py` |
+| ≥ 200 sampled blocks ≥ 95% correct page and region | **PASS** | **1.0000** (409/409 blocks). Was 0.8952 FAIL; that figure was the paragraph over-merging of [limitations §15](docs/limitations.md), not the matcher artefact this README previously claimed. See [ADR 0014](docs/adr/0014-calibrating-the-paragraph-break.md) and [ADR 0015](docs/adr/0015-a-type-size-change-starts-a-new-block.md) |
+| Corpus blocks addressable on their own | **PASS, not a spec item** | **235/246 = 0.9553**, from 11/76. Reported because anchoring is what the reader is built on; `scripts/measure_segmentation.py` |
 | OCR CER ≤ 5% on clear scans | **PASS** | recognition 0.0484 / 0.0092 / 0.0334 on the three clear scans, all ≤ 0.05 |
 | OCR reading order | **PARTIAL, not claimed as pass** | 0.78–1.0 per page before layout reordering; see above |
 | Protected placeholder integrity 100% | **PASS** | `tests/unit/test_cleaning.py`, including a percentage token that earlier went unprotected |
