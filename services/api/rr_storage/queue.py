@@ -360,7 +360,10 @@ class JobQueue:
             )
         now = utcnow()
         job.status = status
-        job.stage_status = "succeeded" if status == "succeeded" else "failed"
+        job.stage_status = {
+            "succeeded": "succeeded",
+            "cancelled": "cancelled",
+        }.get(status, "failed")
         job.finished_at = now
         job.error_code = error_code
         job.error_message = error_message
@@ -393,7 +396,9 @@ class JobQueue:
         if job.status == "queued":
             job.status = "cancelled"
             job.finished_at = utcnow()
-            job.stage_status = "failed"
+            # Not "failed": the user asked for this, and nothing broke.  Reporting a
+            # cancellation as a stage failure would misstate what happened.
+            job.stage_status = "cancelled"
             self.emit(session, job, "job_cancelled", data={"reason": "cancelled while queued"})
         else:
             self.emit(session, job, "log", data={"message": "cancellation requested"})

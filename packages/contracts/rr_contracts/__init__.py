@@ -99,6 +99,10 @@ class StageStatus(str, Enum):
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     SKIPPED = "skipped"
+    #: A stage stopped because the user asked it to.  Cancelled is not failed: reporting a
+    #: cancellation as a stage failure tells the reader something broke when nothing did, and
+    #: the spec requires failures and cancellations to stay distinguishable.
+    CANCELLED = "cancelled"
 
 
 BlockTypeWire = Literal[

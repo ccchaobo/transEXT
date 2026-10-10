@@ -29,6 +29,7 @@ from rr_services.translation import (
     TranslationNotConfigured,
     TranslationService,
     cache_key,
+    error_code_for,
 )
 from rr_storage import (
     Block,
@@ -344,8 +345,15 @@ class TestTheSpendGuard:
         plan = service.plan(session, "doc_1")
         with pytest.raises(TranslationNotConfigured) as info:
             service.execute(session, plan)
-        assert ErrorCode.TRANSLATION_NOT_CONFIGURED.value in str(info.value)
-        assert "mock" in str(info.value), "the refusal must say no placeholder text is produced"
+        message = str(info.value)
+        assert "mock" in message, "the refusal must say no placeholder text is produced"
+        # The machine-readable code travels in its own channel.  It used to be prefixed onto
+        # the message as well, and every report that showed both then read
+        # "translation_not_configured: translation_not_configured: ...".  This pins the fix.
+        assert error_code_for(info.value) == ErrorCode.TRANSLATION_NOT_CONFIGURED
+        assert not message.startswith(ErrorCode.TRANSLATION_NOT_CONFIGURED.value), (
+            "the message must not repeat the error code"
+        )
 
     def test_planning_never_needs_a_provider(self, session) -> None:
         make_document(session, blocks=[(BlockType.PARAGRAPH.value, "Prose.")])

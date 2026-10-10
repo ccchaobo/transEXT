@@ -335,11 +335,14 @@ class TranslationService:
         nothing is sent at all when no provider is configured.
         """
         if self.provider is None:
+            # The message does NOT repeat the error code.  The code has its own column on the
+            # job, and embedding it here produced "translation_not_configured:
+            # translation_not_configured: ..." in every report that showed both.
             raise TranslationNotConfigured(
-                f"{ErrorCode.TRANSLATION_NOT_CONFIGURED.value}: no translation provider is "
-                "configured.  Set RR_TRANSLATION_API_KEY (and RR_TRANSLATION_BASE_URL if the "
-                "default is wrong) before translating.  No placeholder or mock text is "
-                "produced, because a mock would make an unverified pipeline look finished."
+                "no translation provider is configured.  Set RR_TRANSLATION_API_KEY (and "
+                "RR_TRANSLATION_BASE_URL if the default is wrong) before translating.  No "
+                "placeholder or mock text is produced, because a mock would make an unverified "
+                "pipeline look finished."
             )
 
         pending = plan.pending_units
