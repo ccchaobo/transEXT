@@ -170,10 +170,97 @@ def _check(data_dir: Path) -> int:
     reading = client.get(f"/api/v1/documents/{document_id}/reading-state").json()
     check("reading state", reading, ["reading_state"])
 
+    print("\n[4] the overlay view's own requirements")
+    # The overlay draws the translation into the area the original occupied, so it needs a usable
+    # box for every block it would cover.  This is the part of that feature which can be checked
+    # without a browser: the panels cannot be seen here, but the geometry they are placed from
+    # can be, and a block with no spans would be a panel drawn at 0x0 with the text invisible.
+    source_text = APP_JS.read_text(encoding="utf-8")
+    if '"overlay"' not in source_text:
+        failures.append("the overlay view is not offered in the mode list")
+        print("  FAIL the overlay view is not offered in the mode list")
+    else:
+        print("  ok   the overlay view is offered in the mode list")
+
+    verbatim = {"formula", "table", "table_cell", "figure"}
+    total_pages = detail["page_count"]
+    covered = 0
+    skipped_verbatim = 0
+    bad: list[str] = []
+    for index in range(total_pages):
+        view = client.get(
+            f"/api/v1/documents/{document_id}/pages/{index}?target_language=zh"
+        ).json()
+        for block in view["blocks"]:
+            if block["type"] in verbatim:
+                # Never covered: a translation of a formula or a table destroys what it means.
+                skipped_verbatim += 1
+                continue
+            boxes = [span["bbox"] for span in block["spans"] if span.get("bbox")]
+            if not block["translatable"] or not boxes:
+                continue
+            x0 = min(b[0] for b in boxes)
+            y0 = min(b[1] for b in boxes)
+            x1 = max(b[2] for b in boxes)
+            y1 = max(b[3] for b in boxes)
+            if not (0.0 <= x0 < x1 <= 1.0 and 0.0 <= y0 < y1 <= 1.0):
+                bad.append(f"page {index} block {block['id']}: union box {(x0, y0, x1, y1)}")
+            covered += 1
+    if bad:
+        failures.append(f"{len(bad)} block(s) would get an unusable overlay panel: {bad[:4]}")
+        print(f"  FAIL {len(bad)} block(s) would get an unusable overlay panel")
+        for line in bad[:4]:
+            print(f"       {line}")
+    else:
+        print(
+            f"  ok   every one of {covered} translatable blocks has a well-formed union box"
+            f" ({total_pages} pages, {skipped_verbatim} verbatim blocks left uncovered)"
+        )
+    if covered == 0:
+        failures.append("no block on any page would be covered, so the check proved nothing")
+        print("  FAIL no block would be covered, so the check proved nothing")
+
+    print("\n[5] the linked scrolling switch is stored, not just accepted")
+    # `link_scrolling` was written on every page turn and read by nothing, so the two panes never
+    # followed each other.  Now that a control writes it and the reader obeys it, it has to
+    # actually persist - otherwise the checkbox silently does nothing on the next visit.
+    for wanted in (False, True):
+        written = client.put(
+            f"/api/v1/documents/{document_id}/reading-state",
+            json={
+                "page_index": 0, "view_mode": "overlay", "zoom": 1.0,
+                "link_scrolling": wanted,
+            },
+        )
+        got = client.get(f"/api/v1/documents/{document_id}/reading-state").json()["reading_state"]
+        if written.status_code != 200:
+            # The reason this loop exists.  `view_mode` is a Literal in the contract and the
+            # overlay is a new member of it; forgetting to add it there rejects the reader's own
+            # view choice with a 400, and the switch would appear to work until it was reloaded.
+            failures.append(
+                f"storing view_mode='overlay' was refused: HTTP {written.status_code} {written.text[:200]}"
+            )
+            print(f"  FAIL storing view_mode='overlay' was refused: HTTP {written.status_code}")
+            print(f"       {written.text[:300]}")
+            break
+        if got is None:
+            failures.append("reading state came back empty after a successful write")
+            print("  FAIL reading state came back empty after a successful write")
+            break
+        if got["link_scrolling"] is not wanted or got["view_mode"] != "overlay":
+            failures.append(
+                f"reading state did not persist: link_scrolling={got['link_scrolling']} "
+                f"view_mode={got['view_mode']!r}"
+            )
+            print(f"  FAIL link_scrolling={wanted} came back as {got['link_scrolling']}")
+            break
+    else:
+        print("  ok   link_scrolling and the overlay view mode both survive a round trip")
+
     annotations = client.get(f"/api/v1/documents/{document_id}/annotations").json()
     check("annotation listing", annotations, ["annotations", "needs_relocation"])
 
-    print("\n[4] the pages the frontend requests must exist")
+    print("\n[6] the pages the frontend requests must exist")
     for index in range(detail["page_count"] or 0):
         for kind in ("preview", "thumbnail"):
             response = client.get(f"/api/v1/documents/{document_id}/pages/{index}/{kind}.png")
@@ -182,7 +269,7 @@ def _check(data_dir: Path) -> int:
                 failures.append(f"{kind}.png page {index}: HTTP {response.status_code}")
             print(f"  {status} pages/{index}/{kind}.png  {len(response.content)} bytes")
 
-    print("\n[5] static assets the browser will fetch")
+    print("\n[7] static assets the browser will fetch")
     # Derived from the module graph rather than listed by hand, because a hand-written list is
     # exactly how a new module goes unchecked: `settings.js` was added and fetched by
     # `app.js`, and a missing one would have broken the page with no failing test - a 404 on an

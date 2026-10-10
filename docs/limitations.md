@@ -716,6 +716,58 @@ because it happened to re-read afterwards. Both were found by calling the endpoi
 bytes, not by reading the code, and neither was visible to the 25 tests that already covered this
 endpoint.
 
+## 33. `link_scrolling` was stored, returned, tested — and read by nothing
+
+The reading state carries a `link_scrolling` flag. It is in the contract, in the `reading_states`
+table, in the OpenAPI document, it is written on every page turn and on every view-mode change, it
+is returned by `GET` and echoed by `PUT`, and `tests/integration/test_api.py` asserts that it
+survives a round trip. The frontend has never once read it. There was no scroll listener anywhere
+in the application.
+
+So the two panes never followed each other. The only thing that ever moved the other side was a
+click, which centres the matching block. A reader scrolling through a paper had to find the
+matching paragraph on the other side by eye, every time — which is the complaint that led here.
+
+This is the same shape as [`page_columns`](#27-page_columns-was-always-1-and-has-been-removed): a
+value that exists, is persisted, is asserted about, and has no effect. A round-trip test proves a
+value is *stored*; it says nothing about whether anything *acts on* it. That distinction is worth
+keeping in mind for every other round-trip assertion in the suite, which is most of them.
+
+The fix reads the flag and adds a **联动** checkbox that writes it, since a stored switch with no
+control is the other half of the same problem. The link snaps from block to block rather than
+interpolating a scroll fraction — see the note in the README for why nothing finer can be correct
+here — and it has to distinguish the reader's scrolling from its own writes, or the two panes hand
+the scroll back and forth and neither settles. That guard is a recorded scroll position plus a
+short suspension window while a smooth `scrollIntoView` is in flight.
+
+## 34. The overlay view is unverified, and cannot be verified here
+
+The 译文覆盖 view is new code in the browser, and **nothing in this repository has ever executed
+it on a page**. There is no browser automation available in this environment — that is ADR 0016's
+whole reason for server-rendering page images — so the panels have never been seen, the text has
+never been laid out, and the linked scrolling has never been observed to settle.
+
+What *is* checked, and what it is worth:
+
+* the modules parse (`node --check`), and every field the new code reads exists in a real payload,
+  because `verify_frontend_contract.py` extracts those names from `app.js` and requires them
+  present in the response from a real import;
+* every translatable, non-verbatim block on every page of a real document has at least one span
+  with a bbox and a union box inside the page — 54 blocks over 2 pages, with 1 verbatim block left
+  uncovered. This is a statement about the **data**. It is not a statement about the rendering,
+  and it would be easy to mistake for one;
+* `overlay` round-trips through `PUT /reading-state`, which found a real defect immediately:
+  `view_mode` is a `Literal` in the contract and the new mode was not in it, so the reader's own
+  choice of view would have been refused with a 400 — and only when they picked it, at which point
+  it looks like a setting that silently did not stick.
+
+The check in the previous bullet was written, run, and **failed** for that reason before it was
+fixed, which is the only evidence that it can fail at all. Everything past "the data is
+well-formed" is PENDING and belongs to the person who can open a page. The three things most
+likely to be wrong, in order: whether the panels land where they belong; whether the linked
+scrolling settles instead of oscillating; and whether the overflow badge appears on the paragraphs
+that need it and not on the ones that do not.
+
 
 
 

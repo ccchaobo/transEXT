@@ -358,6 +358,32 @@ class TestReadingState:
         assert got["zoom"] == 1.5
         assert got["link_scrolling"] is False
 
+    def test_every_view_mode_the_reader_can_offer_is_accepted(self, client) -> None:
+        """`view_mode` is a Literal, so a mode the frontend offers and the contract forgot is a
+        400 on the reader's own choice of view - and it fails only when they pick it, then looks
+        like the setting silently did not stick.
+
+        The list is read out of `app.js` rather than written here, because a second hand-kept copy
+        of the same list is how the two drift apart in the first place.
+        """
+        import re
+        from pathlib import Path
+
+        source = Path("apps/web/js/app.js").read_text(encoding="utf-8")
+        block = re.search(r"for \(const \[value, label\] of \[(.*?)\]\)", source, re.S)
+        assert block, "the view mode list is no longer where this test expects it"
+        offered = re.findall(r'\["([a-z_]+)",', block.group(1))
+        assert len(offered) >= 5, f"only found {offered}"
+
+        document_id = import_and_parse(client)
+        for mode in offered:
+            put = client.put(
+                f"/api/v1/documents/{document_id}/reading-state",
+                json={"page_index": 0, "view_mode": mode, "zoom": 1.0, "link_scrolling": True},
+            )
+            assert put.status_code == 200, f"view_mode={mode!r} was refused: {put.text[:200]}"
+            assert put.json()["view_mode"] == mode
+
 
 class TestExport:
     def test_the_export_states_what_it_is(self, client) -> None:

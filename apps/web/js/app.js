@@ -31,6 +31,18 @@ const state = {
   jobs: [],
   jobsTimer: null,
   annotations: [],
+  // Whether the two panes follow each other.  This is `link_scrolling` from the reading state,
+  // and it is load-bearing here rather than decorative: the field used to be written on every
+  // page turn and read by nothing at all, so the panes never followed each other and the reader
+  // had to hunt for the matching paragraph by eye on every scroll.
+  linkScrolling: true,
+  // Scroll positions this app moved itself, so its own write is not mistaken for the reader
+  // scrolling.  Without it the two panes trade scroll positions and neither settles.
+  linkedTo: { "source-body": null, "target-body": null },
+  // Set while a smooth `scrollIntoView` is in flight, whose events cannot be attributed.
+  linkSuspendedUntil: 0,
+  overlayPanels: [],
+  overflowObserver: null,
 };
 
 const els = {
@@ -196,8 +208,9 @@ async function openReader(documentId) {
 
   const reader = el("div", "reader");
   reader.dataset.mode = (saved.reading_state && saved.reading_state.view_mode) || "side_by_side";
+  state.linkScrolling = !saved.reading_state || saved.reading_state.link_scrolling !== false;
   reader.appendChild(buildSidebar(doc, outlinePayload));
-  reader.appendChild(buildPanes(doc));
+  reader.appendChild(buildPanes(doc, reader.dataset.mode));
   els.view.appendChild(reader);
 
   await loadPage(state.pageIndex);
@@ -279,7 +292,7 @@ function buildSidebar(doc, outlinePayload) {
   return sidebar;
 }
 
-function buildPanes(doc) {
+function buildPanes(doc, viewMode) {
   const panes = el("div", "panes");
 
   /* -- source -- */
@@ -312,21 +325,48 @@ function buildPanes(doc) {
 
   const mode = el("select");
   for (const [value, label] of [
-    ["side_by_side", "左右对照"], ["stacked", "上下对照"],
+    ["side_by_side", "左右对照"], ["stacked", "上下对照"], ["overlay", "译文覆盖"],
     ["source_only", "仅原文"], ["target_only", "仅译文"],
   ]) {
     const option = el("option", null, label);
     option.value = value;
     mode.appendChild(option);
   }
+  mode.value = viewMode;
   mode.addEventListener("change", async () => {
     const reader = document.querySelector(".reader");
     reader.dataset.mode = mode.value;
+    // The overlay is drawn into the source pane, so it has to be built or torn down here rather
+    // than waiting for the next page load: switching into it otherwise shows an empty mode.
+    if (state.page) renderSource(state.page);
     await api.putReadingState(doc.id, {
-      page_index: state.pageIndex, view_mode: mode.value, zoom: 1, link_scrolling: true,
+      page_index: state.pageIndex, view_mode: mode.value, zoom: 1,
+      link_scrolling: state.linkScrolling,
     }).catch(() => {});
   });
   targetHead.appendChild(mode);
+
+  // The switch for `link_scrolling`.  It was stored and round-tripped through the API while
+  // nothing read it; giving it a control is what makes the stored value mean something.  Both
+  // panes follow each other by default, which is the behaviour the field's default promises.
+  const linkLabel = el("label", "link-toggle");
+  linkLabel.title = "滚动一侧时，另一侧跟到对应的段落";
+  const linkBox = document.createElement("input");
+  linkBox.type = "checkbox";
+  linkBox.id = "link-scrolling";
+  linkBox.checked = state.linkScrolling;
+  linkBox.addEventListener("change", async () => {
+    state.linkScrolling = linkBox.checked;
+    await api.putReadingState(doc.id, {
+      page_index: state.pageIndex,
+      view_mode: document.querySelector(".reader").dataset.mode,
+      zoom: 1,
+      link_scrolling: linkBox.checked,
+    }).catch(() => {});
+  });
+  linkLabel.appendChild(linkBox);
+  linkLabel.appendChild(document.createTextNode("联动"));
+  targetHead.appendChild(linkLabel);
 
   const translateButton = el("button", "button primary", "翻译全文");
   translateButton.id = "translate-button";
@@ -340,6 +380,7 @@ function buildPanes(doc) {
 
   panes.appendChild(source);
   panes.appendChild(target);
+  linkPanes(sourceBody, targetBody);
   return panes;
 }
 
@@ -460,6 +501,137 @@ function renderSource(payload) {
     }
   }
   body.appendChild(shell);
+  renderOverlay(payload, shell);
+}
+
+/* ------------------------------------------------------------------ the overlay view */
+
+/** Where a block's text sits on the page, in the page's own normalised coordinates.
+ *
+ *  A block has one box per span and the spans are per line, so the block's area is their union.
+ *  That union is what the translated text has to fit into.  It is not the paragraph's "true"
+ *  box - a paragraph whose last line is short has a union that includes the empty space beside
+ *  it - so the panel is drawn with a visible border and can be moved out of the way by hovering,
+ *  rather than pretending to be an exact match.
+ */
+function blockArea(block) {
+  const boxes = (block.spans || []).map((span) => span.bbox).filter(Boolean);
+  if (!boxes.length) return null;
+  return [
+    Math.min(...boxes.map((b) => b[0])),
+    Math.min(...boxes.map((b) => b[1])),
+    Math.max(...boxes.map((b) => b[2])),
+    Math.max(...boxes.map((b) => b[3])),
+  ];
+}
+
+/** Draw the translation over the source text, in place.
+ *
+ *  This is a reading view, not an export and not a translated file.  Filling an English paragraph
+ *  with Chinese is a layout problem this does not attempt: the original is covered where the
+ *  translation fits and, where it does not, the panel scrolls and says so.  It must never be
+ *  described as producing a same-layout document, and the export does not come from here.
+ *
+ *  What it is worth: the two panes can only ever be aligned block by block, because one is a page
+ *  image whose height follows its aspect ratio and the other is a list of cards whose height does
+ *  not.  Every scroll still costs the reader a hunt for the matching paragraph.  Putting the
+ *  translation where the original is removes the correspondence problem rather than managing it.
+ */
+function renderOverlay(payload, shell) {
+  state.overlayPanels = [];
+  if (document.querySelector(".reader").dataset.mode !== "overlay") return;
+
+  for (const block of payload.blocks) {
+    const area = blockArea(block);
+    if (!area) continue;
+
+    // Formulas, figures and tables are shown verbatim and are never covered: they carry meaning
+    // that a translation would destroy, and the classifier already marks them.
+    if (VERBATIM_TYPES.has(block.type)) continue;
+
+    const translation = block.translation;
+    const translated = translation && translation.status === "ok" && translation.text;
+
+    if (!translated) {
+      // Nothing to draw, and drawing an empty panel would hide the original text for no reason.
+      // The block box underneath already marks it; say which of the reasons it is.
+      const boxes = state.boxes.get(block.id) || [];
+      for (const box of boxes) {
+        box.classList.add("is-untranslated");
+        if (!block.translatable) {
+          box.title = `${blockLabel(block)}：不可翻译，按原文保留`;
+        } else if (translation && translation.status !== "ok") {
+          box.title = `${blockLabel(block)}：翻译失败 ${translation.error_code || ""}`.trim();
+        } else {
+          box.title = `${blockLabel(block)}：尚未翻译`;
+        }
+      }
+      continue;
+    }
+
+    const panel = el("div", "overlay-panel");
+    const [x0, y0, x1, y1] = area;
+    panel.style.left = `${x0 * 100}%`;
+    panel.style.top = `${y0 * 100}%`;
+    panel.style.width = `${(x1 - x0) * 100}%`;
+    panel.style.height = `${(y1 - y0) * 100}%`;
+    panel.dataset.blockId = block.id;
+    panel.title = `${blockLabel(block)}：译文覆盖原文。悬停可看到下面的原文。`;
+
+    const text = el("div", "overlay-text");
+    text.textContent = translation.text;
+    panel.appendChild(text);
+
+    if (translation.stale) {
+      panel.classList.add("is-stale");
+      text.title = "原文在该译文生成后发生过变化，译文可能已过期。";
+    }
+
+    // The overflow badge.  A translated paragraph that does not fit is the normal case in the
+    // other direction - English into German, French or Russian grows - and it must be *visible*.
+    // Shrinking the type until it fits would produce text nobody can read, which is the failure
+    // this view exists to avoid; silently clipping it would be worse, because it would look fine.
+    const badge = el("span", "overlay-overflow", "溢出");
+    badge.title = "译文比原文的位置长，框内可以滚动查看其余部分";
+    panel.appendChild(badge);
+
+    panel.addEventListener("mouseenter", () => {
+      panel.classList.add("is-peeking");
+      highlight(block.id, true);
+    });
+    panel.addEventListener("mouseleave", () => {
+      panel.classList.remove("is-peeking");
+      highlight(block.id, false);
+    });
+    panel.addEventListener("click", () => selectBlock(block.id, { scroll: false, scrollOther: false }));
+
+    shell.appendChild(panel);
+    state.overlayPanels.push(panel);
+  }
+
+  measureOverflow(shell);
+}
+
+/** Flag the panels whose text does not fit, and re-flag them when the window changes size. */
+function measureOverflow(shell) {
+  const measure = () => {
+    for (const panel of state.overlayPanels) {
+      if (!panel.isConnected) continue;
+      const text = panel.firstElementChild;
+      if (!text) continue;
+      const overflows = text.scrollHeight > text.clientHeight + 1;
+      panel.classList.toggle("is-overflowing", overflows);
+    }
+  };
+  // Twice: once now, and once after layout has settled.  Container queries mean the font size is
+  // not known until the shell has been laid out, so measuring synchronously gets the wrong
+  // answer for the first page and the right one for every page after it - the sort of bug that
+  // only shows on the first page you open.
+  measure();
+  requestAnimationFrame(measure);
+  if (state.overflowObserver) state.overflowObserver.disconnect();
+  state.overflowObserver = new ResizeObserver(measure);
+  state.overflowObserver.observe(shell);
 }
 
 /* ------------------------------------------------------------------ translation pane */
@@ -592,13 +764,95 @@ function selectBlock(blockId, { scroll = true, scrollOther = true } = {}) {
 
   if (scrollOther && card) card.scrollIntoView({ block: "center", behavior: "smooth" });
   if (scroll && boxes && boxes.length) boxes[0].scrollIntoView({ block: "center", behavior: "smooth" });
+  if (scrollOther || scroll) {
+    // `scrollIntoView` does not go through the linked-scroll guard, and it is smooth, so its
+    // scroll events arrive over the next several frames. A short suspension is simpler and more
+    // reliable than trying to predict where it will land.
+    state.linkSuspendedUntil = performance.now() + 600;
+  }
 
   for (const item of document.querySelectorAll(".outline-item")) {
     item.classList.toggle("is-active", item.dataset.blockId === blockId);
   }
 }
 
+/* ------------------------------------------------------------------ scroll linking */
+
+/* The two panes are aligned block by block and nothing finer, and that is not a shortcut.
+ *
+ * The source side is one page image whose height follows the page's aspect ratio; the target side
+ * is a stack of cards whose total height has no relation to it. Equal fractions of the two scroll
+ * ranges therefore point at different paragraphs, and any scheme that interpolates between block
+ * positions has to invent a correspondence that does not exist. Snapping to the block nearest the
+ * top of the viewport is the only mapping that survives that - and it is also exactly what the
+ * reader is doing by eye when they hunt for the matching paragraph.
+ */
+
+const PANE_PAD = 14;
+
+function paneRelTop(node, body) {
+  return node.getBoundingClientRect().top - body.getBoundingClientRect().top;
+}
+
+function anchorBounds(nodes, body) {
+  const list = Array.isArray(nodes) ? nodes : [nodes];
+  let top = Infinity;
+  let bottom = -Infinity;
+  for (const node of list) {
+    const at = paneRelTop(node, body);
+    top = Math.min(top, at);
+    bottom = Math.max(bottom, at + node.offsetHeight);
+  }
+  return { top, bottom };
+}
+
+function topmostBlock(anchors, body) {
+  let picked = null;
+  for (const [id, nodes] of anchors) {
+    const list = Array.isArray(nodes) ? nodes : [nodes];
+    if (!list.length) continue;
+    const { top, bottom } = anchorBounds(list, body);
+    // `bottom > PANE_PAD` drops blocks that have already scrolled off the top; of the rest, the
+    // one whose top is highest is the one the reader is looking at.
+    if (bottom > PANE_PAD + 2 && (picked === null || top < picked.top)) picked = { id, top };
+  }
+  return picked ? picked.id : null;
+}
+
+function scrollPaneToBlock(body, anchors, blockId) {
+  const nodes = anchors.get(blockId);
+  if (!nodes) return false;
+  const { top } = anchorBounds(nodes, body);
+  const target = Math.max(0, body.scrollTop + top - PANE_PAD);
+  // Record the position this code is about to set. The scroll event it causes arrives on the
+  // *other* pane's listener, which would otherwise read it as the reader scrolling and hand the
+  // scroll straight back - the two panes would trade positions and neither would settle.
+  state.linkedTo[body.id] = target;
+  if (Math.abs(target - body.scrollTop) < 2) return false;
+  body.scrollTop = target;
+  return true;
+}
+
+function linkPanes(sourceBody, targetBody) {
+  const pairs = [
+    [sourceBody, targetBody, () => state.boxes, () => state.cards],
+    [targetBody, sourceBody, () => state.cards, () => state.boxes],
+  ];
+  for (const [from, to, fromAnchors, toAnchors] of pairs) {
+    from.addEventListener("scroll", () => {
+      const echo = state.linkedTo[from.id];
+      state.linkedTo[from.id] = null;
+      if (echo !== null && Math.abs(from.scrollTop - echo) < 2) return;
+      if (!state.linkScrolling) return;
+      if (performance.now() < (state.linkSuspendedUntil || 0)) return;
+      const blockId = topmostBlock(fromAnchors(), from);
+      if (blockId) scrollPaneToBlock(to, toAnchors(), blockId);
+    }, { passive: true });
+  }
+}
+
 /* ------------------------------------------------------------------ translation jobs */
+
 
 async function startTranslation(documentId) {
   const button = document.getElementById("translate-button");

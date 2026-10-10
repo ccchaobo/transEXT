@@ -437,7 +437,9 @@ class ReadingState(BaseModel):
 
     page_index: int = Field(default=0, ge=0)
     block_id: str | None = None
-    view_mode: Literal["side_by_side", "source_only", "target_only", "stacked"] = "side_by_side"
+    view_mode: Literal[
+        "side_by_side", "source_only", "target_only", "stacked", "overlay"
+    ] = "side_by_side"
     zoom: float = Field(default=1.0, gt=0.0, le=8.0)
     link_scrolling: bool = True
     revision_id: str | None = None

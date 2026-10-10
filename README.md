@@ -40,7 +40,7 @@ that demonstrates it, and every one of them was run to produce the results in th
 | Corpus | 35 labelled samples with draw-time ground truth | `benchmarks/rr_m0/corpus_generator.py`, `benchmarks/corpus/manifest.json` |
 | HTTP API | 22 routes over the frozen contract; loopback-only, same-origin guard, refusals with reasons | `tests/integration/test_api.py`, `scripts/verify_live_acceptance.py` |
 | Worker | Separate process; leased, fenced, cancellable jobs; per-stage and per-unit status | `tests/unit/test_worker.py`, `scripts/smoke_storage.py` |
-| Reader | Server-rendered page images with normalised-bbox overlays; four view modes; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py` |
+| Reader | Server-rendered page images with normalised-bbox overlays; five view modes; linked scrolling; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py` |
 
 **What is PENDING, and why.** These cannot be closed in this environment, and are recorded rather
 than worked around:
@@ -159,6 +159,43 @@ stage yet, so the server declines those formats instead of pretending. A refusal
 reported on the document (`parse_status = failed`), on the job (`error_code`), and in
 the reader — not as a server error and never as an empty success.
 
+### Reading a page: five view modes, and the panes follow each other
+
+The reader shows one page at a time and offers **译文覆盖** (the translation drawn where the
+original is), **左右对照**, **上下对照**, **仅原文** and **仅译文**.
+
+In the two side-by-side modes the two panes follow each other: scrolling either one moves the
+other to the matching paragraph, and the **联动** checkbox turns that off. Off is a reasonable
+choice — the link snaps from paragraph to paragraph, and if you are reading one long paragraph
+you may prefer the other side to stay where you put it.
+
+The alignment is **block by block and nothing finer**, and that is not a shortcut being excused.
+The source pane is one page image whose height follows the page's aspect ratio; the target pane is
+a stack of cards whose total height has nothing to do with it. Equal fractions of the two scroll
+ranges therefore point at different paragraphs, so nothing that interpolates between positions can
+be right. Snapping to the paragraph nearest the top of the viewport is the only mapping that
+survives that.
+
+**译文覆盖** removes the correspondence problem instead of managing it. The translated text is
+drawn into the area the original occupied, so there is only one place to look. Four things it
+deliberately does not pretend:
+
+* It is a **reading view, not an export**, and it is not a translated file. Filling an English
+  paragraph with Chinese is a layout problem this does not attempt, and the bilingual Markdown
+  export does not come from here.
+* Formulas, figures and tables are **never covered** — the classifier marks them and they stay
+  verbatim.
+* Where the translation is longer than the space the original used (English into German, French or
+  Russian grows; Chinese into English grows), the panel **scrolls and shows an 溢出 badge**. The
+  type is never shrunk to fit, because text shrunk until it fits is text nobody can read, which is
+  the failure this view exists to avoid.
+* The panel's area is the union of the block's line boxes, which is the paragraph's own area in
+  almost every case but not by construction. Hovering a panel lets the original show through, so
+  you can always check whether it is covering something that is not its own.
+
+A block with no translation is left showing its original, marked so you can tell "not translated"
+from "translated to something empty".
+
 ## Verify
 
 Every command below is runnable from the repository root and prints its own result.
@@ -251,19 +288,19 @@ at the calibrated 250 dpi. Full data in
 
 | Stage | n | P50 | P95 | Max | Threshold | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| Open a PDF | 14 | 1.8 ms | 1.9 ms | 2.0 ms | — | — |
-| Extract text, one page | 31 | 2.3 ms | 5.1 ms | 7.6 ms | — | — |
-| First-screen preview render | 14 | 45.5 ms | 211.2 ms | 284.7 ms | ≤ 3 s | **PASS** |
-| Page-turn preview render | 48 | 40.9 ms | 214.3 ms | 277.3 ms | ≤ 300 ms | **PASS** |
-| Scan detection, one page | 31 | 1.4 ms | 4.1 ms | 4.2 ms | — | — |
-| DOCX conversion | 6 | 76.0 ms | 155.5 ms | 155.5 ms | — | — |
-| OCR engine load | 10 | 184.3 ms | 679.3 ms | 679.3 ms | — | — |
-| OCR render, one page | 13 | 170.5 ms | 190.0 ms | 190.8 ms | — | — |
-| **OCR recognition, one page** | 17 | **7.5 s** | **10.7 s** | **10.7 s** | — | **not interactive** |
+| Open a PDF | 14 | 1.7 ms | 2.3 ms | 2.7 ms | — | — |
+| Extract text, one page | 31 | 2.3 ms | 5.5 ms | 7.5 ms | — | — |
+| First-screen preview render | 14 | 45.8 ms | 235.0 ms | 282.6 ms | ≤ 3 s | **PASS** |
+| Page-turn preview render | 48 | 41.4 ms | 224.2 ms | 277.8 ms | ≤ 300 ms | **PASS** |
+| Scan detection, one page | 31 | 1.3 ms | 4.1 ms | 4.4 ms | — | — |
+| DOCX conversion | 6 | 69.0 ms | 171.7 ms | 171.7 ms | — | — |
+| OCR engine load | 10 | 190.1 ms | 667.0 ms | 667.0 ms | — | — |
+| OCR render, one page | 13 | 171.9 ms | 187.6 ms | 194.1 ms | — | — |
+| **OCR recognition, one page** | 17 | **7.6 s** | **10.6 s** | **10.7 s** | — | **not interactive** |
 
-These are single-run figures and the P95s carry visible run-to-run variation — across five runs of
-identical code the first-screen P95 was observed at 211.2, 212.6, 212.7, 226.9 and 230.9 ms. The
-threshold verdicts hold in every run, because the margin is large; the individual milliseconds
+These are single-run figures and the P95s carry visible run-to-run variation — across six runs of
+identical code the first-screen P95 was observed at 211.2, 212.6, 212.7, 226.9, 230.9 and 235.0 ms.
+The threshold verdicts hold in every run, because the margin is large; the individual milliseconds
 should be read as "about this", not as a fixed property of the code. The artifact in
 [`benchmarks/out/perf.json`](benchmarks/out/perf.json) is always the run it was written from, so
 regenerating it will move these numbers slightly and the table should then be updated to match.
@@ -276,7 +313,7 @@ figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that do
 defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
 measurement cannot drift from it.
 
-Peak working set for the whole run: 1740 MiB, a batch figure across many documents
+Peak working set for the whole run: 1742 MiB, a batch figure across many documents
 rather than a per-document footprint ([limitations §14](docs/limitations.md)).
 
 OCR recognition is three orders of magnitude outside the interactive targets, and

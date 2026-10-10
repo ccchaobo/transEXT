@@ -1964,7 +1964,8 @@
               "side_by_side",
               "source_only",
               "target_only",
-              "stacked"
+              "stacked",
+              "overlay"
             ],
             "title": "View Mode",
             "type": "string"
