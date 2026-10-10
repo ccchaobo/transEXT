@@ -19,7 +19,7 @@
       "recognised_chars": 3314,
       "reference_lines": 46,
       "recognised_lines": 44,
-      "seconds": 12.23,
+      "seconds": 9.38,
       "mean_confidence": 0.923
      },
      {
@@ -32,15 +32,15 @@
       "recognised_chars": 2145,
       "reference_lines": 51,
       "recognised_lines": 48,
-      "seconds": 7.97,
+      "seconds": 6.21,
       "mean_confidence": 0.875
      }
     ],
     "cer": 0.0484,
     "reference_chars": 5724,
-    "seconds": 20.2,
+    "seconds": 15.59,
     "dpi": 250,
-    "wall_seconds": 26.47
+    "wall_seconds": 20.6
    },
    {
     "document": "scan_b_two_column_noisy",
@@ -55,7 +55,7 @@
       "recognised_chars": 3945,
       "reference_lines": 102,
       "recognised_lines": 96,
-      "seconds": 14.78,
+      "seconds": 9.97,
       "mean_confidence": 0.913
      },
      {
@@ -68,15 +68,15 @@
       "recognised_chars": 2544,
       "reference_lines": 82,
       "recognised_lines": 80,
-      "seconds": 7.09,
+      "seconds": 6.78,
       "mean_confidence": 0.892
      }
     ],
     "cer": 0.0338,
     "reference_chars": 6637,
-    "seconds": 21.87,
+    "seconds": 16.75,
     "dpi": 250,
-    "wall_seconds": 29.97
+    "wall_seconds": 24.18
    },
    {
     "document": "scan_c_skewed",
@@ -91,7 +91,7 @@
       "recognised_chars": 2659,
       "reference_lines": 56,
       "recognised_lines": 52,
-      "seconds": 7.44,
+      "seconds": 7.4,
       "mean_confidence": 0.889
      },
      {
@@ -104,13 +104,13 @@
       "recognised_chars": 2168,
       "reference_lines": 33,
       "recognised_lines": 35,
-      "seconds": 5.6,
+      "seconds": 5.62,
       "mean_confidence": 0.914
      }
     ],
     "cer": 0.0092,
     "reference_chars": 4795,
-    "seconds": 13.05,
+    "seconds": 13.02,
     "dpi": 250,
     "wall_seconds": 17.13
    },
@@ -127,7 +127,7 @@
       "recognised_chars": 3523,
       "reference_lines": 46,
       "recognised_lines": 46,
-      "seconds": 8.75,
+      "seconds": 8.72,
       "mean_confidence": 0.919
      },
      {
@@ -140,7 +140,7 @@
       "recognised_chars": 2182,
       "reference_lines": 51,
       "recognised_lines": 48,
-      "seconds": 5.49,
+      "seconds": 5.52,
       "mean_confidence": 0.872
      }
     ],
@@ -148,7 +148,7 @@
     "reference_chars": 5724,
     "seconds": 14.24,
     "dpi": 250,
-    "wall_seconds": 16.43
+    "wall_seconds": 16.42
    },
    {
     "document": "scan_e_grayscale",
@@ -163,7 +163,7 @@
       "recognised_chars": 3947,
       "reference_lines": 102,
       "recognised_lines": 97,
-      "seconds": 9.56,
+      "seconds": 9.25,
       "mean_confidence": 0.913
      },
      {
@@ -176,15 +176,15 @@
       "recognised_chars": 2544,
       "reference_lines": 82,
       "recognised_lines": 80,
-      "seconds": 6.77,
+      "seconds": 6.61,
       "mean_confidence": 0.89
      }
     ],
     "cer": 0.0334,
     "reference_chars": 6637,
-    "seconds": 16.32,
+    "seconds": 15.86,
     "dpi": 250,
-    "wall_seconds": 23.08
+    "wall_seconds": 22.63
    }
   ]
  }
