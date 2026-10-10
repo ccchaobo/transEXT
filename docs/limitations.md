@@ -684,6 +684,38 @@ returned by any endpoint, it is stored with an `is_secret` flag that redacts it 
 the table is read whole, and it is reported only as a boolean. For a single-user reader bound to
 loopback that trade was accepted knowingly.
 
+## 32. The check that exists to explain a failure reported a code and nothing else
+
+`POST /settings/translation/test` was written because a wrong base URL, a wrong model id and a
+wrong key all look identical from the outside. It is the one feature whose entire value is the
+explanation it returns. Sending it at an endpoint that answers `HTTP 502` with an **empty body**
+returned:
+
+```
+ok=False  http_status=502  error_code=external_unavailable  error_message=""
+```
+
+The code, and then nothing. The panel rendered `external_unavailable：` and stopped — strictly less
+useful than the failure itself, because the reader now has a code they cannot acton.
+
+The empty body is the diagnosis and was being thrown away. A chat-completions service that refuses
+always sends a reason; a 502 with nothing in it comes from something that is not the service. The
+message now says so, and names the responder from its own headers when there are any.
+
+The case is real, not hypothetical, and was measured: on this machine a request to the discard port
+`127.0.0.1:9` returns HTTP 502 with an empty body and no `Server` header. **No proxy variable is set
+in this environment**, which is why the message names a proxy as one possibility rather than as the
+cause — what answered has not been identified, only detected. The regression test reproduces the
+*shape* with a local responder rather than reaching for port 9, so the test does not depend on this
+machine's port 9 being answered by whatever answers it.
+
+The same run found a second, smaller defect: `DELETE /settings/translation` answered with
+`{removed, effective}` while a read answered `{effective, stored, env_overrides}`. Two shapes for
+one resource is how a client renders a stale panel after a successful clear — the panel worked only
+because it happened to re-read afterwards. Both were found by calling the endpoint and reading the
+bytes, not by reading the code, and neither was visible to the 25 tests that already covered this
+endpoint.
+
 
 
 

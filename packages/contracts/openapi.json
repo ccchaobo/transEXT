@@ -3505,7 +3505,7 @@
           "settings"
         ],
         "summary": "Delete Translation Settings",
-        "description": "Forget every stored translation setting, falling back to the environment and defaults.",
+        "description": "Forget every stored translation setting, falling back to the environment and defaults.\n\nAnswers with the same three keys as a read, plus the count removed, so a client can render\nthe result of a clear without a second round trip - and so that \"nothing left to clear\" and\n\"cleared\" are distinguishable by the same field a read would have shown.  An earlier version\nomitted ``stored`` here and every client had to call the read again to find out what state it\nwas now in.",
         "operationId": "delete_translation_settings_api_v1_settings_translation_delete",
         "responses": {
           "200": {

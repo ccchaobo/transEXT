@@ -509,7 +509,26 @@ class OpenAIChatTranslationProvider:
         report["http_status"] = response.status_code
         if response.status_code >= 400:
             report["error_code"] = code_for_status(response.status_code)
-            report["error_message"] = (response.text or "")[:400]
+            body = (response.text or "").strip()
+            if body:
+                report["error_message"] = body[:400]
+            else:
+                # An empty body is itself the diagnosis, and it has to be said out loud.  A
+                # chat-completions endpoint that refuses always sends a reason; a 502 with
+                # nothing in it comes from something that is not the service - a corporate
+                # proxy, a TLS-inspecting middlebox, or a port that is answered by whatever
+                # happened to be listening.  Reporting the code and leaving the message blank
+                # would hand the reader "external_unavailable:" and no way to tell those apart,
+                # which is worse than the failure itself.  Measured on this machine: a request
+                # to the discard port 127.0.0.1:9 returns exactly this - 502, no body, and no
+                # Server header - so the case is real and not hypothetical.
+                report["error_message"] = (
+                    f"the endpoint answered HTTP {response.status_code} with an empty body, "
+                    "which a chat-completions service does not normally do. Check the base "
+                    "URL, and whether a proxy or a network filter is between this machine and "
+                    "the service"
+                    + self._describe_responder(response)
+                )
             return report
         try:
             data = response.json()
@@ -534,6 +553,21 @@ class OpenAIChatTranslationProvider:
         report["ok"] = True
         report["sample"] = text[:80]
         return report
+
+    @staticmethod
+    def _describe_responder(response: httpx.Response) -> str:
+        """Name what answered, as far as its own headers admit.
+
+        When the responder is not the service, the headers are the only evidence there is, and
+        they are exactly what makes "something is in the way" checkable rather than a guess.
+        """
+        interesting = ("server", "via", "content-type", "x-cache", "x-squid-error")
+        seen = [
+            f"{name}: {response.headers[name]}"
+            for name in interesting
+            if response.headers.get(name)
+        ]
+        return f" (the answer came from: {'; '.join(seen)})" if seen else ""
 
     def translate(
         self,

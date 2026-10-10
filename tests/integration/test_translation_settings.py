@@ -253,6 +253,27 @@ class TestStoringSettings:
         assert body["removed"] == 2
         assert client.get("/api/v1/settings/translation").json()["stored"] == {}
 
+    def test_delete_answers_the_same_shape_as_a_read(self, client) -> None:
+        """A clear reported its own state, or every client had to ask again to find out.
+
+        The first version returned only ``removed`` and ``effective`` while a read returned
+        ``effective``, ``stored`` and ``env_overrides``.  Two shapes for one resource is how a
+        client ends up rendering a stale panel after a successful clear - and it was found by
+        calling the endpoint, not by reading it.
+        """
+        configure(client, api_key=SECRET, model="m1")
+        read = client.get("/api/v1/settings/translation").json()
+        cleared = client.delete("/api/v1/settings/translation").json()
+
+        # `fields` and `writable` describe what may be written and are a property of the
+        # endpoint rather than of the state, so a clear need not repeat them.  The three that
+        # describe the *state* must agree, or a client renders a stale panel after a clear.
+        for key in ("effective", "stored", "env_overrides"):
+            assert key in read and key in cleared, f"{key} missing from one of them"
+        assert cleared["stored"] == {}
+        assert cleared["effective"]["configured"] is False
+        assert cleared["effective"]["has_api_key"] is False
+
 
 class TestTheEnvironmentStillWins:
     def test_an_environment_variable_overrides_a_stored_setting(self, client, monkeypatch) -> None:
@@ -350,6 +371,49 @@ class TestTheCheckCall:
             configure(client, api_key=SECRET, model="test-model", base_url=double.base_url)
             client.post("/api/v1/settings/translation/test")
             assert len(double.requests) == 1
+
+    def test_a_failure_always_comes_with_a_reason(self, client) -> None:
+        """The whole point of the button is the explanation, so a blank one is the defect.
+
+        The responder here is a stand-in for something measured on this machine: a request to
+        the discard port 127.0.0.1:9 comes back as HTTP 502 with an **empty body** and no
+        ``Server`` header, so something other than the service answered it.  Reaching the real
+        port 9 from a test would make the result depend on this machine's port 9, which is the
+        whole class of mistake this project keeps finding, so the shape is reproduced instead
+        of the port.  Before the fix the panel rendered ``external_unavailable:`` and stopped,
+        which is strictly less useful than the failure itself.  The assertion is on the message
+        being present and explaining the empty body, not on its exact wording.
+        """
+
+        class _EmptyResponder(BaseHTTPRequestHandler):
+            def do_POST(self) -> None:  # noqa: N802 - the base class names it
+                length = int(self.headers.get("Content-Length") or 0)
+                self.rfile.read(length)
+                self.send_response(502)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                self.wfile.write(b"")
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), _EmptyResponder)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            configure(
+                client,
+                api_key=SECRET,
+                model="test-model",
+                base_url=f"http://127.0.0.1:{server.server_address[1]}/v1",
+            )
+            body = client.post("/api/v1/settings/translation/test").json()
+        finally:
+            server.shutdown()
+            server.server_close()
+
+        assert body["ok"] is False
+        assert body["http_status"] == 502
+        message = body["error_message"] or ""
+        assert message.strip(), "a failed check must say why it failed"
+        assert "empty body" in message
+        assert "proxy" in message
 
 
 # ---------------------------------------------------------------------------

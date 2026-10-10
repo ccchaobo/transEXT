@@ -537,11 +537,24 @@ def put_translation_settings(
 
 @router.delete("/settings/translation", tags=["settings"])
 def delete_translation_settings(request: Request) -> dict:
-    """Forget every stored translation setting, falling back to the environment and defaults."""
+    """Forget every stored translation setting, falling back to the environment and defaults.
+
+    Answers with the same three keys as a read, plus the count removed, so a client can render
+    the result of a clear without a second round trip - and so that "nothing left to clear" and
+    "cleared" are distinguishable by the same field a read would have shown.  An earlier version
+    omitted ``stored`` here and every client had to call the read again to find out what state it
+    was now in.
+    """
     with _session(request) as session:
         removed = clear_translation_settings(session)
         resolved = resolve_translation_config(session)
-    return {"removed": removed, "effective": resolved.describe()}
+        stored = read_translation_settings(session)
+    return {
+        "removed": removed,
+        "effective": resolved.describe(),
+        "stored": stored,
+        "env_overrides": list(resolved.env_overrides),
+    }
 
 
 @router.post("/settings/translation/test", tags=["settings"])
