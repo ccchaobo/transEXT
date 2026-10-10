@@ -15,6 +15,7 @@ import pytest
 from document_core.blocks import (
     body_font_size,
     classify_paragraph,
+    has_author_shape,
     in_references_section,
     is_formula_like,
     is_reference_like,
@@ -48,6 +49,11 @@ CORPUS_REFERENCE_FIRST = (
     "Journal of Synthetic Methods, vol. 12, no. 3, pp. 210–225, 2019. doi:10.1000/jsm.2019.210"
 )
 CORPUS_FOOTNOTE = "2 Correspondence: author@example.invalid"
+CORPUS_CAPTION = (
+    "Figure 1. Error rate as a function of page rotation. Markers show measured values; "
+    "the curve is a guide to the eye only, and no functional form is claimed."
+)
+CORPUS_SINGLE_AUTHOR = "O. Author"
 
 
 def make_para(
@@ -313,6 +319,77 @@ class TestBodyFontSize:
             make_para("b", font_size=10.0),
         ]
         assert body_font_size(paragraphs) == 10.0
+
+
+class TestAuthorIsNotTheTitle:
+    """All 7 multi-author corpus lines were typed as titles before this guard.
+
+    An author list is short and is set larger than the body, which is exactly the signal the
+    title test keys on, so the title test claimed the author line first.  Position alone
+    cannot separate them: both sit in the top zone of page one.
+    """
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            CORPUS_AUTHOR,
+            "D. Researcher and E. Scholar",
+            "F. Analyst, G. Engineer, and H. Statistician",
+            CORPUS_SINGLE_AUTHOR,
+        ],
+    )
+    def test_an_author_line_is_not_a_title(self, text: str) -> None:
+        para = make_para(text, y0=0.10, font_size=12.5)
+        assert classify(para, position=1) is BlockType.AUTHOR
+
+    def test_the_title_is_still_a_title(self) -> None:
+        para = make_para(CORPUS_TITLE, y0=0.05, font_size=16.0)
+        assert classify(para, position=0) is BlockType.TITLE
+
+    def test_a_title_with_a_comma_is_not_mistaken_for_authors(self) -> None:
+        # The veto must use the narrow shape test.  The looser author rule fires on any comma
+        # plus two capitalised words, which would refuse a real title like this one.
+        title = "Bilingual Reading, Anchored Translation"
+        assert has_author_shape(title) is False
+        assert classify(make_para(title, y0=0.05, font_size=16.0), position=0) is BlockType.TITLE
+
+    def test_the_narrow_shape_test_rejects_prose_with_initials(self) -> None:
+        assert has_author_shape("Reading order and evidence tracking are prerequisites.") is False
+
+
+class TestCaptions:
+    """No caption rule existed, so all 4 corpus captions came back as paragraphs."""
+
+    def test_a_figure_caption_is_a_caption(self) -> None:
+        assert classify(make_para(CORPUS_CAPTION, y0=0.5)) is BlockType.CAPTION
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Table 1. OCR character error rate by scan quality.",
+            "Figure 3: Page-turn latency at the 95th percentile.",
+            "Algorithm 2. Recursive whitespace cut.",
+            "Fig. 4 Precision against recall for both columns.",
+        ],
+    )
+    def test_the_usual_label_forms_are_recognised(self, text: str) -> None:
+        assert classify(make_para(text, y0=0.5)) is BlockType.CAPTION
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Table 2 shows the results of the ablation study described above.",
+            "Figure 5 illustrates the same effect on a scanned page.",
+            "Algorithm 1 presents the procedure we follow in the rest of this section.",
+        ],
+    )
+    def test_prose_that_merely_mentions_a_table_is_not_a_caption(self, text: str) -> None:
+        # A caption names what the reader is looking at; it does not tell the reader about it.
+        # Mistyping this prose as a caption keeps a real sentence out of translation.
+        assert classify(make_para(text, y0=0.5)) is BlockType.PARAGRAPH
+
+    def test_a_caption_is_translatable(self) -> None:
+        assert BlockType.CAPTION.is_translatable
 
 
 class TestEveryDecisionCarriesConfidence:

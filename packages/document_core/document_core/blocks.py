@@ -67,6 +67,12 @@ _SECTION_NUMBER_RE = re.compile(r"^\s*(?:\d+(?:\.\d+)*[.)]?|[IVXLC]+[.)])\s+")
 
 #: "[1] ", "[12].", "1. " at the start of a bibliography entry, or a bare "[3]".
 _REFERENCE_LEAD_RE = re.compile(r"^\s*(\[\d{1,3}\]|\(\d{1,3}\)|\d{1,3}\.)\s+")
+#: A bracketed lead, "``[3]``" or "``(3)``".  Unambiguous: section headings are not numbered
+#: this way in any of the styles this reader targets.
+_BRACKET_LEAD_RE = re.compile(r"^\s*(\[\d{1,3}\]|\(\d{1,3}\))\s+")
+#: A bare numbered lead, "``3.``".  Ambiguous — it is how a bibliography entry is numbered
+#: *and* how a section is numbered — so it is never evidence on its own.
+_NUMBERED_LEAD_RE = re.compile(r"^\s*\d{1,3}\.\s+")
 
 #: Things that only appear in a citation, and must survive verbatim.
 _CITATION_MARKERS_RE = re.compile(
@@ -101,6 +107,28 @@ _AUTHOR_LINE_RE = re.compile(
     r"([A-Z]\.\s*[A-Z][\w'’\-]*|[A-Z][\w'’\-]*)+"
 )
 _SENTENCE_END_RE = re.compile(r"[.!?。！？]\s*$")
+
+#: A single author, "O. Author", which the multi-author pattern above cannot match because
+#: it requires a separator.  Kept to this exact shape — an initial and one surname — so it
+#: cannot claim a title that merely happens to contain a full stop.
+_SINGLE_AUTHOR_RE = re.compile(r"^[A-Z]\.\s*[A-Z][\w'’\-]*(\s*[¹²³*†‡])?$")
+
+#: A figure or table caption, e.g. "Figure 1. Error rate as a function of page rotation."
+_CAPTION_RE = re.compile(
+    r"^\s*(figure|fig\.?|table|tab\.?|algorithm|listing|scheme)\s*\.?\s*\d+[a-z]?\b",
+    re.IGNORECASE,
+)
+#: A caption names what the reader is looking at; it does not tell the reader about it.  If
+#: the word after the label is a finite verb then this is prose *referring* to a figure —
+#: "Table 2 shows the results" — and typing that as a caption would keep the sentence out of
+#: translation, because captions are not translated as body prose.  This corpus has no such
+#: sentence, so this guard is reasoned rather than measured; limitations.md 18 says so.
+_CAPTION_CLAUSE_RE = re.compile(
+    r"^\s*(figure|fig\.?|table|tab\.?|algorithm|listing|scheme)\s*\.?\s*\d+[a-z]?[.,:]?\s+"
+    r"(\w+\s+)?(shows?|presents?|lists?|gives?|summari[sz]es?|depicts?|illustrates?|"
+    r"reports?|compares?|contains?|provides?|is|are|was|were)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -151,7 +179,14 @@ def is_reference_like(text: str) -> bool:
     if not stripped:
         return False
 
-    has_lead = bool(_REFERENCE_LEAD_RE.match(stripped))
+    has_lead = bool(_BRACKET_LEAD_RE.match(stripped))
+    # A bare "3." is how a section heading is numbered as well as how a bibliography entry is,
+    # so it cannot carry a decision by itself.  This mattered in practice: once paragraph
+    # breaks were fixed (ADR 0014), "1. Introduction" merged with the paragraph under it, the
+    # merged block cited two papers, and the numbered lead plus one citation marker typed a
+    # whole section of prose as a bibliography — which removes it from translation.  The
+    # comment below had already noticed the ambiguity but only guarded the shorter branch.
+    numbered_lead = bool(_NUMBERED_LEAD_RE.match(stripped))
     marker_hits = len(_CITATION_MARKERS_RE.findall(stripped))
     has_year = bool(_YEAR_RE.search(stripped))
     has_quoted = bool(_QUOTED_TITLE_RE.search(stripped))
@@ -172,6 +207,10 @@ def is_reference_like(text: str) -> bool:
         # accepted when it is clearly entry-shaped and not a numbered section heading.
         if len(stripped) > 30 and not stripped.rstrip().endswith(":"):
             return True
+    if numbered_lead:
+        # Accept a bare number only on the full entry shape: a year and a quoted title, which
+        # is what distinguishes "3. Smith, J., “A title,” 2019." from "3. Method We model…".
+        return has_year and has_quoted and marker_hits >= 2
     # No lead marker: require the full shape, which ordinary prose does not have.
     if has_quoted and has_year and marker_hits >= 2:
         return True
@@ -208,6 +247,20 @@ def is_formula_like(text: str) -> bool:
     return False
 
 
+def has_author_shape(text: str) -> bool:
+    """Whether a line has the *specific* shape of an author list.
+
+    Narrower than :func:`looks_like_author_line` on purpose.  This one is used to veto the
+    title test, so it must not fire on a title that merely contains a comma: the corpus
+    titles are not affected, but "Bilingual Reading, Anchored Translation" would be caught
+    by the looser comma-and-capitals rule and would then be refused as a title.
+    """
+    stripped = _normalise(text)
+    if not stripped or _SENTENCE_END_RE.search(stripped):
+        return False
+    return bool(_AUTHOR_LINE_RE.match(stripped) or _SINGLE_AUTHOR_RE.match(stripped))
+
+
 def looks_like_author_line(text: str) -> bool:
     """Whether a line is a list of author names."""
     stripped = _normalise(text)
@@ -216,7 +269,7 @@ def looks_like_author_line(text: str) -> bool:
     # An author line has no sentence-ending punctuation and is mostly proper nouns.
     if _SENTENCE_END_RE.search(stripped):
         return False
-    if _AUTHOR_LINE_RE.match(stripped):
+    if has_author_shape(stripped):
         return True
     # "Jane Doe¹, John Smith²" — comma separated, no lowercase function words.
     if "," in stripped and len(stripped.split()) <= 30:
@@ -251,6 +304,11 @@ def looks_like_title(
     if not stripped or len(stripped) > 400:
         return False
     if _SENTENCE_END_RE.search(stripped) and stripped.count(".") > 1:
+        return False
+    # An author list is short and is set larger than the body, which is exactly the signal
+    # this test keys on, so without this the author line outranks the title and claims it.
+    # Measured: all 7 multi-author corpus lines were typed as titles before this guard.
+    if has_author_shape(stripped):
         return False
     # Top of the first page, in normalised units.
     if paragraph.bbox.y0 > TITLE_ZONE:
@@ -354,7 +412,19 @@ def classify_paragraph(
             ["inside a references section"],
         )
 
-    # 6. A footnote: small type low on the page.  Checked BEFORE the heading label, because
+    # 6. A figure or table caption.  The layout stage never emits one — it has no notion of a
+    #    caption — so before this rule existed every caption in the corpus came back as an
+    #    ordinary paragraph (measured: 0 of 4).  Checked after the bibliography tests and
+    #    before the heading label, because a caption is short and can be set larger than the
+    #    body, which is the heading test; and after the abstract, because "Table 1. …" is not
+    #    an abstract.  The clause guard keeps prose that merely mentions a table out of here.
+    if _CAPTION_RE.match(text) and not _CAPTION_CLAUSE_RE.match(text):
+        return TypeDecision(
+            BlockType.CAPTION, Confidence(0.7, ConfidenceLevel.MEDIUM, "heuristic"),
+            ["figure or table caption label"],
+        )
+
+    # 7. A footnote: small type low on the page.  Checked BEFORE the heading label, because
     #    a footnote is short and is therefore labelled a heading by the layout stage — the
     #    corpus footnote "2 Correspondence: author@example.invalid" arrives as a heading.
     #    Position plus type size is stronger evidence than shortness.  Without font
@@ -367,7 +437,7 @@ def classify_paragraph(
             ["small type low on the page"],
         )
 
-    # 7. A heading label from the layout stage.  The section's own heading reaches here,
+    # 8. A heading label from the layout stage.  The section's own heading reaches here,
     #    which is why the check above excludes it.
     is_heading = paragraph.kind == "heading" or paragraph.level is not None
     if is_heading:
@@ -378,7 +448,7 @@ def classify_paragraph(
             ["layout labelled it a heading"],
         )
 
-    # 8. A formula, which is kept verbatim.
+    # 9. A formula, which is kept verbatim.
     if is_formula_like(text):
         return TypeDecision(BlockType.FORMULA, Confidence(0.7, ConfidenceLevel.MEDIUM, "heuristic"), ["symbol density"])
 

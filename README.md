@@ -207,10 +207,11 @@ better result 43% of the time, below chance. See
 | Coordinate contract, all rotations | **PASS** | `scripts/check_rotation.py --verify`; markers within 2 px of the transform's prediction for 0/90/180/270, re-measured from pixels |
 | PDF text box frame | **PASS** (was a defect) | `scripts/diagnose_adapter_vs_render.py`, `scripts/verify_coordinate_fix.py`; every line box was vertically mirrored. See [ADR 0011](docs/adr/0011-pymupdf-text-frame.md) |
 | Body character coverage ≥ 98% | **PASS** | **0.9985** pooled over the 9 text-layer documents (84 of 56008 chars, typographic quotation marks); `scripts/measure_layout.py` |
-| Adjacent-block order ≥ 95% | **PASS** | **0.9725** (212/218 pairs); `scripts/measure_layout.py` |
+| Adjacent-block order ≥ 95% | **PASS** | **0.9969** (323/324 pairs); `scripts/measure_layout.py` |
 | Reading order (matcher-independent) ≥ 95% | **PASS** | **0.9983** pooled word-LCS over 17 pages; every page ≥ 0.95; `scripts/measure_reading_order.py`. Two-column pages were **0.53–0.54** before the XY-cut fix |
 | Reading order (line-level, merge-independent) ≥ 95% | **PASS** | **1.0000** — 0 inverted pairs of 32964 over 928 matched lines, every document at 1.0000; `scripts/measure_line_order.py`. See [ADR 0013](docs/adr/0013-placing-the-crossing-group.md) |
-| ≥ 200 sampled blocks ≥ 95% correct page and region | **FAIL** | **0.8987** (204/227 blocks). Not trusted — both dominant failure modes are artefacts of comparing against a paragraph's whole-page union box; see [limitations §3](docs/limitations.md). 227 blocks sampled, meeting the ≥200 requirement |
+| ≥ 200 sampled blocks ≥ 95% correct page and region | **PASS** | **1.0000** (333/333 blocks). Was 0.8952 FAIL; that figure was the paragraph over-merging of [limitations §15](docs/limitations.md), not the matcher artefact this README previously claimed. See [ADR 0014](docs/adr/0014-calibrating-the-paragraph-break.md) |
+| Corpus blocks addressable on their own | **PARTIAL, not a spec item** | **87/175 = 0.4971**, up from 11/76. Reported because anchoring is what the reader is built on; `scripts/measure_segmentation.py` |
 | OCR CER ≤ 5% on clear scans | **PASS** | recognition 0.0484 / 0.0092 / 0.0334 on the three clear scans, all ≤ 0.05 |
 | OCR reading order | **PARTIAL, not claimed as pass** | 0.78–1.0 per page before layout reordering; see above |
 | Protected placeholder integrity 100% | **PASS** | `tests/unit/test_cleaning.py`, including a percentage token that earlier went unprotected |
@@ -242,6 +243,15 @@ block counts as much as a long one. It found that page 0 of every two-column doc
 out of order and every other page was perfect, which pointed straight at the cause. See
 [ADR 0012](docs/adr/0012-xy-cut-reading-order.md) and
 [ADR 0013](docs/adr/0013-placing-the-crossing-group.md).
+
+The page-and-region row is the counter-example, and it is kept on display for that reason.
+It reported **0.8952 and FAIL**, and this README explained the failure away as an artefact of
+the matcher — a mechanism that really does exist. It was wrong. The metric was correctly
+detecting the same over-merging defect from a different angle, and it went to **1.0000** once
+the paragraph break was calibrated, with no change to the matcher at all. A plausible
+mechanism that *could* explain a failure is not evidence that it does; it has to be shown to
+account for the failures. See [limitations §3](docs/limitations.md) and
+[ADR 0014](docs/adr/0014-calibrating-the-paragraph-break.md).
 
 The PENDING rows are not failures. They are items that require a real translation
 provider, a real-world corpus, or a measurement that has not been built yet, and

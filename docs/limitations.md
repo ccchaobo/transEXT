@@ -41,34 +41,28 @@ estimates match real billing, and that retry and rate-limit behaviour matches a
 real service. The human review of at least 100 paragraphs required by the spec
 cannot begin without one.
 
-## 3. Page-and-region accuracy is measured against a paragraph's whole-page box
+## 3. Page-and-region accuracy — resolved, and an earlier explanation of it was wrong
 
-The acceptance item "≥ 200 sampled blocks, ≥ 95% attributed to the correct page and
-region" reads **0.8952** (205/229 blocks) on the corpus, and that figure is **not
-trusted**. Both dominant failure modes are artefacts of the comparison, not placement
-errors:
+The acceptance item "≥ 200 sampled blocks, ≥ 95% attributed to the correct page and region"
+now reads **1.0000** (333/333 blocks). It is recorded here because the earlier reading of it
+was mistaken.
 
-* A reference block whose text was split across two corpus blocks is matched to the
-  paragraph holding its *continuation* — a fragment with a small box — while the
-  reference block's own box is the union of both parts. The block is on the right page
-  in the right column; the boxes simply are not the same shape. Example overlap 0.133
-  for `[5] H. Statistician and I. Reviewer, "Co…`.
-* A heading or author line absorbed into the paragraph that follows it sits at 0.492
-  against the 0.5 threshold, so a correct merge is recorded as a region failure.
+It previously read **0.8952** (205/229), and this document explained that figure away as an
+artefact of the matcher — a block being compared against a paragraph's whole-page union box
+while the pipeline emitted per-page fragments. That explanation was **wrong**. The metric
+was not measuring an artefact; it was correctly detecting the paragraph over-merging
+described in 15. Once paragraph breaks were calibrated (ADR 0014), the same metric on the
+same corpus, with no change to the matcher, went to 1.0000 over *more* sampled blocks
+(229 → 333).
 
-The cause is structural: the matcher compares a block against a paragraph's union box
-for the whole page, while the pipeline now splits that paragraph into column fragments.
-The metric needs to compare against the paragraph's fragment on the block's own page.
+The distinction matters because the artefact story was specific and plausible — a split
+reference really is compared against the wrong fragment's box — and it was still not the
+cause of the failure. A metric should not be declared untrustworthy on the strength of a
+mechanism that *could* explain it; that requires showing the mechanism accounts for the
+failures. This is the fourth time in this project that a metric and a product defect were
+confused, and the first time the metric was simply right.
 
-**What is verified instead:** the text is present (coverage 0.9985, no line recorded as
-drawn is absent) and it is in the right order (pooled reading order **0.9915** by a
-matcher-independent word-LCS measure). Reading order and coverage are the two items that
-speak to whether text is lost or misordered; this item speaks to whether a highlight
-would land on the right rectangle, and it cannot be answered by the current comparison.
-
-**Status:** the acceptance figure is reported as **FAIL** and not worked around. Either
-the metric is corrected to compare per-page fragments, or the item stays FAIL. It is not
-to be re-labelled.
+**Status:** PASS, and no longer reported as untrusted.
 
 ## 4. DOCX conversion is a declared degraded path
 
@@ -203,56 +197,62 @@ crossing group in a fixed middle position. The crossing group is now placed by i
 vertical centre. Page 0 went from 141 inverted line pairs to 0, and pooled
 line-order accuracy from 0.9872 to 1.0000, with no other metric moving.
 
-**The over-merging half is not fixed.** The corpus records 21 blocks on that page —
-title, author, abstract, then the left column, then the right column — and the
-pipeline still emits 6 paragraphs. Distinct headings and paragraphs are absorbed
-into long runs, and the author line absorbs the head of the abstract:
+**The over-merging half is now fixed too** (ADR 0014), by calibrating the paragraph break
+against the corpus instead of against one page. The mechanism was two defects that cancelled
+into a third behaviour, not "paragraph assembly merges too eagerly":
 
-| block | what it actually is |
-| --- | --- |
-| 0 | the title (correct) |
-| 1 | the author line with the head of the abstract absorbed into it |
-| 2, 3 | left-column and right-column runs, several source blocks merged |
-| 4 | a paragraph typed as a heading |
-| 5 | a continued right-column run |
+1. `_same_column_flow` rejected every *negative* `_vertical_gap`, but consecutive lines of one
+   paragraph routinely have slightly overlapping boxes, because a line box covers ascender to
+   descender while the leading is smaller than that. On `pdf_b_two_column` page 0 the left
+   column's 47 lines produced **33 breaks**, every one of them at a gap of exactly −0.94 pt.
+   The guard was meant to catch the reading order stepping backwards out of a column, which is
+   a gap of about −700 pt, three orders of magnitude away.
+2. The other break condition was `gap > paragraph_gap_factor * typical_height`, i.e.
+   1.55 × 13.34 = **20.7 pt**. Every paragraph boundary measured anywhere in the corpus has a
+   gap well under that, so the test **could never fire** and only the inverted guard was ever
+   breaking a paragraph. The value had also been computed against the wrong unit.
 
-One anchor therefore covers text that should be several anchors, so a reader
-cannot pair the abstract's halves with their translations individually.
+`scripts/calibrate_paragraph_step.py` measured the two populations the threshold has to
+separate, using the corpus's own block boundaries as the answer key, and **same-column pairs
+only** — a column jump is already rejected by the horizontal-overlap test, so counting those
+would flatter any threshold:
 
-**The mechanism is now diagnosed** (`scripts/diagnose_merging.py`), and it is not
-"paragraph assembly merges too eagerly" — it is two defects that cancel into a
-third behaviour:
+| | within a block | between blocks |
+| --- | --- | --- |
+| gap, all pairs | +2.40 pt (constant) | p05 +4.16, median +6.90 |
+| gap, same column | +2.40 pt (constant) | p05 +4.16, median +6.90 |
 
-1. `_same_column_flow` rejects every *negative* `_vertical_gap`, but consecutive
-   lines of one paragraph routinely have slightly overlapping boxes, because a
-   line box covers ascender to descender while the leading is smaller than that.
-   On `pdf_b_two_column` page 0 the left column's 47 lines produced **33 breaks**,
-   every one of them at a gap of exactly −0.00112. The guard was meant to catch the
-   reading order stepping backwards out of a column; that case is a gap of about
-   −0.84, three orders of magnitude away.
-2. The other break condition is `gap > paragraph_gap_factor * typical_height`, i.e.
-   1.55 × 0.01585 = **0.02456**. Every paragraph boundary actually present on that
-   page has a gap between 0.00423 and 0.01618, so this threshold **can never fire**.
-   The unit is wrong as well as the value: `typical_height` is the box height, while
-   the natural unit for a paragraph break is the top-to-top *step* (0.01475 here,
-   against 0.0200 across a boundary).
+Only 3 of 268 between-block gaps are ≤ 2.40 pt, so the populations separate and the threshold
+must sit in the valley between 2.40 and 4.16 pt. The default factor of 0.25 gives 3.34 pt.
 
-So step 1 splits at almost every line and simultaneously fails to split at real
-paragraph boundaries, and step 2's `_should_merge` then re-joins the fragments. The
-net effect is coarse blocks, but neither condition is doing what it says.
+**Measured effect**, on the same corpus, with nothing else changed:
 
-**Measured over the whole corpus: only 11 of 76 corpus text blocks (0.1447) are
-addressable on their own** — 34 are absorbed into a longer paragraph.
-`scripts/measure_segmentation.py` reports this, and its 41% "differs" bucket is
-itself not yet trustworthy, so the figure is a lower bound on the problem rather
-than a clean score.
+| measure | before | after |
+| --- | --- | --- |
+| corpus blocks addressable on their own | 11/76 (0.1447) | **87/175 (0.4971)** |
+| page+region accuracy | 0.8952 FAIL | **1.0000 PASS** (333/333) |
+| adjacent-block order | 0.9725 | **0.9969** |
+| block-type accuracy | 13/13 (thin sample) | **87/87** (section 17) |
+| line-level order | 1.0000 | 1.0000 |
+| body character coverage | 0.9985 | 0.9985 |
 
-This is left unfixed deliberately. Correcting it needs a step-based threshold
-calibrated across every page of the corpus; calibrating it from this one page is
-how an earlier attempt collapsed a 101-line page from 33 paragraphs to 8. Ordering
-was fixed first because a title emitted third is fatal to the reader, whereas a
-coarse anchor is merely inconvenient: the text is present and translated, just not
-addressable piece by piece.
+The denominator of the segmentation measure moved from 76 to 175 because with coherent
+paragraphs *more* corpus blocks find a paragraph to match at all; 76 was the number that
+matched while blocks were being absorbed, not the number that exists.
+
+**What is still not fixed:** the remaining 0.497 are blocks whose text is a proper part of a
+longer paragraph. The corpus's own blocks are finer than any threshold can recover — a
+caption, a heading and the paragraph under it are one visual run of text — so closing this
+needs structure the layout stage does not currently produce, not a better threshold. The
+0.497 is also a lower bound on the current split quality: the measure's "merged" bucket
+cannot distinguish "this block was absorbed into the paragraph that follows" from "this
+block's paragraph is correct but the matcher paired it with a neighbour".
+
+**Calibration caveat.** This corpus has a *constant* 12.40 pt leading and a 10.00 pt line box,
+so its within-paragraph gap is a single point rather than a distribution. The valley is
+therefore wider here than it will be on real papers with mixed leading, and 0.25 is calibrated
+against this corpus, not against published articles. Re-calibration on real papers is
+required before the number can be called settled.
 
 **The old reading-order measure could not see the ordering defect.** It scored
 these pages at 0.9733 and passed. Word-LCS finds the longest common subsequence, so
@@ -270,7 +270,7 @@ becomes a run of ordinary paragraphs, one per cell: in the same evidence run
 paragraph. Sending a numeric cell to a translation service is wasted spend, and a
 translated percentage is a wrong number in a research table.
 
-This also swamps block-type measurement: of 207 matched corpus blocks, 131 are
+This also swamps block-type measurement: of the matched corpus blocks, 132 are
 cells of one wide table. They are excluded from the classifier's score and
 reported separately, because no classifier can label a table cell when nothing
 detects the table.
@@ -278,14 +278,51 @@ detects the table.
 A figure caption *is* extracted (it is ordinary text), and captions are
 translatable, so captions are not affected by this gap.
 
-## 17. Block-type measurement covers only 13 of 207 matched blocks
+## 17. Block-type measurement is over a corpus whose typography is uniform
 
-The classifier's 13/13 result is real but thin, and the reason matters. Of 207
-matched blocks: 131 are the wide table's cells (section 16), 33 have been merged
-into a longer paragraph by section 15, and 30 are pairs where the block and the
-paragraph are simply different content, which is a defect of the matcher used to
-score it. Scoring any of those would attribute someone else's defect to the
-classifier, so they are excluded and counted. The conclusion the number supports is
-"no known misclassification on the blocks that can be scored", not "the classifier
-is correct on real papers".
+This section previously reported the classifier at 13/13 and said the sample was thin
+because 33 blocks were merged by section 15. Section 15 is now fixed, so the sample is
+**87 blocks scored at 87/87**, up from 13. The thin-sample warning is resolved: the number
+is now over every corpus block that has text, is not a table or figure, and matches a
+paragraph one-to-one or is scored where it does.
+
+| true type | scored |
+| --- | --- |
+| paragraph | 56/56 |
+| title | 8/8 |
+| author | 8/8 |
+| abstract | 7/7 |
+| caption | 4/4 |
+| formula | 2/2 |
+| footnote | 2/2 |
+
+Three defects were only visible once the sample grew from 13 to 87, and all three were
+fixed: the author line was typed as a title (7 cases — an author list is short and set
+larger than the body, which is exactly the title test's own signal, so the title test
+claimed it first, and all 7 corpus author lines were affected), a caption had **no rule at
+all** (0 of 4 — the layout stage has no notion of a caption), and a single-author line
+"O. Author" matched neither the multi-author pattern nor the title test.
+
+**What the 87/87 still does not support.** Every document in the corpus has a constant
+12.40 pt leading, a 10.00 pt body box, two or three type sizes and the same 13 block shapes.
+A classifier that keys on relative type size and label shape will do well on that and is not
+thereby shown to work on published papers, which vary leading, use colour and rules, place
+captions above and below their figure, and number sections inconsistently. The claim the
+number supports is "no known misclassification on any block of this corpus that can be
+scored".
+
+## 18. The caption clause guard is reasoned, not measured
+
+`_CAPTION_CLAUSE_RE` exists to keep prose that merely *mentions* a table out of the caption
+type — "Table 2 shows the results" must stay a paragraph, because a caption is not translated
+as body prose and mistyping a real sentence as a caption would keep it out of the translation
+entirely.
+
+That guard has never fired on the corpus. The corpus contains no sentence of that shape, so
+its three parametrized tests assert behaviour against **invented** examples, not against
+measured ones. It is the only rule in the block classifier in that position: every other rule
+was found by measuring, and several were wrong the first time. It is carried because the
+error it prevents is a silent translation omission, which is the expensive direction, but it
+would be the first thing to re-examine against real papers.
+
 

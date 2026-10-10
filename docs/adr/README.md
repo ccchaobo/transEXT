@@ -20,6 +20,7 @@ supersedes the old one, because the point is to keep the reasoning auditable.
 | [0011](0011-pymupdf-text-frame.md) | PyMuPDF text boxes are in the unrotated media frame, not raw PDF space | accepted |
 | [0012](0012-xy-cut-reading-order.md) | Reading order comes from a recursive whitespace cut, not from sorting by y | accepted |
 | [0013](0013-placing-the-crossing-group.md) | The crossing group is placed by its vertical centre, not fixed in the middle | accepted |
+| [0014](0014-calibrating-the-paragraph-break.md) | The paragraph break is calibrated against the corpus, in the measured valley | accepted |
 
 ## Not decided yet
 

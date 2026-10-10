@@ -93,8 +93,24 @@ class LayoutParams:
     gutter_min_overlap: float = 0.55    # gutter must span this share of the band
     column_balance_tolerance: float = 0.25
     band_gap_factor: float = 1.9        # horizontal gap > factor * line height = band break
-    paragraph_gap_factor: float = 1.55  # vertical gap > factor * median height = new para
+    paragraph_gap_factor: float = 0.25  # vertical gap > factor * median height = new para
     paragraph_indent: float = 0.018     # first-line indent that starts a new para
+    #: How much consecutive line boxes may overlap and still be read as one paragraph, as a
+    #: share of the median line height.  A line box covers ascender to descender while the
+    #: leading is smaller than that, so consecutive lines of one paragraph *always* overlap
+    #: slightly: measured at -0.94 pt on this corpus, against a line box 13.34 pt tall.  The
+    #: previous test rejected every negative gap, which broke the grouping at almost every
+    #: line — on ``pdf_b_two_column`` page 0 the left column's 47 lines produced 33 breaks,
+    #: all at exactly -0.94 pt.  The case that test meant to catch, the reading order
+    #: stepping backwards out of a column, is a gap of about -700 pt.
+    line_overlap_tolerance: float = 0.15
+    #: A paragraph break is a *large* step, so this is small on purpose.  It used to be
+    #: 1.55, i.e. 15.5 pt of gap, which is larger than the median paragraph gap actually
+    #: present in the corpus (6.9 pt) — so it could never fire, and only the (inverted)
+    #: negative-gap test was ever breaking paragraphs.  Calibrated in
+    #: ``scripts/calibrate_paragraph_step.py``: within a block the gap is a constant 2.4 pt
+    #: and between blocks its 5th percentile is 4.16 pt, so the threshold has to sit in that
+    #: valley.  See limitations.md 15.
     paragraph_similarity: float = 0.45  # min shingle overlap for cross-break merge
     heading_max_chars: int = 90
     heading_max_words: int = 14
@@ -752,7 +768,11 @@ def _same_column_flow(
 ) -> bool:
     """Decide whether ``below`` continues the paragraph containing ``above``."""
     gap = _vertical_gap(above, below)
-    if gap < 0:
+    # Consecutive lines of one paragraph routinely have slightly overlapping boxes, because
+    # a line box covers ascender to descender while the leading is smaller than that.  Only
+    # a real backwards step — the reading order leaving a column — should break here, and
+    # that is orders of magnitude larger than the normal overlap.
+    if gap < -params.line_overlap_tolerance * typical_height:
         return False
     if gap > params.paragraph_gap_factor * typical_height:
         return False
