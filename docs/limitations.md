@@ -25,21 +25,41 @@ PDFs.
 **Status:** this is a limitation, not a defect. Obtaining a redistributable real
 corpus is a PENDING item.
 
-## 2. Translation quality is unverified
+## 2. Translation quality is unverified — the pipeline no longer is
 
-No translation provider credential exists in this environment. Per the spec,
-credential-independent work was done and the real-call acceptance item is
-**PENDING**. No mock translation is used to claim completion, and no
-translation-quality figure is reported.
+**The real-call acceptance item is closed.** A real provider credential was configured through the
+settings panel and the first genuine outbound calls were made. Measured:
 
-**What is verified:** the adapter interface, the cache key composition, the job
-and retry state machine, partial-completion accounting, and the anchoring
-contract that a translation must satisfy.
+```
+POST /api/v1/settings/translation/test   -> HTTP 200 in 6309 ms
+  endpoint  https://ollama.com/v1/chat/completions
+  model     deepseek-v4.1-flash      ok=True
+  sample    'ok'     usage {prompt: 44, completion: 34, total: 78}
+```
 
-**What is not verified:** that a real provider's output is accurate, that cost
-estimates match real billing, and that retry and rate-limit behaviour matches a
-real service. The human review of at least 100 paragraphs required by the spec
-cannot begin without one.
+That also verifies the default base URL, `https://ollama.com/v1`, which had been documented as
+**NOT VERIFIED** since it was written because `ollama.com` resolves to a non-public address from
+this machine's tooling. It resolves and answers from the server.
+
+A whole document then translated through the real service: **53 blocks, all `status: ok`**, every
+row carrying `provider: deepseek` and `model: deepseek-v4.1-flash`, with Chinese target text that
+reads as a translation of the paper rather than as a placeholder. The path that produced them is
+the one the reader uses: `POST /translate` → job → worker resolves the provider from the settings
+→ real HTTP → translation stored → returned to the page.
+
+**What is still not verified**, and it is the larger half:
+
+* **Quality.** Nothing here has been read by a human against the source. The spec's requirement of
+  a review of at least 100 paragraphs has not begun, and no translation-quality figure is reported.
+  Fifty-three rows exist; that is evidence about plumbing, not about accuracy.
+* **Cost.** The service reports usage per call, but the job records `usage: {}` — token spend is not
+  attributed to a job, so the cost of a document cannot be stated. The pre-flight estimate is now
+  correct about *how many* blocks will be sent, and says nothing about what they will cost.
+* **Retry and rate-limit behaviour against a real service.** Only one request was ever refused
+  (no such case arose). The backoff path has been exercised against a local double and never
+  against a provider that returns 429.
+* **Domain terminology.** The corpus is synthetic and authored, so these 53 blocks are the first
+  real translation of real academic prose in this project — and one document is not a corpus.
 
 ## 3. Page-and-region accuracy — resolved, and an earlier explanation of it was wrong
 
@@ -767,6 +787,40 @@ well-formed" is PENDING and belongs to the person who can open a page. The three
 likely to be wrong, in order: whether the panels land where they belong; whether the linked
 scrolling settles instead of oscillating; and whether the overflow badge appears on the paragraphs
 that need it and not on the ones that do not.
+
+## 35. The pre-flight estimate described a different job than the one that would run
+
+`POST /translate` plans before it queues, so its response can tell the reader how many blocks are
+already translated and how many would be sent. That number is the only warning they get about what
+a paid service is about to cost them.
+
+The cache key includes the provider and the model. The route built its planning service **without**
+a provider — the provider is resolved per job inside the worker — so the plan computed cache
+identity against a provider-less key and could not match any stored translation. Measured on a
+document whose 53 blocks were all already translated:
+
+```
+planned with no provider (what the API did)   provider=unconfigured  reusable=0   pending=53
+planned with the worker's provider            provider=deepseek      reusable=53  pending=0
+```
+
+So the response said "53 blocks will be sent" about a job that would send none, and named the
+provider as `unconfigured` on a job that then ran perfectly. Being wrong in the direction of *you
+are about to spend* is the worst way for this particular number to be wrong, and the misleading
+`provider` field is what made it visible — a job that reports itself unconfigured and then
+succeeds is a field nobody can trust.
+
+The fix resolves the provider before planning and hands it to the service. Planning does not call
+the provider, so it costs nothing. The regression test translates a document through a local double
+and then asserts that a second request reports all of it as cached and none of it as pending; with
+the fix removed it fails with `assert 'unconfigured' == 'cache-test'`, which is the negative
+control.
+
+This is the third defect of the same shape found in this area — after `page_columns` and
+`link_scrolling`: **a value computed on one path and acted on by another**. The pattern to watch
+for is any field that is *derived* somewhere other than where the work happens. The provider is
+resolved per job by design, which is right; what was wrong was letting a second, different
+resolution leak into a user-facing number.
 
 
 

@@ -158,6 +158,16 @@ def configure(client, **values) -> dict:
     return response.json()
 
 
+def _cli_style_provider(database):
+    """Copied from ``rr_worker/__main__._provider``: the CLI's own wiring, not a test's."""
+    with database.session() as session:
+        resolved = resolve_translation_config(session)
+    try:
+        return provider_from_resolved(resolved)
+    except Exception:  # noqa: BLE001 - the CLI prints and carries on
+        return None
+
+
 # ---------------------------------------------------------------------------
 # the settings endpoint
 # ---------------------------------------------------------------------------
@@ -558,3 +568,60 @@ class TestTheWorkerResolvesAProvider:
         settings, database, workspace, queue, _ = harness
         worker = Worker(settings, workspace, queue, database=database)
         assert worker.resolve_provider() is None
+
+
+# ---------------------------------------------------------------------------
+# the estimate the reader is shown before spending anything
+# ---------------------------------------------------------------------------
+
+
+class TestThePlanDescribesTheJobThatWillRun:
+    """The pre-flight count is the reader's only warning about what a paid service will cost.
+
+    The cache key includes provider and model, so a plan built from a service with no provider
+    describes a *different* job than the one the worker will run.  Measured on a document whose
+    blocks were all already translated: the provider-less plan said 0 reusable and 53 pending,
+    while the worker found all 53 reusable and sent nothing.  The response therefore told the
+    reader "53 blocks will be sent" about a job that would send none - wrong in the direction of
+    "you are about to spend", which is the worst way for it to be wrong.
+    """
+
+    def test_a_second_request_reports_the_cache_it_will_really_hit(self, client, parsed_document) -> None:
+        with ChatDouble() as double:
+            configure(
+                client,
+                api_key=SECRET,
+                model="cache-key-model",
+                base_url=double.base_url,
+                provider_name="cache-test",
+            )
+
+            first = client.post(
+                f"/api/v1/documents/{parsed_document}/translate",
+                json={"scope": "document", "target_language": "zh"},
+            ).json()
+            assert first["would_be_sent"] > 0, first
+            assert first["already_cached"] == 0, first
+
+            # Run the worker the way the CLI does: from a factory, so it resolves the provider
+            # from the very settings the plan above was built for.
+            app = client.app
+            worker = Worker(
+                app.state.settings,
+                app.state.workspace,
+                app.state.queue,
+                database=app.state.database,
+                provider_factory=lambda: _cli_style_provider(app.state.database),
+            )
+            assert worker.serve(poll_seconds=0, max_jobs=4, exit_when_idle=True, idle_grace=0.0) >= 1
+
+            second = client.post(
+                f"/api/v1/documents/{parsed_document}/translate",
+                json={"scope": "document", "target_language": "zh"},
+            ).json()
+
+            # Naming the provider the job will use, not "unconfigured" while it runs fine.
+            assert second["provider"] == "cache-test", second
+            assert second["model"] == "cache-key-model", second
+            assert second["already_cached"] == second["planned_blocks"], second
+            assert second["would_be_sent"] == 0, second

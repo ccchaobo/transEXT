@@ -16,11 +16,15 @@ ground truth, the storage layer, the wire contract, and the measurements that fi
 parameters.
 
 M1 adds the product around it — an HTTP API, a separate worker process, and the reader itself —
-and it is usable today for text PDFs: import, read with the source and translation side by side,
-navigate by outline, look up an anchored block, annotate, and export bilingual Markdown. Three
+and it is usable today for text PDFs: import, read with the translation drawn over the source or
+side by side, navigate by outline, look up an anchored block, annotate, and export bilingual
+Markdown. **Translation works against a real service**, verified end to end: 53 blocks of a real
+paper translated through `https://ollama.com/v1` with `deepseek-v4.1-flash`, all `status: ok`. Two
 things are **not** done and are named here rather than left to be discovered: OCR and DOCX are
-engines without a wire into the parse stage ([limitations §24](docs/limitations.md)), real-call
-translation acceptance has no credential (§2), and `BlockTextPatch` does not exist (§25).
+engines without a wire into the parse stage ([limitations §24](docs/limitations.md)), and
+`BlockTextPatch` does not exist (§25). The quality of those 53 translations has not been reviewed
+by a human, and no cost figure can be stated because token usage is not attributed to a job —
+both in [§2](docs/limitations.md).
 
 The table below is the short version of what is implemented; each row names the test or script
 that demonstrates it, and every one of them was run to produce the results in this document.
@@ -45,9 +49,16 @@ that demonstrates it, and every one of them was run to produce the results in th
 **What is PENDING, and why.** These cannot be closed in this environment, and are recorded rather
 than worked around:
 
-* **Real-call translation acceptance.** No provider credential exists here. The adapter interface
-  and everything credential-independent is done; no mock translation is used to claim completion,
-  and no translation-quality figure is reported. See [limitations §2](docs/limitations.md).
+* **Human review of translation quality.** The pipeline is no longer the blocker: a real provider
+  was configured and 53 blocks of a real paper were translated through `https://ollama.com/v1`
+  with `deepseek-v4.1-flash`, every row `status: ok`. Nothing has been read against the source, so
+  the spec's ≥ 100 reviewed paragraphs is outstanding and no quality figure is reported. See
+  [limitations §2](docs/limitations.md).
+* **Cost attribution.** The service reports tokens per call; the job records `usage: {}`, so the
+  cost of a document cannot be stated. The pre-flight count of blocks to send is now correct.
+* **The new browser features are unexecuted.** There is no browser automation here, so the overlay
+  view and the linked scrolling have never been run on a page. See
+  [limitations §34](docs/limitations.md).
 * **A real-world document corpus.** Every sample is authored by this repository's generator, so
   the measured layout and OCR figures describe this corpus, not published papers. See
   [limitations §1](docs/limitations.md).
@@ -141,9 +152,11 @@ Copy-Item .env.example .env
 An environment variable **wins** over a stored setting. When that happens the panel names
 the fields being overridden rather than leaving you to wonder why a saved value did nothing.
 
-> The default Ollama Cloud endpoint (`https://ollama.com/v1`) and model id are
-> **unverified**: this environment cannot reach the service to confirm them, so no
-> real translation call has been made. Use **测试连接** to check yours. See
+> The default base URL, `https://ollama.com/v1`, is **verified**: a real request reached it and
+> returned HTTP 200 with a real completion (`.env.example` and earlier revisions of this file
+> called it unverified, because `ollama.com` is not reachable from this machine's other tooling —
+> the server reaches it fine). The model id is yours to pick and is not verified for you; that is
+> what **测试连接** is for. Translation *quality* remains unreviewed. See
 > [limitations §2](docs/limitations.md).
 
 ### What works today
@@ -397,7 +410,7 @@ better result 43% of the time, below chance. See
 | OCR CER ≤ 5% on clear scans | **PASS** | recognition 0.0484 / 0.0092 / 0.0334 on the three clear scans, all ≤ 0.05 |
 | OCR reading order | **PARTIAL, not claimed as pass** | 0.78–1.0 per page before layout reordering; see above |
 | Protected placeholder integrity 100% | **PASS** | `tests/unit/test_cleaning.py`, including a percentage token that earlier went unprotected |
-| ≥ 100 human-reviewed paragraphs ≥ 4/5 | **PENDING** | requires a real provider (limitations §2) |
+| ≥ 100 human-reviewed paragraphs ≥ 4/5 | **PENDING** | the pipeline runs against a real service (53 blocks, all `status: ok`) but no human has reviewed the output; only the review is outstanding (limitations §2) |
 | First screen ≤ 3 s | **PASS** | 5.2 ms P95 text extraction, 212.7 ms P95 preview render, 2.1 ms P95 open |
 | Page turn ≤ 300 ms | **PASS** | 214.5 ms P95, 40.6 ms P50, worst case 278.5 ms |
 | Anomaly handling | **PASS** | 11/11 handled as intended by `scripts/spike_extract.py` |

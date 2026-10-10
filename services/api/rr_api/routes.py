@@ -696,7 +696,20 @@ def start_translation(
                 ).all()
             )
 
-        service = TranslationService(settings, _workspace(request), _queue(request))
+        # The provider is resolved *before* planning and handed to the service, because the cache
+        # key includes provider and model.  Planning without it made this response describe a
+        # different job from the one that would run: measured on a document whose 53 blocks were
+        # all already translated, the provider-less plan reported 0 reusable and 53 pending (so
+        # "53 blocks will be sent") while the worker, resolving the real provider, found all 53
+        # reusable and sent nothing.  This number is the reader's estimate of what a paid service
+        # will cost them, so being wrong in the direction of "you are about to spend" is the worst
+        # way to be wrong.  Planning does not call the provider, so passing it costs nothing.
+        service = TranslationService(
+            settings,
+            _workspace(request),
+            _queue(request),
+            provider=provider_from_resolved(configuration),
+        )
         plan = service.plan(
             session,
             document_id,
