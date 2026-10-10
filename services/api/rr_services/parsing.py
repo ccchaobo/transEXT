@@ -19,13 +19,18 @@ from __future__ import annotations
 import hashlib
 import uuid
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 
 from document_core.blocks import body_font_size, classify_paragraph
 from document_core.layout import LayoutResult, Paragraph, analyse
 from document_core.models import ConfidenceLevel, ParseStatus
-from rr_adapters.pdf_extract import PdfExtraction, PdfTextExtractor
+from rr_adapters.pdf_extract import (
+    PdfExtraction,
+    PdfTextExtractor,
+    render_page_images,
+)
 from rr_storage import (
     Block,
     Document,
@@ -49,6 +54,12 @@ PARSER_VERSION = "1.0.0"
 #: both adapters exist but are not wired into this stage yet, and saying so plainly is
 #: better than a parse that quietly produces nothing.
 SUPPORTED_FORMATS = {"pdf"}
+
+#: Page images are rendered here, not in the browser (ADR 0016).  120 DPI is the value the
+#: recorded first-screen and page-turn numbers were measured at, so those figures still
+#: describe this path rather than a different one.
+PREVIEW_DPI = 120
+THUMBNAIL_MAX_WIDTH = 180
 
 
 @dataclass
@@ -106,6 +117,12 @@ class ParseService:
         self.queue.set_stage(session, lease, "persist", "saving pages and blocks")
         self._persist_pages(session, lease, document, revision, extraction, outcome)
         self._persist_blocks(session, lease, document, revision, extraction, layout, outcome)
+
+        # Rendering runs after the pages exist so a failure here attaches to a page that is
+        # already readable.  It is its own stage because it is the slowest part and because a
+        # page image that cannot be produced must not cost the reader the text.
+        self.queue.set_stage(session, lease, "render", "rendering page images")
+        self._render_page_images(session, lease, document, revision, source, outcome)
 
         self._finish_revision(session, document, revision, outcome)
         document.parse_status = outcome.status
@@ -194,6 +211,68 @@ class ParseService:
                 status="succeeded",
                 usage={"text_chars": info.text_chars, "lines": len(lines)},
             )
+
+    def _render_page_images(
+        self,
+        session: Session,
+        lease: LeaseInfo,
+        document: Document,
+        revision: ParseRevision,
+        source: Path,
+        outcome: ParseOutcome,
+    ) -> None:
+        """Render each page to a preview and a thumbnail in the workspace.
+
+        Until now this step did not exist and ``preview_path`` was written as ``None``, on the
+        grounds that PDF.js drew the page in the browser.  The source pane now shows a
+        server-produced image (ADR 0016), so that reasoning no longer holds and the reader would
+        otherwise open a document whose original pane is blank.
+
+        A page whose render fails keeps its text and gets its own warning and a failed unit; the
+        parse is reported as partial rather than failed.  Losing the picture of a page must not
+        cost the reader the page.
+        """
+        rendered = 0
+        for index, preview, thumbnail in render_page_images(source, dpi=PREVIEW_DPI,
+                                                          thumbnail_max_width=THUMBNAIL_MAX_WIDTH):
+            page = session.get(Page, f"pg_{revision.id}_{index}")
+            if page is None:
+                continue
+            unit_key = f"render:{index}"
+            try:
+                preview_relative = self.workspace.relative(
+                    self.workspace.derived_dir(document.id, revision.id) / "pages" / f"{index:04d}.png"
+                )
+                thumbnail_relative = self.workspace.relative(
+                    self.workspace.derived_dir(document.id, revision.id) / "pages" / f"{index:04d}.thumb.png"
+                )
+                self.workspace.write_bytes(preview_relative, preview)
+                self.workspace.write_bytes(thumbnail_relative, thumbnail)
+            except Exception as error:  # noqa: BLE001 - any render or write failure is per-page
+                page.warnings = list(page.warnings or []) + [
+                    f"page image could not be rendered: {type(error).__name__}: {error}"
+                ]
+                outcome.warnings.append(
+                    f"page {index}: page image could not be rendered ({type(error).__name__})"
+                )
+                self.queue.upsert_unit(
+                    session, lease, unit_key=unit_key, unit_type="page", page_index=index,
+                    status="failed", error_code="RENDER_FAILED",
+                    error_message=f"{type(error).__name__}: {error}",
+                )
+                outcome.status = ParseStatus.PARTIAL.value
+                continue
+
+            page.preview_path = preview_relative
+            page.thumbnail_path = thumbnail_relative
+            rendered += 1
+            self.queue.upsert_unit(
+                session, lease, unit_key=unit_key, unit_type="page", page_index=index,
+                status="succeeded",
+                usage={"preview_bytes": len(preview), "thumbnail_bytes": len(thumbnail)},
+            )
+        outcome.stats["pages_rendered"] = rendered
+        session.flush()
 
     # -- blocks ------------------------------------------------------------
 

@@ -9,11 +9,13 @@ to stand in for a real service call.
 
 from __future__ import annotations
 
+import io
 import json
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from PIL import Image
 
 from rr_api import create_app
 from rr_services import Settings
@@ -165,6 +167,52 @@ class TestImportAndRead:
         assert response.status_code == 200
         assert response.content == (CORPUS / "files" / f"{DOCUMENT}.pdf").read_bytes()
 
+    def test_every_page_has_a_page_image_in_the_displayed_frame(self, client) -> None:
+        """The source pane is a server-rendered image (ADR 0016), so it must exist and fit.
+
+        The aspect ratio assertion is the one that matters.  The overlays are positioned as
+        percentages of the image box, so if the render used a different frame from the one the
+        contract normalises against - the media box instead of the crop box, or the rotation
+        applied the other way - every box would be subtly in the wrong place while still looking
+        plausible.  Equal aspect ratios are what make the percentages mean what they say.
+        """
+        document_id = import_and_parse(client)
+        detail = client.get(f"/api/v1/documents/{document_id}").json()
+        assert detail["page_count"] == 2
+        for index in range(detail["page_count"]):
+            payload = client.get(f"/api/v1/documents/{document_id}/pages/{index}").json()
+            page = payload["page"]
+            assert page["preview_url"].endswith(f"/pages/{index}/preview.png")
+
+            for kind in ("preview", "thumbnail"):
+                response = client.get(
+                    f"/api/v1/documents/{document_id}/pages/{index}/{kind}.png"
+                )
+                assert response.status_code == 200, f"{kind} page {index}"
+                assert response.headers["content-type"] == "image/png"
+                assert response.content[:8] == b"\x89PNG\r\n\x1a\n"
+                # A blank or one-pixel image would satisfy a mere 200.
+                assert len(response.content) > 2000, f"{kind} page {index} is suspiciously small"
+
+            preview = client.get(
+                f"/api/v1/documents/{document_id}/pages/{index}/preview.png"
+            ).content
+            with Image.open(io.BytesIO(preview)) as image:
+                declared = page["display_width"] / page["display_height"]
+                rendered = image.width / image.height
+                assert abs(declared - rendered) / declared < 0.02, (
+                    f"page {index}: declared display {declared:.4f} but rendered {rendered:.4f}"
+                )
+
+    def test_a_page_image_for_a_page_that_does_not_exist_is_404(self, client) -> None:
+        document_id = import_and_parse(client)
+        assert client.get(
+            f"/api/v1/documents/{document_id}/pages/99/preview.png"
+        ).status_code == 404
+        assert client.get(
+            f"/api/v1/documents/{document_id}/pages/0/banner.png"
+        ).status_code == 400
+
 
 class TestTranslationRefusal:
     def test_translation_without_credentials_is_refused_and_says_why(self, client) -> None:
@@ -196,8 +244,16 @@ class TestJobs:
         assert job["type"] == "parse"
         assert job["status"] == "succeeded"
         assert job["progress_fraction"] == 1.0
-        assert job["total_units"] == 3
-        assert job["done_units"] == 3
+        assert job["total_units"] == job["done_units"]
+        assert job["failed_units"] == 0
+        # The units are the record of what the parse actually did, so the composition is
+        # asserted rather than a magic total: a page of text, a rendered page image, and the
+        # block pass.  When rendering was added this count changed from 3 to 5, and asserting
+        # the shape says which work is being counted.
+        unit_keys = {unit["unit_key"] for unit in job["units"]}
+        assert {f"page:{index}" for index in range(2)} <= unit_keys
+        assert {f"render:{index}" for index in range(2)} <= unit_keys
+        assert any(key.startswith("blocks") for key in unit_keys), unit_keys
 
         events = client.get(f"/api/v1/jobs/{job['id']}/events").json()
         kinds = [event["kind"] for event in events["events"]]
@@ -344,6 +400,55 @@ class TestSameOriginGuard:
     def test_reads_are_never_blocked_by_the_origin_check(self, client) -> None:
         response = client.get("/health", headers={"Origin": "https://evil.example"})
         assert response.status_code == 200
+
+
+class TestTheFrontendIsServed:
+    """The browser's own requests, checked without a browser.
+
+    These are the paths the shell loads on first paint.  A 404 here is a blank page, which no
+    amount of API coverage would catch, so the assets are asserted to be served and to contain
+    something rather than merely to exist.
+    """
+
+    @pytest.fixture()
+    def served(self, tmp_path):
+        settings = Settings(data_dir=tmp_path / "data")
+        app = create_app(settings, serve_frontend=True)
+        with TestClient(app) as test_client:
+            yield test_client
+
+    def test_the_shell_and_its_assets_are_served(self, served) -> None:
+        index = served.get("/")
+        assert index.status_code == 200
+        assert "text/html" in index.headers["content-type"]
+        assert "/js/app.js" in index.text
+        assert "/styles.css" in index.text
+
+        for path, needle in (
+            ("/styles.css", ".page-shell"),
+            ("/js/app.js", "selectBlock"),
+            ("/js/api.js", "/api/v1"),
+        ):
+            response = served.get(path)
+            assert response.status_code == 200, path
+            assert needle in response.text, f"{path} does not contain {needle!r}"
+
+    def test_the_overlay_is_positioned_from_the_contract_not_from_guesses(self, served) -> None:
+        """The one line that ties the pane to the frozen coordinate contract.
+
+        The span bbox is normalised 0-1 against the displayed page, so the box is a percentage
+        of the image container.  If this ever becomes a pixel calculation, the rotation and crop
+        handling silently stops applying and every box shifts on rotated pages only.
+        """
+        app_js = served.get("/js/app.js").text
+        assert "x0 * 100}%" in app_js
+        assert "y0 * 100}%" in app_js
+        assert "aspectRatio" in app_js
+
+    def test_a_path_outside_the_assets_is_not_served_from_disk(self, served) -> None:
+        # The static mount serves the frontend directory; it must not serve the workspace.
+        assert served.get("/../pyproject.toml").status_code in (400, 404)
+        assert served.get("/js/../../pyproject.toml").status_code in (400, 404)
 
 
 class TestDeletion:

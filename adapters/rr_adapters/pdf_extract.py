@@ -45,6 +45,9 @@ __all__ = [
     "is_encrypted",
     "inspect_pdf",
     "page_is_probably_scanned",
+    "render_page",
+    "render_thumbnail",
+    "render_page_images",
 ]
 
 #: A page is treated as scanned when its text layer carries fewer printable
@@ -473,3 +476,36 @@ def render_thumbnail(
     zoom = max_width / max(1.0, page.rect.width)
     pixmap = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
     return pixmap.tobytes("png")
+
+
+def render_page_images(
+    path: Path,
+    *,
+    dpi: int = 120,
+    thumbnail_max_width: int = 180,
+    page_indices: Sequence[int] | None = None,
+) -> Iterable[tuple[int, bytes, bytes]]:
+    """Yield ``(page_index, preview_png, thumbnail_png)`` one page at a time.
+
+    A generator rather than a dict on purpose: a 2000-page paper would otherwise hold every
+    rendered page in memory at once before any of them was written.  Here the caller writes each
+    page and drops it.
+
+    The pixmaps come from :func:`render_page` and :func:`render_thumbnail`, which use PyMuPDF's
+    own rendering.  That applies the page's ``/Rotate`` and renders the page's visible box, so
+    the image is the page as a reader sees it - which is the frame the normalised span
+    coordinates are expressed in, and therefore the frame the overlay is positioned against.
+    """
+    doc = pymupdf.open(path)
+    try:
+        indices = range(doc.page_count) if page_indices is None else page_indices
+        for index in indices:
+            if index < 0 or index >= doc.page_count:
+                raise IndexError(f"page {index} is outside 0..{doc.page_count - 1}")
+            yield (
+                index,
+                render_page(doc, index, dpi=dpi),
+                render_thumbnail(doc, index, max_width=thumbnail_max_width),
+            )
+    finally:
+        doc.close()

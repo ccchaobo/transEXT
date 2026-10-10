@@ -166,12 +166,28 @@ class TestImplementationHonesty:
             f"provider credentials must stay server-side: {offenders}"
         )
 
-    def test_the_secure_scheme_is_documented(self, document: dict) -> None:
-        schemes = document["components"]["securitySchemes"]
-        assert schemes, "the loopback session token must be documented"
-        assert any(
-            entry["type"] == "apiKey" for entry in schemes.values()
-        ), "a loopback guard is expected to be a token"
+    def test_no_security_scheme_claims_auth_that_is_not_implemented(self, document: dict) -> None:
+        """An earlier revision of this test asserted the opposite, and it was wrong.
+
+        It required ``components.securitySchemes`` to declare an ``apiKey`` header named
+        ``X-Session-Token``.  The generated document did declare exactly that, so the test passed
+        - but the implementation has never read that header.  A client following this document
+        would have sent a token that does nothing, and the document would have implied the
+        service was authenticated when it is not.  A test that pins a claim the code does not
+        honour is worse than no test, because it makes the claim look verified.
+
+        What actually guards the service is a same-origin check on state-changing requests, which
+        is a browser-origin check and is described in the document's own description.  So the
+        assertion is now that no security scheme exists, and that the description says what does.
+        """
+        components = document["components"]
+        assert not components.get("securitySchemes"), (
+            "the service has no authentication; declaring a security scheme would tell clients "
+            "to send a credential that is never read"
+        )
+        description = document["info"]["description"].lower()
+        assert "no authentication" in description
+        assert "origin" in description or "referer" in description
 
 
 class TestErrorMappingReachesTheDocument:

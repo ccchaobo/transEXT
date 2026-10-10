@@ -22,6 +22,7 @@ supersedes the old one, because the point is to keep the reasoning auditable.
 | [0013](0013-placing-the-crossing-group.md) | The crossing group is placed by its vertical centre, not fixed in the middle | accepted |
 | [0014](0014-calibrating-the-paragraph-break.md) | The paragraph break is calibrated against the corpus, in the measured valley | accepted |
 | [0015](0015-a-type-size-change-starts-a-new-block.md) | A change of type size starts a new block, which is how a heading is split off | accepted |
+| [0016](0016-server-rendered-page-images.md) | The source pane renders server-produced page images, not PDF.js | accepted |
 
 ## Not decided yet
 

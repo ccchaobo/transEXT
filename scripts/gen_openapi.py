@@ -1,20 +1,21 @@
-"""Generate the OpenAPI document from the wire contract.
+"""Generate the OpenAPI document from the wire contract and the real application.
 
 The document is an *output* of the contract, not a parallel description of it
-(ADR 0006).  Generating it here, from the same Pydantic models the service will
-use, means it cannot drift from the code, and it can be reviewed and diffed
+(ADR 0006).  Component schemas are generated here, from the same Pydantic models the
+service uses, so they cannot drift from the code and can be reviewed and diffed
 without starting a server.
 
-At M0 the paths are not implemented yet, so this writes the component schemas and
-the error responses only.  Paths are added in M1 by the FastAPI application, which
-derives them from the models in this same package; the file records that fact
-rather than pretending to be a complete API description.
+Path objects are taken from the FastAPI application itself, which declares the
+contract models as its request and response models.  Until the API existed this file
+recorded ``paths: {}`` and said so in its own metadata; now it carries the real
+routes, and the "no paths yet" note is gone rather than left to become a lie.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import tempfile
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -41,8 +42,24 @@ def _collect_models() -> dict[str, Any]:
     return found
 
 
-def build_document(*, version: str = "0.1.0") -> dict[str, Any]:
-    """Build the OpenAPI document for the M0 contract."""
+def _app_paths() -> tuple[dict[str, Any], dict[str, Any]]:
+    """The paths and schemas the running application publishes.
+
+    The app is built against a temporary data directory.  Using the default one would create a
+    real database and workspace as a side effect of generating documentation, which is not
+    something a doc generator should do to the user's data.
+    """
+    from rr_api import create_app
+    from rr_services import Settings
+
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as scratch:
+        app = create_app(Settings(data_dir=Path(scratch) / "data"), serve_frontend=False)
+        document = app.openapi()
+    return document.get("paths", {}), document.get("components", {}).get("schemas", {})
+
+
+def build_document(*, version: str = "0.1.0", with_paths: bool = True) -> dict[str, Any]:
+    """Build the OpenAPI document for the implemented API."""
     models = _collect_models()
 
     schemas: dict[str, Any] = {}
@@ -57,8 +74,17 @@ def build_document(*, version: str = "0.1.0") -> dict[str, Any]:
         schema.setdefault("title", name)
         schemas[name] = schema
 
-    # Error responses are the only part of the API surface that exists at M0, so
-    # they are stated as reusable responses rather than left to each path.
+    paths: dict[str, Any] = {}
+    if with_paths:
+        paths, app_schemas = _app_paths()
+        # The contract's own schemas stay authoritative; anything the app generated that the
+        # contract does not name (its wrapper models) is added.  A disagreement is visible as a
+        # contract schema that differs from the app's, which is what a test should catch.
+        for name, schema in app_schemas.items():
+            schemas.setdefault(name, schema)
+
+    # Error responses are the only part of the API surface that is stated as a reusable response
+    # rather than repeated on each path.
     error_response = {
         "description": "A business error, with a machine-readable code.",
         "content": {
@@ -75,11 +101,12 @@ def build_document(*, version: str = "0.1.0") -> dict[str, Any]:
             "version": version,
             "description": (
                 "Local-first bilingual research-paper reader.\n\n"
-                "This document is generated from the wire contract (ADR 0006).  At "
-                "M0 it describes the component schemas and the error taxonomy; the "
-                "path objects are added in M1 by the FastAPI application, which "
-                "derives them from the same models.  Its absence of paths is a "
-                "statement about what is implemented, not an omission."
+                "This document is generated from the wire contract (ADR 0006) and the FastAPI "
+                "application, so the schemas cannot drift from the code.\n\n"
+                "There is no authentication. The service binds loopback and refuses a "
+                "state-changing request whose Origin or Referer is not local, which stops a page "
+                "on another origin from making this service import, translate or delete. That is "
+                "a browser-origin check and is not described as authentication."
             ),
         },
         "servers": [
@@ -93,30 +120,24 @@ def build_document(*, version: str = "0.1.0") -> dict[str, Any]:
             "responses": {
                 "BusinessError": error_response,
             },
-            "securitySchemes": {
-                "loopbackSession": {
-                    "type": "apiKey",
-                    "in": "header",
-                    "name": "X-Session-Token",
-                    "description": (
-                        "A token minted at start-up and required on every mutating "
-                        "request. It protects against a browser page on another "
-                        "origin reaching the loopback service. Provider API keys "
-                        "are never sent to the client."
-                    ),
-                }
-            },
+            # No securitySchemes.  An earlier revision of this file declared an
+            # `X-Session-Token` scheme that the implementation never had, which is worse than
+            # having none: it would tell a client to send a header that does nothing.
         },
-        "paths": {},
+        "paths": paths,
         "x-implementation-status": {
-            "milestone": "M0",
+            "milestone": "M1",
             "implemented": [
                 "the component schemas below, enforced by tests",
                 "the error taxonomy and its HTTP status mapping",
+                f"{len(paths)} path objects, served by the FastAPI application",
+                "import, parse, page images, outline, annotations, terms, reading state, jobs "
+                "and the bilingual Markdown export",
             ],
             "not_yet_implemented": [
-                "all path objects (M1)",
-                "authentication enforcement (M1)",
+                "real-service translation acceptance (no provider credentials in this environment)",
+                "OCR wiring into the parse stage",
+                "DOCX conversion wiring into the parse stage",
             ],
         },
     }
@@ -130,9 +151,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=REPO / "packages" / "contracts" / "openapi.json",
     )
     parser.add_argument("--version", default="0.1.0")
+    parser.add_argument(
+        "--schemas-only",
+        action="store_true",
+        help="omit path objects (the M0 shape, kept so the contract can be inspected alone)",
+    )
     args = parser.parse_args(argv)
 
-    document = build_document(version=args.version)
+    document = build_document(version=args.version, with_paths=not args.schemas_only)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -141,9 +167,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     schemas = document["components"]["schemas"]
     print(f"wrote {args.out}")
     print(f"schemas: {len(schemas)}")
-    print(f"paths:   {len(document['paths'])} (added in M1)")
-    for name in sorted(schemas):
-        print(f"  {name}")
+    print(f"paths:   {len(document['paths'])}")
+    for path in sorted(document["paths"]):
+        methods = ",".join(sorted(m.upper() for m in document["paths"][path]))
+        print(f"  {methods:<28} {path}")
     return 0
 
 
