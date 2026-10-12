@@ -1,0 +1,50 @@
+{
+  "status": {
+    "bridge_version": "0.1.1",
+    "zotero_version": "9.0.6",
+    "instance": "CWxI5Ph1",
+    "libraries": [
+      {
+        "id": 1,
+        "name": "我的文库",
+        "type": "user",
+        "editable": true,
+        "group_id": null
+      }
+    ],
+    "user_library_id": 1,
+    "cloud_configured": true,
+    "paired": true,
+    "authorized": true,
+    "connected": true,
+    "bridge_installed": true,
+    "can_write": true
+  },
+  "pull": {
+    "instance": "CWxI5Ph1",
+    "library_id": 1,
+    "cached_items": 126,
+    "updated_documents": 0,
+    "conflicts": [],
+    "message": "已更新本机 Zotero 目录缓存；这不表示云端同步完成。"
+  },
+  "books": 58,
+  "capture": {
+    "status": 200,
+    "items": 1
+  },
+  "library_modified": false,
+  "reader_documents": 7,
+  "web_capture": {
+    "source": "https://arxiv.org/abs/2502.08560",
+    "status": 200,
+    "items": 1
+  },
+  "tests": {
+    "backend": 719,
+    "reader_frontend": 19,
+    "bridge": 6
+  },
+  "word_acceptance": "not_requested",
+  "native_write_acceptance": "isolated_boundary_tests_only"
+}

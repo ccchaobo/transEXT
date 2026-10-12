@@ -302,9 +302,7 @@ def _check(data_dir: Path) -> int:
     else:
         print("  ok   the pane body can shrink below its content, so it scrolls")
 
-    # The overlay is drawn where the original was, and is not a widget: no border, no scrollbar,
-    # a minimum height rather than a fixed one.  The reader asked for that after using the version
-    # that had a box and a scrollbar around every paragraph.
+    # 按当前阅读目标检查：无边框、限制在原文区域，并有完整段落阅读入口。
     overlay_css = re.search(r"\.overlay-panel\s*\{([^}]*)\}", css_text)
     if overlay_css is None:
         failures.append("the overlay panel has no style rule at all")
@@ -317,7 +315,7 @@ def _check(data_dir: Path) -> int:
         boxed = []
         for prop, value in re.findall(r"([a-z-]+)\s*:\s*([^;]+)", block):
             value = value.strip()
-            if prop == "overflow" and value not in ("visible", "initial"):
+            if prop == "overflow" and value not in ("auto", "visible", "initial"):
                 boxed.append(f"overflow: {value}")
             elif prop == "border" and re.search(r"\b[1-9]\d*(\.\d+)?px", value):
                 boxed.append(f"border: {value}")
@@ -326,17 +324,16 @@ def _check(data_dir: Path) -> int:
         if boxed:
             failures.append(f"the overlay panel is still a box: {boxed}")
             print(f"  FAIL the overlay panel is still a box: {boxed}")
-        elif not re.search(r"panel\.style\.minHeight", source_text) or re.search(
-            r"panel\.style\.height", source_text
-        ):
-            failures.append("the overlay panel is not sized by min-height alone")
-            print("  FAIL the overlay panel has a fixed height or no minimum")
+        elif not (re.search(r"panel\.style\.height", source_text) or
+                  re.search(r"Object\.assign\(item\.style,[^\n]*height:", source_text)) or "overlay-full-block" not in source_text:
+            failures.append("the overlay is not bounded or has no complete paragraph viewer")
+            print("  FAIL the overlay is not bounded or has no complete paragraph viewer")
         elif '"overlay-overflow"' in source_text or "overlay-overflow" in css_text:
             failures.append("the overlay still draws an overflow badge")
             print("  FAIL the overflow badge is still there")
         else:
             text = " ".join(block.split())
-            print(f"  ok   the overlay panel is plain text in place ({text[:58]}...)")
+            print(f"  ok   bounded borderless overlay with complete paragraph viewer ({text[:58]}...)")
 
     # Re-translating one block: the API has taken `scope: "blocks"` with `force` since it was
     # written and nothing ever called it, so the call site is the thing to assert.

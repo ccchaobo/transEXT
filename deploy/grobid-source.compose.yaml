@@ -1,0 +1,13 @@
+services:
+  grobid:
+    image: research-reader-grobid:0.9.1-source
+    pull_policy: never
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8070:8070"
+    mem_limit: 4g
+    cpus: 2
+    labels:
+      rr.project: research-reader
+      rr.source: grobid-0.9.1

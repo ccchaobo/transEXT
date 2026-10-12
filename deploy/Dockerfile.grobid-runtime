@@ -1,0 +1,20 @@
+ARG JAVA_BASE_IMAGE=eclipse-temurin:21-jre-noble
+FROM ${JAVA_BASE_IMAGE}
+USER root
+RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org/debian|https://repo.huaweicloud.com/debian|g' /etc/apt/sources.list.d/debian.sources; else sed -i 's|http://archive.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g;s|http://security.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources; fi \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends libxml2 libfontconfig \
+    && apt-get clean
+COPY grobid-home /opt/grobid/grobid-home
+COPY grobid-service /opt/grobid/grobid-service
+RUN mkdir -p /opt/grobid/logs /opt/grobid/grobid-home/tmp \
+    && find /opt/grobid/grobid-home/pdfalto -name "*_server" -type f -exec sed -i 's/\r$//' {} + \
+    && chmod -R 755 /opt/grobid/grobid-home/pdfalto \
+    && chown -R 7474:7474 /opt/grobid/logs /opt/grobid/grobid-home/tmp
+WORKDIR /opt/grobid
+ENV LD_LIBRARY_PATH=/opt/grobid/grobid-home/lib/lin-64
+ENV GROBID_SERVICE_OPTS="-Xmx2g --enable-native-access=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED"
+LABEL rr.project="research-reader" org.opencontainers.image.version="0.9.1" org.opencontainers.image.revision="523bb8e97f357e93682dc4eaa6d22faa8b5b93de"
+USER 7474:7474
+ENTRYPOINT ["/bin/sh"]
+CMD ["/opt/grobid/grobid-service/bin/grobid-service"]

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "科研文献对照阅读器连接组件",
+  "version": "0.1.1",
+  "description": "在本机连接科研文献对照阅读器与 Zotero；保留 Zotero 原生引用、合并和同步流程。",
+  "author": "Research Reader",
+  "applications": {
+    "zotero": {
+      "id": "research-reader-bridge@local.research-reader",
+      "update_url": "https://localhost/research-reader-bridge/updates.json",
+      "strict_min_version": "9.0",
+      "strict_max_version": "9.0.*"
+    }
+  }
+}

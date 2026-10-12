@@ -161,6 +161,10 @@ def create_app(
         }
 
     app.include_router(router)
+    from .library import router as library_router
+    app.include_router(library_router)
+    from .zotero import router as zotero_router
+    app.include_router(zotero_router)
 
     if serve_frontend and WEB_ROOT.is_dir():
         app.mount("/", StaticFiles(directory=WEB_ROOT, html=True), name="web")

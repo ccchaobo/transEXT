@@ -128,11 +128,21 @@ class DocumentService:
             # Content-addressed storage means the bytes are already on disk under the
             # existing document; this second copy is redundant.
             self._discard(document_id)
+            was_deleted = existing.deleted_at is not None
+            existing.deleted_at = None
+            resumed_job = None
+            resumed_created = False
+            if was_deleted and queue_parse and not existing.active_revision_id:
+                resumed_job, resumed_created = self.queue.enqueue(session,job_type=JobType.PARSE.value,
+                    document_id=existing.id,request={"document_id":existing.id,"format":existing.format},
+                    idempotency_key=f"restore-import:{existing.id}:{uuid.uuid4().hex}")
             return ImportResult(
                 document=existing,
                 probe=probe,
                 duplicate=True,
-                warnings=[f"already imported as “{existing.filename}”"],
+                job=resumed_job,
+                job_created=resumed_created,
+                warnings=["已恢复回收站中的原记录。" if was_deleted else f"already imported as “{existing.filename}”"],
             )
 
         document = Document(
@@ -231,7 +241,6 @@ class DocumentService:
         stmt = (
             select(Document)
             .where(Document.sha256 == sha256)
-            .where(Document.deleted_at.is_(None))
             .order_by(Document.imported_at.asc())
         )
         return session.execute(stmt).scalars().first()

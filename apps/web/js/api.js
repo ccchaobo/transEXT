@@ -46,7 +46,58 @@ async function request(path, { method = "GET", body, form, raw = false } = {}) {
   return payload;
 }
 
+export async function consumeAssistantEvents(response,onEvent){
+  if(!response.ok){const payload=await response.json();const detail=payload.detail || payload;throw new ApiError(detail.message || `请求失败（HTTP ${response.status}）`,{code:detail.error_code,status:response.status});}
+  if(!response.body)throw new ApiError('浏览器未提供流式响应。');
+  const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='',result=null,finished=false;
+  const consume=frame=>{
+    let kind='message';const data=[];
+    for(const line of frame.split('\n')){if(line.startsWith('event:'))kind=line.slice(6).trim();else if(line.startsWith('data:'))data.push(line.slice(5).trimStart());}
+    if(!data.length)return;
+    let value;try{value=JSON.parse(data.join('\n'));}catch{throw new ApiError('流式响应格式损坏，已收到的内容会保留。');}
+    if(kind==='error')throw new ApiError(value.message,{code:value.code});
+    onEvent?.(kind,value);if(kind==='done')result=value;
+  };
+  try{
+    while(true){const {done,value}=await reader.read();buffer+=decoder.decode(value || new Uint8Array(),{stream:!done});buffer=buffer.replace(/\r\n/g,'\n');
+      let split;while((split=buffer.indexOf('\n\n'))>=0){consume(buffer.slice(0,split));buffer=buffer.slice(split+2);}if(done){finished=true;break;}}
+    if(buffer.trim())consume(buffer);
+    if(!result)throw new ApiError('连接结束但回答未完成，已保留收到的内容；未自动重试。',{code:'assistant_unknown_result'});
+    return result;
+  }finally{if(!finished){try{await reader.cancel();}catch{}}reader.releaseLock();}
+}
+
+async function streamAssistant(id,body,{signal,onEvent}={}){
+  const response=await fetch(`${BASE}/documents/${id}/assistant/stream`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});
+  return consumeAssistantEvents(response,onEvent);
+}
+
 export const api = {
+  zoteroStatus: () => request(`${BASE}/zotero/status`),
+  zoteroPull: library_id => request(`${BASE}/zotero/pull`,{method:"POST",body:{library_id}}),
+  zoteroItems: params => request(`${BASE}/zotero/items?${new URLSearchParams(params)}`),
+  zoteroImportPdf: (library_id,key) => request(`${BASE}/zotero/import-pdf`,{method:"POST",body:{library_id,key}}),
+  zoteroPush: body => request(`${BASE}/zotero/push`,{method:"POST",body}),
+  zoteroAssociate: body => request(`${BASE}/zotero/associate`,{method:"POST",body}),
+  zoteroResolve: body => request(`${BASE}/zotero/resolve-from-zotero`,{method:"POST",body}),
+  zoteroBinding: id => request(`${BASE}/zotero/binding/${id}`),
+  zoteroCapturePreview: source => request(`${BASE}/zotero/capture-preview`,{method:"POST",body:{source}}),
+  zoteroCaptureSave: body => request(`${BASE}/zotero/capture-save`,{method:"POST",body}),
+  zoteroDuplicates: library_id => request(`${BASE}/zotero/duplicates?library_id=${library_id}`),
+  zoteroMerge: body => request(`${BASE}/zotero/merge`,{method:"POST",body}),
+  zoteroNative: (command,body) => request(`${BASE}/zotero/native/${command}`,{method:"POST",body}),
+  zoteroExportUrl: (keys,format="bibtex",style="apa",library_id=0) => `${BASE}/zotero/export?${new URLSearchParams({keys:keys.join(","),format,style,library_id})}`,
+  libraryOverview: () => request(`${BASE}/library/overview`),
+  libraryItems: (params = {}) => request(`${BASE}/library/items?${new URLSearchParams(params)}`),
+  libraryItem: id => request(`${BASE}/library/items/${id}`),
+  editLibraryItem: (id, body) => request(`${BASE}/library/items/${id}`, {method:"PATCH",body}),
+  libraryBatch: body => request(`${BASE}/library/batch`, {method:"POST",body}),
+  createCollection: name => request(`${BASE}/library/collections`, {method:"POST",body:{name}}),
+  renameCollection: (id,name) => request(`${BASE}/library/collections/${id}`, {method:"PATCH",body:{name}}),
+  deleteCollection: id => request(`${BASE}/library/collections/${id}`, {method:"DELETE"}),
+  askAssistant: (id, payload) => request(`${BASE}/documents/${id}/assistant`, { method: "POST", body: payload }),
+  streamAssistant,
+  assistantCapabilities: () => request(`${BASE}/assistant/capabilities`),
   health: () => request("/health"),
   translationConfiguration: () => request(`${BASE}/translation/configuration`),
 
@@ -61,7 +112,7 @@ export const api = {
   testTranslationSettings: () =>
     request(`${BASE}/settings/translation/test`, { method: "POST" }),
 
-  listDocuments: () => request(`${BASE}/documents`),
+  listDocuments: (offset = 0) => request(`${BASE}/documents?limit=100&offset=${offset}`),
   getDocument: (id) => request(`${BASE}/documents/${id}`),
   deleteDocument: (id) => request(`${BASE}/documents/${id}?confirm=true`, { method: "DELETE" }),
   outline: (id) => request(`${BASE}/documents/${id}/outline`),

@@ -1,0 +1,119 @@
+{
+  "checks": [
+    {
+      "name": "真实第4页编号不可翻译",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "旧编号错误译文未被绘制",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "竖排提示语消失",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "真实第4页译文无极窄区域及内部滚动",
+      "status": "PASS",
+      "detail": [
+        {
+          "width": 387,
+          "height": 21,
+          "scroll": 21,
+          "overflow": "visible",
+          "text": "方法"
+        },
+        {
+          "width": 205,
+          "height": 18,
+          "scroll": 18,
+          "overflow": "visible",
+          "text": "数据集与图像预处理"
+        },
+        {
+          "width": 411,
+          "height": 144,
+          "scroll": 144,
+          "overflow": "visible",
+          "text": "在本研究中，我们使用来自英国生物银行（U"
+        },
+        {
+          "width": 411,
+          "height": 84,
+          "scroll": 84,
+          "overflow": "visible",
+          "text": "Data-Field 25009）。用于"
+        },
+        {
+          "width": 380,
+          "height": 18,
+          "scroll": 18,
+          "overflow": "visible",
+          "text": "生成模型"
+        },
+        {
+          "width": 411,
+          "height": 282,
+          "scroll": 282,
+          "overflow": "visible",
+          "text": "在我们的实验中，我们使用了LDMs，它将"
+        }
+      ]
+    },
+    {
+      "name": "真实标题保持原位没有额外上边距",
+      "status": "PASS",
+      "detail": 0
+    },
+    {
+      "name": "真实图形页画面连续完整保留",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "真实图形页的图未切断",
+      "status": "PASS",
+      "detail": {
+        "page_number": 3
+      }
+    },
+    {
+      "name": "真实图内文字未被译文覆盖",
+      "status": "PASS",
+      "detail": {
+        "protected_count": 8
+      }
+    },
+    {
+      "name": "图外图注仍可翻译",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "浏览器无运行异常",
+      "status": "PASS",
+      "detail": []
+    }
+  ],
+  "read_only": true,
+  "zoom": "CSS 110%",
+  "external_model_requests": 0,
+  "regression": {
+    "backend_passed": 681,
+    "backend_existing_warnings": 3,
+    "frontend_passed": 18,
+    "browser_passed": 78
+  },
+  "source_sha256": {
+    "apps/web/js/app.js": "3a99fd42e3a568aee75eab54cccb6fee042e7d9095b8131215e1a0f54f7f51e6",
+    "apps/web/styles.css": "c1846f260c0af68d96ad84bdcfde4cf749800acbf7021f28f341abdfc7c23cb1",
+    "adapters/rr_adapters/pdf_visuals.py": "06da8e6d5f4d0fe200f849f241f46d69cee600a6379fa9fcc1625ff0baf50d91",
+    "services/api/rr_services/translation_policy.py": "41e6c39cd213aa2606b1eaa8aab5dcb1a109db3d3f72f3579e9c993db91df4fe",
+    "services/api/rr_services/translation.py": "8d30ee3201250ebd9fac3684b838a5d9ad7df970508ecafce95366ce97b06b1e",
+    "services/api/rr_api/reads.py": "a790b1c684db1e8e6883ec1ea6a409e0441d445d773a840cd207fab281ddaeaa",
+    "services/api/rr_api/routes.py": "17bc22eb08434e942e06c319d86e894a2f046f99c4e9ef46b3523ecbd002641f"
+  }
+}

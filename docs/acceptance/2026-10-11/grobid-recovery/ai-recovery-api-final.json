@@ -1,0 +1,43 @@
+{
+  "fixture": "自编算术平均数文献，未使用用户文献",
+  "checks": {
+    "actual_worker_parse": true,
+    "visual_regions_wire": true,
+    "comparison_state_persists": true,
+    "real_ai_reply": true,
+    "real_ai_citations": true,
+    "owned_fixture_removed": true
+  },
+  "model": "deepseek-v4.1-flash",
+  "ai": {
+    "answer": "S=3。\n\n依据 [S1] 直接给出：当 x=2、y=4 时，分数 S=3。另据 [S3]，S=(x+y)/2，代入也可得 (2+4)/2=3。",
+    "model": "deepseek-v4.1-flash",
+    "citations": [
+      {
+        "id": "S1",
+        "block_id": "blk_f5cb2499f9c20f417a5d",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "formula",
+        "text": "For x=2 and y=4, the score S=3."
+      },
+      {
+        "id": "S3",
+        "block_id": "blk_0661b94faf4e77b59ab6",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "paragraph",
+        "text": "The score S=(x+y)/2 is the arithmetic mean of x and y."
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 266,
+      "completion_tokens": 219,
+      "total_tokens": 485,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  },
+  "passed": true
+}

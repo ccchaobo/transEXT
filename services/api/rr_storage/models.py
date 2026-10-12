@@ -51,6 +51,8 @@ __all__ = [
     "JobEvent",
     "ReadingStateRow",
     "DocumentLabel",
+    "LibraryCollection",
+    "CollectionDocument",
     "utcnow",
 ]
 
@@ -117,6 +119,48 @@ class DocumentLabel(Base):
     document_id: Mapped[str] = mapped_column(ForeignKey("documents.id", ondelete="CASCADE"), index=True)
     label: Mapped[str] = mapped_column(String(64))
     document: Mapped[Document] = relationship(back_populates="labels")
+
+
+class LibraryCollection(Base):
+    """Logical collections; membership never moves an original file."""
+    __tablename__ = "library_collections"
+    id: Mapped[str] = mapped_column(String(48), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class CollectionDocument(Base):
+    __tablename__ = "collection_documents"
+    collection_id: Mapped[str] = mapped_column(ForeignKey("library_collections.id", ondelete="CASCADE"), primary_key=True)
+    document_id: Mapped[str] = mapped_column(ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True)
+
+
+class ZoteroRecord(Base):
+    """A bibliographic item can exist without any local reader attachment."""
+    __tablename__="zotero_records"
+    instance: Mapped[str]=mapped_column(String(64),primary_key=True)
+    library_id: Mapped[int]=mapped_column(Integer,primary_key=True)
+    item_key: Mapped[str]=mapped_column(String(8),primary_key=True)
+    title: Mapped[str]=mapped_column(String(1024),default='')
+    search_text: Mapped[str]=mapped_column(Text,default='')
+    item_type: Mapped[str]=mapped_column(String(32),default='')
+    parent_key: Mapped[str | None]=mapped_column(String(8),nullable=True)
+    fingerprint: Mapped[str]=mapped_column(String(64))
+    data: Mapped[dict[str,Any]]=mapped_column(JSON,default=dict)
+    deleted: Mapped[bool]=mapped_column(Boolean,default=False)
+    synced_at: Mapped[datetime]=mapped_column(DateTime(timezone=True),default=utcnow)
+
+
+class ZoteroBinding(Base):
+    __tablename__="zotero_bindings"
+    document_id: Mapped[str]=mapped_column(ForeignKey("documents.id",ondelete="CASCADE"),primary_key=True)
+    instance: Mapped[str]=mapped_column(String(64))
+    library_id: Mapped[int]=mapped_column(Integer)
+    item_key: Mapped[str]=mapped_column(String(8))
+    attachment_key: Mapped[str | None]=mapped_column(String(8),nullable=True)
+    fingerprint: Mapped[str]=mapped_column(String(64))
+    baseline: Mapped[dict[str,Any]]=mapped_column(JSON,default=dict)
+    synced_at: Mapped[datetime]=mapped_column(DateTime(timezone=True),default=utcnow)
 
 
 class ParseRevision(Base):

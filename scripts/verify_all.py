@@ -25,6 +25,7 @@ a finding rather than a pass.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -55,6 +56,8 @@ class Entry:
 
     @property
     def command(self) -> list[str]:
+        if self.argv[0] == "node":
+            return list(self.argv)
         return [PYTHON, *self.argv]
 
 
@@ -66,6 +69,7 @@ class Outcome:
     verdict: str
     tail: str
     timed_out: bool = False
+    output: str = ""
 
     @property
     def ok(self) -> bool:
@@ -140,6 +144,10 @@ ENTRIES: tuple[Entry, ...] = (
           "both processes as real processes, everything over HTTP"),
     Entry("verify_checks_can_fail", ("scripts/verify_checks_can_fail.py",), "product", 1800,
           "each new frontend check, reverted, and confirmed to fail"),
+    Entry("frontend runtime tests", ("node", "--test", "tests/frontend/reader.test.cjs"), "frontend", 600,
+          "real frontend functions with controlled API and DOM boundaries"),
+    Entry("browser acceptance", ("scripts/verify_browser_acceptance.py",), "frontend", 600,
+          "real browser rendering and interaction; AI UI fixtures explicitly labelled"),
     # NOTE: that one edits `apps/web/js/app.js` and `styles.css` for the length of its run, so it
     # must never be run in parallel with `verify_frontend_contract`.  This tuple is executed in
     # order and it is listed after that entry; running the product group with more than one worker
@@ -183,7 +191,7 @@ def run(entry: Entry, data_root: Path) -> Outcome:
         )
         seconds = time.monotonic() - started
         output = (finished.stdout or "") + (finished.stderr or "")
-        return Outcome(entry, finished.returncode, seconds, verdict_of(output), output[-2500:])
+        return Outcome(entry, finished.returncode, seconds, verdict_of(output), output[-2500:], output=output)
     except subprocess.TimeoutExpired as expired:
         seconds = time.monotonic() - started
         output = ""
@@ -191,7 +199,7 @@ def run(entry: Entry, data_root: Path) -> Outcome:
             if stream:
                 output += stream if isinstance(stream, str) else stream.decode("utf-8", "replace")
         return Outcome(entry, 124, seconds, f"TIMEOUT after {entry.timeout}s", output[-2500:],
-                       timed_out=True)
+                       timed_out=True, output=output)
 
 
 def main() -> int:
@@ -200,7 +208,8 @@ def main() -> int:
                         help="run only these groups (repeatable)")
     parser.add_argument("--list", action="store_true", help="list the entry points and exit")
     parser.add_argument("--keep", action="store_true",
-                        help="keep each entry point's output for inspection")
+                        help="keep each entry point's isolated data directory")
+    parser.add_argument("--output", type=Path, help="保存逐入口完整日志、执行时间和机器可读报告")
     args = parser.parse_args()
 
     entries = [e for e in ENTRIES if not args.group or e.group in args.group]
@@ -223,6 +232,17 @@ def main() -> int:
             print(f"[{index}/{len(entries)}] {entry.group}: {entry.name} ...", flush=True)
             outcome = run(entry, root)
             outcomes.append(outcome)
+            if args.output:
+                args.output.mkdir(parents=True, exist_ok=True)
+                name = re.sub(r"[^a-zA-Z0-9_-]", "_", entry.name)
+                (args.output / f"{name}.log").write_text(outcome.output, encoding="utf-8")
+                report = {"note": "退出成功表示入口执行成功；度量结果及未接入能力需另行核对。",
+                    "completed": len(outcomes), "total": len(entries), "outcomes": [
+                        {"name": row.entry.name, "group": row.entry.group, "command": row.entry.command,
+                         "exit_code": row.code, "seconds": row.seconds, "ok": row.ok,
+                         "timed_out": row.timed_out, "verdict": row.verdict}
+                        for row in outcomes]}
+                (args.output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
             mark = "PASS" if outcome.ok else "FAIL"
             print(f"      [{mark}] {outcome.seconds:6.1f}s  exit {outcome.code}  "
                   f"{outcome.verdict}", flush=True)

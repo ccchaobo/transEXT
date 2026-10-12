@@ -23,12 +23,17 @@ slot for it.
 
 from __future__ import annotations
 
+from rr_services.translation_policy import is_number_label
 from typing import Any
+import re
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from document_core.models import BlockType
+from document_core.text_structure import structure, translation_parts
+from document_core.navigation import navigation_level, navigation_title, COMMON, NUMBERED
+from statistics import median
 from rr_contracts import ErrorCode
 from rr_storage import (
     Block,
@@ -273,6 +278,10 @@ def block_payload(
     else:
         translation_status = _BLOCK_TRANSLATION_STATUS.get(translation.status, "failed")
 
+    text_structure=structure(block.raw_text or block.clean_text or '',spans,block_type=block.type)
+    rendered_translation=translation_payload(translation) if translation else None
+    if rendered_translation:
+        rendered_translation['structure']=translation_parts(text_structure,rendered_translation.get('text') or '')
     return {
         "id": block.id,
         "page_index": block.page_index,
@@ -280,7 +289,7 @@ def block_payload(
         "type": block.type,
         "text": block.clean_text or block.raw_text,
         "raw_text": block.raw_text,
-        "translatable": block_type.is_translatable and bool((block.clean_text or block.raw_text).strip()),
+        "translatable": block_type.is_translatable and bool((block.clean_text or block.raw_text).strip()) and not is_number_label(block.clean_text or block.raw_text),
         "is_body": block_type.is_body,
         "confidence": {
             "score": block.confidence_score,
@@ -306,12 +315,12 @@ def block_payload(
         "cross_page": len(pages) > 1,
         "human_edited": bool(block.ocr_revision),
         "table": block.table_data,
-        "metadata": dict(block.extra or {}),
+        "metadata": {**dict(block.extra or {}),"text_structure":text_structure},
         "translation_status": translation_status,
         # Beyond the contract: the reader draws a block highlight from this, and deriving it in
         # the browser would duplicate the union logic in a second place.
         "bbox": _union([list(span.bbox) for span in spans if span.page_index == block.page_index]),
-        "translation": translation_payload(translation) if translation else None,
+        "translation": rendered_translation,
     }
 
 
@@ -346,15 +355,47 @@ def page_payload(
         ).all():
             spans.setdefault(span.block_id, []).append(span)
     translations = latest_translations(session, block_ids, target_language=target_language)
+    wires=[block_payload(block,spans.get(block.id,[]),translations.get(block.id)) for block in blocks]
+    lefts=[span.bbox[0] for values in spans.values() for span in values if span.bbox[2]-span.bbox[0]>.2]
+    for wire in wires:
+        value=wire['metadata']['text_structure']
+        if not value['has_list'] or not wire['spans']:continue
+        x=wire['bbox'][0];base=min([v for v in lefts if x-.12<=v<=x+.001] or [x])
+        height=median(s['bbox'][3]-s['bbox'][1] for s in wire['spans'])
+        value['card_indent_em']=min(8,max(0,(x-base)/max(height*1.05,1e-6)))
+        if wire.get('translation'):wire['translation']['structure']['card_indent_em']=value['card_indent_em']
     return {
         "page": page_summary(page),
         "document_id": page.document_id,
         "revision_id": page.revision_id,
-        "blocks": [
-            block_payload(block, spans.get(block.id, []), translations.get(block.id))
-            for block in blocks
-        ],
+        "blocks": wires,
     }
+
+
+def _heading_fragments(session,rows):
+    """Join separately extracted section numbers and bold titles on one baseline."""
+    spans={}
+    for span in session.scalars(select(SourceSpanRow).where(SourceSpanRow.revision_id==rows[0].revision_id)) if rows else []:
+        spans.setdefault(span.block_id,[]).append(span)
+    first={key:min(values,key=lambda s:s.ordinal).bbox for key,values in spans.items() if values}
+    overrides={}
+    for number in rows:
+        code=(number.clean_text or '').strip().rstrip('.')
+        if not re.fullmatch(r'(?:[1-9]\d?(?:\.\d+)*|[A-Z](?:\.\d+)*)',code):continue
+        if not (number.extra or {}).get('bold') or number.id not in first:continue
+        box=first[number.id];options=[]
+        for title in rows:
+            if title.page_index!=number.page_index or title.id==number.id or title.id not in first:continue
+            if title.type in {'title','caption','formula','table','table_cell','reference','list_item','header','footer'}:continue
+            text=(title.clean_text or '').strip();info=title.extra or {};other=first[title.id]
+            if not info.get('bold') or len(text)<2 or len(text)>200 or text.endswith(('.',',',';',':')):continue
+            height=max(box[3]-box[1],other[3]-other[1]);gap=other[0]-box[2]
+            if -.002<=gap<=.045 and abs((box[1]+box[3]-other[1]-other[3])/2)<height*.35:
+                options.append((gap,title,text))
+        if options:
+            _,title,text=min(options,key=lambda t:t[0]);combined=f'{code}. {text}'
+            if navigation_level(combined) is not None:overrides[title.id]=(combined,[number.id,title.id])
+    return overrides,first
 
 
 def outline(session: Session, revision_id: str) -> list[dict[str, Any]]:
@@ -370,46 +411,37 @@ def outline(session: Session, revision_id: str) -> list[dict[str, Any]]:
     A document whose headings were not recognised still yields one entry or none; the caller
     flags that rather than presenting it as navigation.
     """
-    rows = session.execute(
-        select(
-            Block.id,
-            Block.page_index,
-            Block.order_index,
-            Block.type,
-            Block.level,
-            Block.section_id,
-            Block.section_path,
-            Block.clean_text,
-            Block.raw_text,
-        )
-        .where(
-            Block.revision_id == revision_id,
-            (Block.type.in_(("title", "heading"))) | (Block.level.isnot(None)),
-        )
-        .order_by(Block.order_index)
-    ).all()
-    entries = []
+    rows=list(session.scalars(select(Block).where(Block.revision_id==revision_id).order_by(Block.order_index)))
+    fragments,first_boxes=_heading_fragments(session,rows)
+    sizes=[(r.extra or {}).get('font_size') for r in rows if r.type in {'paragraph','abstract','list_item'} and (r.extra or {}).get('font_size')]
+    body_size=median(sizes) if sizes else None
+    numbered_count=sum(1 for r in rows if navigation_level(fragments.get(r.id,(r.clean_text or '',[]))[0]) is not None
+        and re.match(r'^(?:\d|[A-Z]\.)',fragments.get(r.id,(r.clean_text or '',[]))[0])
+        and (r.id in fragments or (r.extra or {}).get('bold') or (body_size and (r.extra or {}).get('font_size',0)>body_size*1.07)))
+    entries=[];stack=[]
     for row in rows:
-        text = (row.clean_text or row.raw_text or "").strip()
-        path = list(row.section_path or [])
-        level = row.level
-        if level is None:
-            # Depth in the section path is what the layout actually knows: ["<title>"] is one
-            # level, ["<title>", "2. Related Work"] is two.
-            level = max(len(path), 1) if row.type != "title" else 1
-        entries.append(
-            {
-                "block_id": row.id,
-                "page_index": row.page_index,
-                "page_number": row.page_index + 1,
-                "order": row.order_index,
-                "type": row.type,
-                "level": level,
-                "section_id": row.section_id,
-                "section_path": path,
-                "title": text[:200],
-            }
-        )
+        if row.type in {'caption','table','table_cell','formula','figure','reference','header','footer','page_number','list_item','title'}:continue
+        text=navigation_title(fragments.get(row.id,(row.clean_text or row.raw_text or '',[]))[0])
+        level=navigation_level(text)
+        if level is None:continue
+        info=row.extra or {};match=NUMBERED.fullmatch(text)
+        known=bool(COMMON.fullmatch(text.rstrip('.')) or (match and COMMON.fullmatch(match['title'])))
+        typography=info.get('bold') or (body_size and info.get('font_size',0)>body_size*1.07)
+        if row.type!='heading' and not known and not typography:continue
+        if match and not known and not typography:continue
+        if text.casefold() in {'methods','results','experiments'} and row.id not in fragments:
+            if numbered_count>=2 or row.id not in first_boxes:continue
+            box=first_boxes[row.id]
+            prose=[b for b in rows if b.page_index==row.page_index and b.type in {'paragraph','abstract','list_item'} and b.id in first_boxes
+                and 0<=first_boxes[b.id][1]-box[3]<.08 and abs(first_boxes[b.id][0]-box[0])<.07
+                and len(re.findall(r'[A-Za-z\u4e00-\u9fff]{2,}',b.clean_text or ''))>=6]
+            if not prose:continue
+        while stack and stack[-1][0]>=level:stack.pop()
+        stack.append((level,text))
+        entries.append({'block_id':row.id,'page_index':row.page_index,'page_number':row.page_index+1,
+            'order':row.order_index,'type':'heading','level':level,'section_id':row.section_id,
+            'section_path':[title for _,title in stack],'title':text[:220]})
+        if row.id in fragments:entries[-1]['block_ids']=fragments[row.id][1]
     return entries
 
 

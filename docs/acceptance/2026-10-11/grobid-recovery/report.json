@@ -1,0 +1,19 @@
+{
+  "backend_passed": 702,
+  "backend_existing_warnings": 3,
+  "browser_passed": 78,
+  "real_ai_api": true,
+  "real_ai_fixture": "self-authored arithmetic PDF; no user document sent",
+  "grobid_adapter_tests": true,
+  "grobid_real_model": false,
+  "grobid_enabled_in_user_service": false,
+  "grobid_blocker": "Docker Hub registry EOF; image not downloaded",
+  "source_sha256": {
+    "adapters/rr_adapters/grobid.py": "1a45201bb06899103302d75bb092c6ab7c7c819f5a1498e972d9ed3bb27601a6",
+    "services/api/rr_services/grobid_assist.py": "cfafa54f8fc255f16997fcd6371464eb89b82aa6ced13de0ff34667a92efc040",
+    "services/api/rr_services/parsing.py": "171732d6bfc3382d82c9be485f7c77a688e96ea6b8d99a75e45ce3f22b880561",
+    "services/api/rr_services/settings.py": "3cbf77b75424d2766e24e2139cbffea18a40b4592c4ebb050405e3381a34b668",
+    "services/api/rr_services/assistant.py": "b63fcc70f350a5f0a74629d72bbed69ca5e24eebf7880ef9cfd09ac6ea995516",
+    "apps/web/js/app.js": "3a99fd42e3a568aee75eab54cccb6fee042e7d9095b8131215e1a0f54f7f51e6"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "name": "真实表格区域完整识别",
+      "status": "PASS",
+      "detail": [
+        [
+          0.3191927990882225,
+          0.6611932311395202,
+          0.6862908656301062,
+          0.7537941980843592
+        ]
+      ]
+    },
+    {
+      "name": "真实表格所有单元格禁止翻译",
+      "status": "PASS",
+      "detail": 11
+    },
+    {
+      "name": "表外说明仍可翻译",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "旧单元格译文未覆盖表格",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "表格原图没有被分带切开",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "无浏览器异常",
+      "status": "PASS",
+      "detail": []
+    }
+  ],
+  "external_model_requests": 0,
+  "assistant_real_service": "PENDING user approval",
+  "regression": {
+    "backend_related_passed": 25
+  },
+  "source_sha256": {
+    "adapters/rr_adapters/pdf_visuals.py": "f0f8590e2bed1226e832fa7062c62d7f9431cf7fe9b3ba09ecb88e4ef0572a76",
+    "services/api/rr_services/assistant.py": "b63fcc70f350a5f0a74629d72bbed69ca5e24eebf7880ef9cfd09ac6ea995516"
+  }
+}

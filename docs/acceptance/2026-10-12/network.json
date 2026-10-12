@@ -1,0 +1,7 @@
+{
+  "docker_engine_version": "29.8.1",
+  "github_via_existing_system_proxy": 200,
+  "official_grobid_image_pull": "registry EOF",
+  "google_official_cache_pull": "registry EOF",
+  "grobid_enabled": false
+}

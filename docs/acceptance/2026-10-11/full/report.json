@@ -1,0 +1,86 @@
+{
+  "note": "退出成功表示入口执行成功；度量结果及未接入能力需另行核对。",
+  "completed": 6,
+  "total": 6,
+  "outcomes": [
+    {
+      "name": "verify_frontend_contract",
+      "group": "product",
+      "command": [
+        "E:\\anaconda\\python.exe",
+        "scripts/verify_frontend_contract.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.798459699988598,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "FRONTEND CONTRACT: PASS - every field app.js reads is present in the real payload"
+    },
+    {
+      "name": "verify_overlay_alignment",
+      "group": "product",
+      "command": [
+        "E:\\anaconda\\python.exe",
+        "scripts/verify_overlay_alignment.py"
+      ],
+      "exit_code": 0,
+      "seconds": 12.937182199995732,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "OVERLAY ALIGNMENT: PASS - box coverage tracks page ink (median row r=+0.972 against its mirror's +0.334, median column r=+0.995 against +0.356) over 18 text pag"
+    },
+    {
+      "name": "verify_live_acceptance",
+      "group": "product",
+      "command": [
+        "E:\\anaconda\\python.exe",
+        "scripts/verify_live_acceptance.py"
+      ],
+      "exit_code": 0,
+      "seconds": 10.99531499997829,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "[PASS] clearing the panel settings restores the refusal  -- HTTP 200"
+    },
+    {
+      "name": "verify_checks_can_fail",
+      "group": "product",
+      "command": [
+        "E:\\anaconda\\python.exe",
+        "scripts/verify_checks_can_fail.py"
+      ],
+      "exit_code": 0,
+      "seconds": 31.618554300017422,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "all 7 checks fail when their defect is reintroduced"
+    },
+    {
+      "name": "frontend runtime tests",
+      "group": "frontend",
+      "command": [
+        "node",
+        "--test",
+        "tests/frontend/reader.test.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.255184100009501,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "# skipped 0"
+    },
+    {
+      "name": "browser acceptance",
+      "group": "frontend",
+      "command": [
+        "E:\\anaconda\\python.exe",
+        "scripts/verify_browser_acceptance.py"
+      ],
+      "exit_code": 0,
+      "seconds": 21.19115490000695,
+      "ok": true,
+      "timed_out": false,
+      "verdict": "REPORT D:\\transEXT\\research-reader\\var\\browser-acceptance\\20261011-145818: 78 PASS, 0 FAIL"
+    }
+  ]
+}

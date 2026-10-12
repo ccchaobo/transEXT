@@ -146,7 +146,7 @@ class TestProseIsNotACitation:
 class TestCitationsAreCitations:
     def test_a_corpus_reference_is_recognised(self) -> None:
         assert is_reference_like(CORPUS_REFERENCE) is True
-        assert classify(make_para(CORPUS_REFERENCE)) == BlockType.REFERENCE
+        assert classify(make_para(CORPUS_REFERENCE, section_path=["References"])) == BlockType.REFERENCE
 
     def test_a_reference_is_not_translatable(self) -> None:
         # The whole point of the type: DOIs, author names and journal titles must survive.
@@ -156,11 +156,11 @@ class TestCitationsAreCitations:
         # A short bibliography entry is set large enough to look like a heading, and the
         # layout stage labels it as one.  Accepting that label first typed 5 corpus
         # references as headings, which puts their DOIs through the translator.
-        para = make_para(CORPUS_REFERENCE, kind="heading", font_size=12.0)
+        para = make_para(CORPUS_REFERENCE, kind="heading", font_size=12.0, section_path=["References"])
         assert classify(para) == BlockType.REFERENCE
 
     def test_a_first_reference_with_a_compact_lead_is_recognised(self) -> None:
-        assert classify(make_para(CORPUS_REFERENCE_FIRST)) == BlockType.REFERENCE
+        assert classify(make_para(CORPUS_REFERENCE_FIRST, section_path=["References"])) == BlockType.REFERENCE
 
     def test_anything_under_a_references_heading_is_a_reference(self) -> None:
         # Entries whose continuation carries the year have no lead marker of their own, so
@@ -182,6 +182,30 @@ class TestCitationsAreCitations:
 
     def test_a_chinese_references_heading_is_recognised(self) -> None:
         assert in_references_section(["参考文献"]) is True
+
+    @pytest.mark.parametrize("text", [CORPUS_REFERENCE, CORPUS_REFERENCE_FIRST,
+        '[3] Smith et al. reported a 2019 baseline; our results improve it.',
+        'Smith, "An example study", Journal of Methods, vol. 12, pp. 20-30, 2019.'])
+    def test_citation_shapes_outside_references_remain_translatable(self, text) -> None:
+        decision = classify(make_para(text, section_path=["Related work"]))
+        assert decision is not BlockType.REFERENCE
+        assert decision.is_translatable
+
+    @pytest.mark.parametrize("heading", ["References", "7. References", "参考文献", "Bibliography"])
+    def test_plain_reference_heading_opens_a_section_without_font_evidence(self, heading) -> None:
+        from document_core.layout import build_sections
+
+        paragraphs = [make_para(CORPUS_REFERENCE), make_para(heading),
+            make_para(CORPUS_REFERENCE_FIRST, kind="heading", page=1),
+            make_para("2018. doi:10.1000/continuation", page=1),
+            make_para("Appendix", kind="heading", page=1),
+            make_para(CORPUS_REFERENCE, page=1)]
+        build_sections(paragraphs)
+        assert classify(paragraphs[0]).is_translatable
+        assert classify(paragraphs[1]) is BlockType.HEADING
+        assert classify(paragraphs[2]) is BlockType.REFERENCE
+        assert classify(paragraphs[3]) is BlockType.REFERENCE
+        assert classify(paragraphs[5]).is_translatable
 
 
 class TestFrontMatter:

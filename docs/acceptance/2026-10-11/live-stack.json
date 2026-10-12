@@ -1,0 +1,43 @@
+{
+  "fixture": "自编算术平均数文献，未使用用户文献",
+  "checks": {
+    "actual_worker_parse": true,
+    "visual_regions_wire": true,
+    "comparison_state_persists": true,
+    "real_ai_reply": true,
+    "real_ai_citations": true,
+    "owned_fixture_removed": true
+  },
+  "model": "deepseek-v4.1-flash",
+  "ai": {
+    "answer": "根据 [S1]，当 \\(x=2\\)、\\(y=4\\) 时，\\(S=3\\)。  \n根据 [S3]，\\(S=(x+y)/2\\)，代入得 \\((2+4)/2=3\\)，与 [S1] 一致。因此答案是 **\\(S=3\\)**。",
+    "model": "deepseek-v4.1-flash",
+    "citations": [
+      {
+        "id": "S1",
+        "block_id": "blk_70f6db3ff533b2f2101a",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "formula",
+        "text": "For x=2 and y=4, the score S=3."
+      },
+      {
+        "id": "S3",
+        "block_id": "blk_47badb4613f833f94a77",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "paragraph",
+        "text": "The score S=(x+y)/2 is the arithmetic mean of x and y."
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 248,
+      "completion_tokens": 387,
+      "total_tokens": 635,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  },
+  "passed": true
+}

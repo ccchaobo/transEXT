@@ -1,0 +1,134 @@
+{
+  "http_status": 200,
+  "passed": true,
+  "phases": [
+    {
+      "phase": "connecting",
+      "elapsed_ms": 0
+    },
+    {
+      "phase": "thinking",
+      "elapsed_ms": 1425
+    },
+    {
+      "phase": "summarizing",
+      "elapsed_ms": 4394
+    },
+    {
+      "phase": "answering",
+      "elapsed_ms": 4525
+    }
+  ],
+  "summary_chunks": 50,
+  "answer_chunks": 96,
+  "result": {
+    "answer": "1. CodecLM 能自动为不同下游任务和目标 LLM 定制指令，而不是依赖不考虑下游任务的预定义规则，并引入 Self-Rubrics 与 Contrastive Filtering 来进一步识别最有效的指令-响应对 [S1]。  \n2. 它聚焦于指令生成，可灵活结合现有蒸馏技术，并兼容仅提供 API 的黑盒 LLM；其核心设计是自适应定制高质量数据对以改进目标 LLM [S1][S3]。",
+    "summary": "依据 [S1] 与 [S3]，CodecLM 的要点是自动为不同下游任务和目标 LLM 定制指令，并筛选有效指令-响应对来改进目标 LLM；下面用两句话概括并标注来源。",
+    "model": "deepseek-v4.1-flash",
+    "scope": "document",
+    "revision_id": "rev_d41170007cd54652b23beaa7",
+    "sources": [
+      {
+        "id": "S1",
+        "block_id": "blk_50e72d9799be5ad83a50",
+        "page_index": 2,
+        "page_number": 3,
+        "type": "paragraph",
+        "text": "et al. (2022); Honovich et al. (2022) prompt LLMs with seed instructions to generate synthetic ones. These are then fed to stronger LLMs, e.g., Chat-GPT, to generate responses for training the target (often smaller) LLM (Taori et al., 2023). As a representative work, WizardLM (Xu et al., 2023), designs a fixed set of human-crafted operations to increase complexity of instructions and control difficulty of generated data. Zhao et al. (2023); Zhou et al. (2023a) further confirm the importance of instruction complexity for LLM alignment through empirical studies. Different from these works that rely on pre-defined rules without considering the downstream tasks, CodecLM enables automatically tailoring instructions for different downstream tasks and target LLMs. We also introduce Self-Rubrics and Contrastive Filtering to further identify the most effective instruction-response pairs. Distillation. Alternatively, tuning the target LLM with responses generated from another LLM can be viewed as knowledge distillation (Hinton et al., 2015; Beyer et al., 2022). However, our focus remains on instruction generation, while still being flexible to readily integrate with existing distillation techniques (Hsieh et al., 2023; Liang et al., 2023). Finally, we discuss some of the most relevant recent work. AttrPrompt (Yu et al., 2023) leverages LLM as attributed data generator by extracting at-tributes within instructions. However, it focuses solely on classification tasks and requires human intervention for attribute selection. In contrast, our work focuses on the broader context of aligning LLMs to follow open-domain instructions, eliminating the need for human efforts. MSP (Chen et al., 2023a) utilizes trainable soft prompts to control generation, but requires gradient access to the LLM. Our method, on the other hand, is readily compatible with black-box LLMs that only offer API access for high-quality data generation. SteerLM (Dong et al., 2023) analyzes quality-related aspects of responses, instead of the instructions, to capture human preference. Therefore, SteerLM can be used alongside CodecLM as a parallel approach for enhancing response quality."
+      },
+      {
+        "id": "S2",
+        "block_id": "blk_8efa3fcde5bb65cbd473",
+        "page_index": 5,
+        "page_number": 6,
+        "type": "paragraph",
+        "text": "We compare our method against state-of-the-art data generation approaches for instruction tuning. For fair comparison, we provide all methods the same LLM backbones when possible. More-over, we control the number of instruction-response pairs the same for all methods to ablate the effect of data quantity. Baseline methods include Self-Instruct (Wang et al., 2022), Alpagasus (Chen"
+      },
+      {
+        "id": "S3",
+        "block_id": "blk_a09152ecbbcd4b0379e3",
+        "page_index": 6,
+        "page_number": 7,
+        "type": "paragraph",
+        "text": "generalizability to different downstream instruction distributions and target LLMs. Both Tree-Instruct and variants of WizardLM focus on the importance of instruction complexity, however, their performances are not always better than Alpagasus with simple instructions, especially with larger target LLM. This observation indicates that the effectiveness of data cannot be solely determined by instruction complexity, and validates the motivation of our design of Self-Rubrics and Contrastive Filtering. Moreover, the win of WizardLM+ over WizardLM confirms the efficacy of instruction distribution matching via instruction metadata. When shifting the target LLM from LLaMA-7B to -13B, all methods get a significant performance boost, which accords with prior discoveries on scaling model size (Wei et al., 2021). Results with PaLM-based Models. Table 2 summarizes the results of CodecLM and the best per-forming baselines in LLaMA-based experiments. We generate 1000 synthetic data due to computation budget. Since text-bison is a proprietary model that has been aligned with various techniques in-cluding instruction tuning, we also include it as a baseline approach. Interestingly, text-bison obtains strong performance across different benchmarks. Both Alpagasus and WizardLM+ underperform text-bison, suggesting it is non-trivial to improve upon a well-tuned LLM continually. CodecLM, on the contrary, outperforms text-bison in most cases, thanks to our core designs that adaptively tailor high quality data pairs to improve the target LLM."
+      },
+      {
+        "id": "S4",
+        "block_id": "blk_51444267ec3fe943d67e",
+        "page_index": 7,
+        "page_number": 8,
+        "type": "paragraph",
+        "text": "ing proportion is equal or greater than 60%, we obtain close performance as the fully-matched result. This observation highlights CodecLM's robustness under potential instruction metadata mismatch. Scaling with Model Size and Data Quantity. To explore how our method scales with different synthetic data quantities and model sizes, we conduct experiments by comparing CodecLM with WizardLM+, the most competitive baseline. The experiment results on Evol-Instruct with LLaMA-7B and -13B as the target LLM are presented in Figure 5. Both methods get increasingly better per-formance with more synthetic data and larger target models. CodecLM consistently outperforms WizardLM+ under all cases, demonstrating its great data efficiency and scalability. We expect the gain will gradually diminish after we generate more than 8k synthetic data, due to the intrinsic ability gap between the target models and the strong LLM."
+      },
+      {
+        "id": "S5",
+        "block_id": "blk_0ffef35c423bebf0a001",
+        "page_index": 8,
+        "page_number": 9,
+        "type": "paragraph",
+        "text": "We acknowledge the limitations of CodecLM from the following aspects to inspire future research opportunities in the field of LLM alignment. First of all, as discussed in the Ethical Considerations, our method requires a strong LLM to generate the data, so the performance of our method depends on the quality of the LLM and may inherit bias and fairness issues from it. On the other hand, CodecLM can benefit from stronger LLMs improved with advanced bias-reducing and fairness-enhancing approaches. Secondly, as an orthogonal direction, our method did not explore robustness of the instruction-tuned model towards adversarial attacks such as prompt injection (Liu et al., 2023) and jailbreaking (Zou et al., 2023). In practice, we should apply adversarial defense techniques (Jain et al., 2023) accordingly to the instruction-tuned LLM from our method. Moreover, we mainly use LLM-based automatic evaluation methods following recent works in data synthesis for alignment."
+      },
+      {
+        "id": "S6",
+        "block_id": "blk_3355e5d33e25711ffc10",
+        "page_index": 12,
+        "page_number": 13,
+        "type": "paragraph",
+        "text": "Self-Instruct (Wang et al., 2022) generates instructions by prompting LLM with existing seed instructions as few-shot demonstrations. Here we randomly subsample the Alpaca (Taori et al., 2023) dataset as seed instructions. Since Alpaca itself is based on Self-Instruct, using its subset as seed is a natural continuation of the Self-Instruct method. Alpagasus (Chen et al., 2023b) selectively filters data using ChatGPT-based response quality evaluator. Closely following the original approach, we adopt the strategy upon instruction-response pairs generated by Self-Instruct. Tree-Instruct (Zhao et al., 2023) improves instruction quality by prompting the LLM to implicitly complicate instruction through its semantic tree. Following the original paper, we use the subsampled Alpaca dataset as seed data. We set the number of tree nodes to 10 for best possible performance. WizardLM (Xu et al., 2023) iteratively complicates instructions by prompting the LLM with a set of pre-defined evolution operations. Given the popularity and effectiveness of WizardLM, we experiment it with two variants: the original version using Alpaca as seed data, and the enhanced version uses the same set of basic instructions generated from CodecLM as seed data. We name the later variant as WizardLM+ as its enhanced by components of our framework."
+      },
+      {
+        "id": "S7",
+        "block_id": "blk_77916571410393a00a98",
+        "page_index": 13,
+        "page_number": 14,
+        "type": "paragraph",
+        "text": "In the main paper, we use ChatGPT as the LLM judge for final evaluation, for its efficiency, price and accessibility for the community to reproduce our results. As pointed out in (Chiang et al., 2023), LLMs evaluators, although largely consistent with human preferences, may have their own biases. Therefore, to make sure our experimental results are solid, we also use GPT-4 as the judge and compare against the performance gap in CRR between different baselines and the Self-Instruct method. The comparison results in Table 6 demonstrates the agreement of two LLM-based judges and confirms the superior performance of CodecLM against comparing methods."
+      },
+      {
+        "id": "S8",
+        "block_id": "blk_7e17b078a63980a44949",
+        "page_index": 13,
+        "page_number": 14,
+        "type": "paragraph",
+        "text": "To complement the performance result using LLM-based automatic evaluator, we also evaluate LLMs tuned with the top methods presented in Section 5.4 on standard NLP benchmarks, MMLU (Hendrycks et al., 2020) and BBH (Suzgun et al., 2022). We follow the same settings introduced in (Wang et al., 2023) without demonstrations or CoT (Wei et al., 2022) prompt for evaluating the target models based on LLaMA-7B. For our method, we follow the same setting as in Evol-Instruction benchmark evaluation. We present the evaluation results in Table 4 and use the performance of vanilla LLaMA-7B as a reference. We observe the same performance ranking of all methods as that in Table 1 where we use LLM-based automatic evaluator. The consistency between two different evaluation approaches indicates the reliability of LLM-based evaluator in terms of demonstrating relative perfor-"
+      }
+    ],
+    "citations": [
+      {
+        "id": "S1",
+        "block_id": "blk_50e72d9799be5ad83a50",
+        "page_index": 2,
+        "page_number": 3,
+        "type": "paragraph",
+        "text": "et al. (2022); Honovich et al. (2022) prompt LLMs with seed instructions to generate synthetic ones. These are then fed to stronger LLMs, e.g., Chat-GPT, to generate responses for training the target (often smaller) LLM (Taori et al., 2023). As a representative work, WizardLM (Xu et al., 2023), designs a fixed set of human-crafted operations to increase complexity of instructions and control difficulty of generated data. Zhao et al. (2023); Zhou et al. (2023a) further confirm the importance of instruction complexity for LLM alignment through empirical studies. Different from these works that rely on pre-defined rules without considering the downstream tasks, CodecLM enables automatically tailoring instructions for different downstream tasks and target LLMs. We also introduce Self-Rubrics and Contrastive Filtering to further identify the most effective instruction-response pairs. Distillation. Alternatively, tuning the target LLM with responses generated from another LLM can be viewed as knowledge distillation (Hinton et al., 2015; Beyer et al., 2022). However, our focus remains on instruction generation, while still being flexible to readily integrate with existing distillation techniques (Hsieh et al., 2023; Liang et al., 2023). Finally, we discuss some of the most relevant recent work. AttrPrompt (Yu et al., 2023) leverages LLM as attributed data generator by extracting at-tributes within instructions. However, it focuses solely on classification tasks and requires human intervention for attribute selection. In contrast, our work focuses on the broader context of aligning LLMs to follow open-domain instructions, eliminating the need for human efforts. MSP (Chen et al., 2023a) utilizes trainable soft prompts to control generation, but requires gradient access to the LLM. Our method, on the other hand, is readily compatible with black-box LLMs that only offer API access for high-quality data generation. SteerLM (Dong et al., 2023) analyzes quality-related aspects of responses, instead of the instructions, to capture human preference. Therefore, SteerLM can be used alongside CodecLM as a parallel approach for enhancing response quality."
+      },
+      {
+        "id": "S3",
+        "block_id": "blk_a09152ecbbcd4b0379e3",
+        "page_index": 6,
+        "page_number": 7,
+        "type": "paragraph",
+        "text": "generalizability to different downstream instruction distributions and target LLMs. Both Tree-Instruct and variants of WizardLM focus on the importance of instruction complexity, however, their performances are not always better than Alpagasus with simple instructions, especially with larger target LLM. This observation indicates that the effectiveness of data cannot be solely determined by instruction complexity, and validates the motivation of our design of Self-Rubrics and Contrastive Filtering. Moreover, the win of WizardLM+ over WizardLM confirms the efficacy of instruction distribution matching via instruction metadata. When shifting the target LLM from LLaMA-7B to -13B, all methods get a significant performance boost, which accords with prior discoveries on scaling model size (Wei et al., 2021). Results with PaLM-based Models. Table 2 summarizes the results of CodecLM and the best per-forming baselines in LLaMA-based experiments. We generate 1000 synthetic data due to computation budget. Since text-bison is a proprietary model that has been aligned with various techniques in-cluding instruction tuning, we also include it as a baseline approach. Interestingly, text-bison obtains strong performance across different benchmarks. Both Alpagasus and WizardLM+ underperform text-bison, suggesting it is non-trivial to improve upon a well-tuned LLM continually. CodecLM, on the contrary, outperforms text-bison in most cases, thanks to our core designs that adaptively tailor high quality data pairs to improve the target LLM."
+      }
+    ],
+    "warnings": [],
+    "usage": {
+      "prompt_tokens": 2111,
+      "completion_tokens": 1221,
+      "total_tokens": 3332,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "reasoning_effort": "low",
+    "metrics": {
+      "elapsed_ms": 4877,
+      "first_answer_ms": 4525,
+      "reasoning_observed": true,
+      "answer_chars": 201
+    }
+  },
+  "errors": [],
+  "requests": 1,
+  "elapsed_seconds": 5.42
+}

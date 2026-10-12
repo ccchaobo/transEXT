@@ -1,0 +1,1245 @@
+{
+  "document": "doc_ee94e17b17e84072a321",
+  "filename": "Wang 等 - 2024 - CodecLM Aligning Language Models with Tailored Synthetic Data.pdf",
+  "browser_channel": "msedge",
+  "original_hash_matches": true,
+  "pages": [
+    {
+      "index": 0,
+      "successful_translations": 13,
+      "modes": {
+        "side_by_side": {
+          "shown": 13,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 13,
+          "overlays": 13,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 13,
+          "overlays": 13,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 1,
+      "successful_translations": 3,
+      "modes": {
+        "side_by_side": {
+          "shown": 3,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 3,
+          "overlays": 3,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 3,
+          "overlays": 3,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 2,
+      "successful_translations": 11,
+      "modes": {
+        "side_by_side": {
+          "shown": 11,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 11,
+          "overlays": 10,
+          "fallbacks": [
+            "blk_643b20588feaf3b835aa"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 11,
+          "overlays": 10,
+          "fallbacks": [
+            "blk_643b20588feaf3b835aa"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 3,
+      "successful_translations": 8,
+      "modes": {
+        "side_by_side": {
+          "shown": 8,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 8,
+          "overlays": 8,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 8,
+          "overlays": 8,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 4,
+      "successful_translations": 17,
+      "modes": {
+        "side_by_side": {
+          "shown": 17,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 17,
+          "overlays": 17,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 17,
+          "overlays": 17,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 5,
+      "successful_translations": 12,
+      "modes": {
+        "side_by_side": {
+          "shown": 12,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 12,
+          "overlays": 10,
+          "fallbacks": [
+            "blk_0460a60a24091c5e1576",
+            "blk_889132968c305b91f83d"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 12,
+          "overlays": 10,
+          "fallbacks": [
+            "blk_0460a60a24091c5e1576",
+            "blk_889132968c305b91f83d"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 6,
+      "successful_translations": 9,
+      "modes": {
+        "side_by_side": {
+          "shown": 9,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 9,
+          "overlays": 6,
+          "fallbacks": [
+            "blk_36dc05d4340bac4f4a2f",
+            "blk_334c634a955aa753ec29",
+            "blk_1a0a0fdc8c56c53c98b8"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 9,
+          "overlays": 6,
+          "fallbacks": [
+            "blk_36dc05d4340bac4f4a2f",
+            "blk_334c634a955aa753ec29",
+            "blk_1a0a0fdc8c56c53c98b8"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 7,
+      "successful_translations": 13,
+      "modes": {
+        "side_by_side": {
+          "shown": 13,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 13,
+          "overlays": 9,
+          "fallbacks": [
+            "blk_a1891cec2dec99999ced",
+            "blk_a1bdd417c265f21596e5",
+            "blk_a55e2ddd13446057da9b",
+            "blk_ddf034225f52142fb714"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 13,
+          "overlays": 9,
+          "fallbacks": [
+            "blk_a1891cec2dec99999ced",
+            "blk_a1bdd417c265f21596e5",
+            "blk_a55e2ddd13446057da9b",
+            "blk_ddf034225f52142fb714"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 8,
+      "successful_translations": 6,
+      "modes": {
+        "side_by_side": {
+          "shown": 6,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 6,
+          "overlays": 6,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 6,
+          "overlays": 6,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 9,
+      "successful_translations": 0,
+      "modes": {
+        "side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 10,
+      "successful_translations": 0,
+      "modes": {
+        "side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 11,
+      "successful_translations": 0,
+      "modes": {
+        "side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 0,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 12,
+      "successful_translations": 17,
+      "modes": {
+        "side_by_side": {
+          "shown": 17,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 17,
+          "overlays": 15,
+          "fallbacks": [
+            "blk_ba07faf46bd06c17f85f",
+            "blk_b88e5302b9c1c5bea1ca"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 17,
+          "overlays": 15,
+          "fallbacks": [
+            "blk_ba07faf46bd06c17f85f",
+            "blk_b88e5302b9c1c5bea1ca"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 13,
+      "successful_translations": 13,
+      "modes": {
+        "side_by_side": {
+          "shown": 13,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 13,
+          "overlays": 11,
+          "fallbacks": [
+            "blk_69690583a5338f044d22",
+            "blk_2f609041b6cc45039083"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 13,
+          "overlays": 11,
+          "fallbacks": [
+            "blk_69690583a5338f044d22",
+            "blk_2f609041b6cc45039083"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 14,
+      "successful_translations": 15,
+      "modes": {
+        "side_by_side": {
+          "shown": 15,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 15,
+          "overlays": 14,
+          "fallbacks": [
+            "blk_b917faae003df01f1f79"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 15,
+          "overlays": 14,
+          "fallbacks": [
+            "blk_b917faae003df01f1f79"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 15,
+      "successful_translations": 2,
+      "modes": {
+        "side_by_side": {
+          "shown": 2,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 2,
+          "overlays": 1,
+          "fallbacks": [
+            "blk_cf3bf5aec2867f28a30e"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 2,
+          "overlays": 1,
+          "fallbacks": [
+            "blk_cf3bf5aec2867f28a30e"
+          ],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 16,
+      "successful_translations": 15,
+      "modes": {
+        "side_by_side": {
+          "shown": 15,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 15,
+          "overlays": 15,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 15,
+          "overlays": 15,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    },
+    {
+      "index": 17,
+      "successful_translations": 12,
+      "modes": {
+        "side_by_side": {
+          "shown": 12,
+          "overlays": 0,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay": {
+          "shown": 12,
+          "overlays": 12,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        },
+        "overlay_side_by_side": {
+          "shown": 12,
+          "overlays": 12,
+          "fallbacks": [],
+          "missing": [],
+          "incomplete": [],
+          "collisions": [],
+          "protected_collisions": [],
+          "unreadable": [],
+          "aligned": true,
+          "passed": true
+        }
+      }
+    }
+  ],
+  "responsive": [
+    {
+      "width": 1745,
+      "font_scale": "100",
+      "target": {
+        "id": "blk_87617b4d3b1c0152cb09",
+        "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+        "fallback": false,
+        "frame": [
+          0.11817,
+          0.455245,
+          0.48875300000000005,
+          0.680695
+        ],
+        "width": 333.0208435058594,
+        "height": 286.65625,
+        "font": 16.5294,
+        "overflowing": false
+      },
+      "bodyOverflow": false
+    },
+    {
+      "width": 1440,
+      "font_scale": "100",
+      "target": {
+        "id": "blk_87617b4d3b1c0152cb09",
+        "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+        "fallback": false,
+        "frame": [
+          0.11817,
+          0.455245,
+          0.48875300000000005,
+          0.680695
+        ],
+        "width": 333.0208435058594,
+        "height": 286.65625,
+        "font": 16.5294,
+        "overflowing": false
+      },
+      "bodyOverflow": false
+    },
+    {
+      "width": 1024,
+      "font_scale": "100",
+      "target": {
+        "id": "blk_87617b4d3b1c0152cb09",
+        "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+        "fallback": false,
+        "frame": [
+          0.11817,
+          0.455245,
+          0.48875300000000005,
+          0.680695
+        ],
+        "width": 282.625,
+        "height": 243.2916717529297,
+        "font": 14.0288,
+        "overflowing": false
+      },
+      "bodyOverflow": false
+    },
+    {
+      "width": 1440,
+      "font_scale": "120",
+      "target": {
+        "id": "blk_87617b4d3b1c0152cb09",
+        "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+        "fallback": false,
+        "frame": [
+          0.11817,
+          0.455245,
+          0.48875300000000005,
+          0.680695
+        ],
+        "width": 333.0208435058594,
+        "height": 286.65625,
+        "font": 19.8353,
+        "overflowing": true
+      },
+      "bodyOverflow": false
+    }
+  ],
+  "errors": [],
+  "blocked_writes": [
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    },
+    {
+      "method": "PUT",
+      "path": "documents/doc_ee94e17b17e84072a321/reading-state"
+    }
+  ],
+  "fallback_dialog": true,
+  "browser_version": "131.0.2903.112",
+  "original_toggle": true,
+  "passed": true
+}

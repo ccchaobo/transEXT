@@ -1,0 +1,22 @@
+page 1: aligned=True panels=16 overlap=0 graphics=0
+page 2: aligned=True panels=11 overlap=0 graphics=0
+page 3: aligned=True panels=10 overlap=0 graphics=0
+page 4: aligned=True panels=9 overlap=0 graphics=0
+page 5: aligned=True panels=5 overlap=0 graphics=0
+page 6: aligned=True panels=4 overlap=0 graphics=0
+page 7: aligned=True panels=17 overlap=0 graphics=0
+page 8: aligned=True panels=12 overlap=0 graphics=0
+page 9: aligned=True panels=7 overlap=0 graphics=0
+page 10: aligned=True panels=5 overlap=0 graphics=0
+page 11: aligned=True panels=2 overlap=0 graphics=0
+page 12: aligned=True panels=3 overlap=0 graphics=0
+page 13: aligned=True panels=3 overlap=0 graphics=0
+page 14: aligned=True panels=8 overlap=0 graphics=0
+page 15: aligned=True panels=8 overlap=0 graphics=0
+page 16: aligned=True panels=6 overlap=0 graphics=0
+page 17: aligned=True panels=9 overlap=0 graphics=0
+page 18: aligned=True panels=4 overlap=0 graphics=0
+page 19: aligned=True panels=5 overlap=0 graphics=0
+page 20: aligned=True panels=10 overlap=0 graphics=0
+page 21: aligned=True panels=1 overlap=0 graphics=0
+{"document": "doc_feb6a31f2d8d46528d5e", "filename": "�Ź������-�д���.pdf", "revision": "rev_c85e514297614615a5df72a5", "original_hash_matches": true, "translation_status": "partially_succeeded", "errors": [], "screenshots": ["page-01-large.png", "page-03-large.png", "page-05-large.png", "page-09-large.png", "page-11-large.png", "page-15-large.png", "page-21-large.png"], "browser_channel": "msedge", "browser": "131.0.2903.112", "viewport": {"width": 2320, "height": 1240, "raster_scale": 1}, "original_toggle": true, "full_paragraph": true, "single_overlay_panels": 16, "passed": true}

@@ -1,0 +1,595 @@
+[
+  {
+    "block_id": "blk_8c12933925d9bd0a568c",
+    "page_index": 0,
+    "page_number": 1,
+    "order": 13,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0000",
+    "section_path": [
+      "Abstract"
+    ],
+    "title": "Abstract"
+  },
+  {
+    "block_id": "blk_b25b43cf352668ec82d7",
+    "page_index": 0,
+    "page_number": 1,
+    "order": 15,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0001",
+    "section_path": [
+      "1. Introduction"
+    ],
+    "title": "1. Introduction"
+  },
+  {
+    "block_id": "blk_81f0b09c6da5a3db350c",
+    "page_index": 2,
+    "page_number": 3,
+    "order": 32,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0002",
+    "section_path": [
+      "2. Related work"
+    ],
+    "title": "2. Related work"
+  },
+  {
+    "block_id": "blk_5cc40d21a6bb09c903c6",
+    "page_index": 2,
+    "page_number": 3,
+    "order": 34,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0003",
+    "section_path": [
+      "2. Related work",
+      "2.1. Population-based progression modeling"
+    ],
+    "title": "2.1. Population-based progression modeling"
+  },
+  {
+    "block_id": "blk_a8fdf5a28ac5aec1b17d",
+    "page_index": 2,
+    "page_number": 3,
+    "order": 36,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0004",
+    "section_path": [
+      "2. Related work",
+      "2.2. Individual-based progression modeling"
+    ],
+    "title": "2.2. Individual-based progression modeling"
+  },
+  {
+    "block_id": "blk_5217d2e21c0b0cca9108",
+    "page_index": 2,
+    "page_number": 3,
+    "order": 38,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0005",
+    "section_path": [
+      "2. Related work",
+      "2.2. Individual-based progression modeling",
+      "2.2.1. Generative adversarial networks"
+    ],
+    "title": "2.2.1. Generative adversarial networks"
+  },
+  {
+    "block_id": "blk_14e79cb1159d5c04a3a9",
+    "page_index": 3,
+    "page_number": 4,
+    "order": 41,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0006",
+    "section_path": [
+      "2. Related work",
+      "2.2. Individual-based progression modeling",
+      "2.2.2. Variational autoencoders"
+    ],
+    "title": "2.2.2. Variational autoencoders"
+  },
+  {
+    "block_id": "blk_5ff8ed79f465be295419",
+    "page_index": 3,
+    "page_number": 4,
+    "order": 43,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0007",
+    "section_path": [
+      "2. Related work",
+      "2.2. Individual-based progression modeling",
+      "2.2.3. Normalizing flows"
+    ],
+    "title": "2.2.3. Normalizing flows"
+  },
+  {
+    "block_id": "blk_73d453e2307ec3a62e4a",
+    "page_index": 3,
+    "page_number": 4,
+    "order": 45,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0008",
+    "section_path": [
+      "2. Related work",
+      "2.2. Individual-based progression modeling",
+      "2.2.4. Diffusion models"
+    ],
+    "title": "2.2.4. Diffusion models"
+  },
+  {
+    "block_id": "blk_a3f05b3b80e1e9c97dc3",
+    "page_index": 3,
+    "page_number": 4,
+    "order": 47,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0009",
+    "section_path": [
+      "2. Related work",
+      "2.3. Limitations of the existing methods"
+    ],
+    "title": "2.3. Limitations of the existing methods"
+  },
+  {
+    "block_id": "blk_a8b20a9de666f75813fb",
+    "page_index": 4,
+    "page_number": 5,
+    "order": 51,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0010",
+    "section_path": [
+      "3. Background - Diffusion models"
+    ],
+    "title": "3. Background - Diffusion models"
+  },
+  {
+    "block_id": "blk_95b56b719757a492f389",
+    "page_index": 4,
+    "page_number": 5,
+    "order": 61,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0011",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)"
+    ],
+    "title": "4. Methods - Brain Latent Progression (BrLP)"
+  },
+  {
+    "block_id": "blk_67e230f19207a8d0116d",
+    "page_index": 5,
+    "page_number": 6,
+    "order": 65,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0012",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.1. LDM - learning the brain MRI distribution"
+    ],
+    "title": "4.1. LDM - learning the brain MRI distribution"
+  },
+  {
+    "block_id": "blk_6f4f18d80e8005a4ef94",
+    "page_index": 5,
+    "page_number": 6,
+    "order": 69,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0013",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.2. ControlNet - conditioning on subject brain MRI"
+    ],
+    "title": "4.2. ControlNet - conditioning on subject brain MRI"
+  },
+  {
+    "block_id": "blk_ed28a12d6ea69086c42f",
+    "page_index": 6,
+    "page_number": 7,
+    "order": 81,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0014",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.3. Proposed auxiliary model - leveraging disease prior knowledge"
+    ],
+    "title": "4.3. Proposed auxiliary model - leveraging disease prior knowledge"
+  },
+  {
+    "block_id": "blk_2240ff16cf0dafa2308b",
+    "page_index": 6,
+    "page_number": 7,
+    "order": 85,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0015",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.4. Inference process"
+    ],
+    "title": "4.4. Inference process"
+  },
+  {
+    "block_id": "blk_a56ed01d08e4ba315ff3",
+    "page_index": 6,
+    "page_number": 7,
+    "order": 94,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0016",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.5. Enhance inference via proposed Latent Average Stabilization (LAS)"
+    ],
+    "title": "4.5. Enhance inference via proposed Latent Average Stabilization (LAS)"
+  },
+  {
+    "block_id": "blk_2273362b9ccce67da04e",
+    "page_index": 6,
+    "page_number": 7,
+    "order": 109,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0017",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.6. Quantifying the uncertainty of the prediction"
+    ],
+    "title": "4.6. Quantifying the uncertainty of the prediction"
+  },
+  {
+    "block_id": "blk_b24dfaa08b7809421e52",
+    "page_index": 7,
+    "page_number": 8,
+    "order": 142,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0018",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.7. Implementation settings"
+    ],
+    "title": "4.7. Implementation settings"
+  },
+  {
+    "block_id": "blk_080c80796e5def6a23ce",
+    "page_index": 7,
+    "page_number": 8,
+    "order": 150,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0019",
+    "section_path": [
+      "4. Methods - Brain Latent Progression (BrLP)",
+      "4.8. MRI preprocessing"
+    ],
+    "title": "4.8. MRI preprocessing"
+  },
+  {
+    "block_id": "blk_2d0b7c379cbaa4b3d409",
+    "page_index": 7,
+    "page_number": 8,
+    "order": 152,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0020",
+    "section_path": [
+      "5. Experiments and results"
+    ],
+    "title": "5. Experiments and results"
+  },
+  {
+    "block_id": "blk_856147b6c21e510eb9dd",
+    "page_index": 8,
+    "page_number": 9,
+    "order": 206,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0021",
+    "section_path": [
+      "5. Experiments and results",
+      "5.1. Internal and external datasets"
+    ],
+    "title": "5.1. Internal and external datasets"
+  },
+  {
+    "block_id": "blk_d8f74f416c8845d27514",
+    "page_index": 8,
+    "page_number": 9,
+    "order": 208,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0022",
+    "section_path": [
+      "5. Experiments and results",
+      "5.2. Evaluation metrics"
+    ],
+    "title": "5.2. Evaluation metrics"
+  },
+  {
+    "block_id": "blk_ce098cc164eed227d0a9",
+    "page_index": 8,
+    "page_number": 9,
+    "order": 210,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0023",
+    "section_path": [
+      "5. Experiments and results",
+      "5.3. Ablation studies"
+    ],
+    "title": "5.3. Ablation studies"
+  },
+  {
+    "block_id": "blk_296b78197d3d0e9718a1",
+    "page_index": 9,
+    "page_number": 10,
+    "order": 344,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0024",
+    "section_path": [
+      "5. Experiments and results",
+      "5.4. Quantitative and qualitative comparisons with baseline methods"
+    ],
+    "title": "5.4. Quantitative and qualitative comparisons with baseline methods"
+  },
+  {
+    "block_id": "blk_4e3fcaae1d070ce204dc",
+    "page_index": 11,
+    "page_number": 12,
+    "order": 473,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0025",
+    "section_path": [
+      "5. Experiments and results",
+      "5.5. Evaluating the impact of incorrect conditioning on cognitive status in BrLP predictions"
+    ],
+    "title": "5.5. Evaluating the impact of incorrect conditioning on cognitive status in BrLP predictions"
+  },
+  {
+    "block_id": "blk_3f010c5939f075b8df6a",
+    "page_index": 13,
+    "page_number": 14,
+    "order": 534,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0026",
+    "section_path": [
+      "5. Experiments and results",
+      "5.6. Analysis of the proposed uncertainty measures"
+    ],
+    "title": "5.6. Analysis of the proposed uncertainty measures"
+  },
+  {
+    "block_id": "blk_31a9a167ca462df3c7ef",
+    "page_index": 13,
+    "page_number": 14,
+    "order": 536,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0027",
+    "section_path": [
+      "5. Experiments and results",
+      "5.6. Analysis of the proposed uncertainty measures",
+      "5.6.1. Global-level uncertainty increases with prediction distance"
+    ],
+    "title": "5.6.1. Global-level uncertainty increases with prediction distance"
+  },
+  {
+    "block_id": "blk_44406e97ba2f2edd52b0",
+    "page_index": 13,
+    "page_number": 14,
+    "order": 542,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0028",
+    "section_path": [
+      "5. Experiments and results",
+      "5.6. Analysis of the proposed uncertainty measures",
+      "5.6.2. Global-level uncertainty associates with prediction error"
+    ],
+    "title": "5.6.2. Global-level uncertainty associates with prediction error"
+  },
+  {
+    "block_id": "blk_c031a88c5861736aff23",
+    "page_index": 14,
+    "page_number": 15,
+    "order": 581,
+    "type": "heading",
+    "level": 3,
+    "section_id": "sec_0029",
+    "section_path": [
+      "5. Experiments and results",
+      "5.6. Analysis of the proposed uncertainty measures",
+      "5.6.3. Evaluating the voxel-level uncertainty map"
+    ],
+    "title": "5.6.3. Evaluating the voxel-level uncertainty map"
+  },
+  {
+    "block_id": "blk_562f3e15fe6356b83727",
+    "page_index": 14,
+    "page_number": 15,
+    "order": 584,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0030",
+    "section_path": [
+      "5. Experiments and results",
+      "5.7. Downstream application: avoiding type II errors in clinical trials using BrLP"
+    ],
+    "title": "5.7. Downstream application: avoiding type II errors in clinical trials using BrLP"
+  },
+  {
+    "block_id": "blk_5d52594757aa4f727bc3",
+    "page_index": 15,
+    "page_number": 16,
+    "order": 589,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0031",
+    "section_path": [
+      "6. Discussion"
+    ],
+    "title": "6. Discussion"
+  },
+  {
+    "block_id": "blk_d289e398b5e694d00135",
+    "page_index": 16,
+    "page_number": 17,
+    "order": 594,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0032",
+    "section_path": [
+      "7. Conclusion"
+    ],
+    "title": "7. Conclusion"
+  },
+  {
+    "block_id": "blk_f4717d88541c4bf3c509",
+    "page_index": 16,
+    "page_number": 17,
+    "order": 596,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0033",
+    "section_path": [
+      "Data availability"
+    ],
+    "title": "Data availability"
+  },
+  {
+    "block_id": "blk_e2d947b2bedeadba3f00",
+    "page_index": 16,
+    "page_number": 17,
+    "order": 598,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0034",
+    "section_path": [
+      "Acknowledgments"
+    ],
+    "title": "Acknowledgments"
+  },
+  {
+    "block_id": "blk_f882b13b25de6df68d94",
+    "page_index": 17,
+    "page_number": 18,
+    "order": 604,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0035",
+    "section_path": [
+      "CRediT authorship contribution statement"
+    ],
+    "title": "CRediT authorship contribution statement"
+  },
+  {
+    "block_id": "blk_ea28075f9e32da0e1263",
+    "page_index": 17,
+    "page_number": 18,
+    "order": 606,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0036",
+    "section_path": [
+      "References"
+    ],
+    "title": "References"
+  },
+  {
+    "block_id": "blk_c6debf63ec138a433637",
+    "page_index": 18,
+    "page_number": 19,
+    "order": 635,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0037",
+    "section_path": [
+      "A. Auxiliary models"
+    ],
+    "title": "A. Auxiliary models"
+  },
+  {
+    "block_id": "blk_a71070bdb7d775edd109",
+    "page_index": 18,
+    "page_number": 19,
+    "order": 637,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0038",
+    "section_path": [
+      "A. Auxiliary models",
+      "A.1. Linear Model (LM)"
+    ],
+    "title": "A.1. Linear Model (LM)"
+  },
+  {
+    "block_id": "blk_8542665128daf0210594",
+    "page_index": 19,
+    "page_number": 20,
+    "order": 640,
+    "type": "heading",
+    "level": 2,
+    "section_id": "sec_0039",
+    "section_path": [
+      "A. Auxiliary models",
+      "A.2. Disease Course Mapping (DCM)"
+    ],
+    "title": "A.2. Disease Course Mapping (DCM)"
+  },
+  {
+    "block_id": "blk_c4308913b1eb04717c09",
+    "page_index": 19,
+    "page_number": 20,
+    "order": 644,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0040",
+    "section_path": [
+      "B. Dataset statements"
+    ],
+    "title": "B. Dataset statements"
+  },
+  {
+    "block_id": "blk_bf6d72f337561a0d290b",
+    "page_index": 19,
+    "page_number": 20,
+    "order": 665,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0041",
+    "section_path": [
+      "C. Impact of reducing DDIM denoising steps on BrLP's performance"
+    ],
+    "title": "C. Impact of reducing DDIM denoising steps on BrLP's performance"
+  },
+  {
+    "block_id": "blk_c31eb13790482981e36d",
+    "page_index": 19,
+    "page_number": 20,
+    "order": 667,
+    "type": "heading",
+    "level": 1,
+    "section_id": "sec_0042",
+    "section_path": [
+      "D. Analysis of sex differences in BrLP's predictions"
+    ],
+    "title": "D. Analysis of sex differences in BrLP's predictions"
+  }
+]

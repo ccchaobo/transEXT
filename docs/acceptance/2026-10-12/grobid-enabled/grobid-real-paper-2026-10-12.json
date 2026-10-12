@@ -1,0 +1,20 @@
+{
+  "local_document_only": true,
+  "stored_revision_modified": false,
+  "hints": {
+    "heading": 11,
+    "paragraph": 21,
+    "caption": 4,
+    "abstract": 1,
+    "reference": 34
+  },
+  "matched_types": {
+    "heading": 10,
+    "paragraph": 7,
+    "caption": 3
+  },
+  "matched_blocks": 20,
+  "methods_heading_found": true,
+  "source_text_and_coordinates_preserved": true,
+  "passed": true
+}

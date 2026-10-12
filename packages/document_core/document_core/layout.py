@@ -28,6 +28,8 @@ from statistics import median
 from .cleaning import clean_text, looks_like_garbage
 from .coords import BBox
 from .ids import normalise_for_match
+from .navigation import navigation_level, COMMON, NUMBERED
+from .text_structure import LIST_START
 
 __all__ = [
     "TextLine",
@@ -59,6 +61,7 @@ class TextLine:
     block_hint: int | None = None      # parser-provided grouping hint
     confidence: float | None = None
     source: str = "text"               # "text" | "ocr"
+    non_horizontal: bool = False       # marginal rotated text is not body flow
     spans: list[tuple[float, float, str]] = field(default_factory=list)
 
     @property
@@ -744,7 +747,7 @@ def classify_furniture(
 
 _SENTENCE_END_RE = re.compile(r"[.!?:;]\s*$")
 _HEADING_RE = re.compile(
-    r"^(?:\d+(?:\.\d+)*\.?\s+|[IVXLC]+\.\s+|Abstract\b|Introduction\b|"
+    r"^(?:\d+(?:\.\d+)*\.?\s+(?=[A-Za-z\u4e00-\u9fff])|[IVXLC]+\.\s+|Abstract\b|Introduction\b|"
     r"Conclusions?\b|References\b|Acknowledg(?:e?ments?)\b|Appendix\b|"
     r"Methods?\b|Results?\b|Discussion\b|Related Work\b|Background\b)",
     re.IGNORECASE,
@@ -753,16 +756,11 @@ _HEADING_RE = re.compile(
 
 def _is_heading_like(para_lines: list[TextLine], params: LayoutParams) -> bool:
     text = " ".join(ln.text for ln in para_lines).strip()
-    if not text or len(text) > params.heading_max_chars:
-        return False
-    if len(text.split()) > params.heading_max_words:
-        return False
-    if text.endswith((".", ",", ";", ":")) and not _HEADING_RE.match(text):
-        return False
-    numbered = bool(re.match(r"^\d+(\.\d+)*\.?\s+", text))
-    all_bold = para_lines and all(ln.bold for ln in para_lines)
-    keyword = bool(_HEADING_RE.match(text))
-    return numbered or keyword or (all_bold and len(text.split()) <= 12)
+    if navigation_level(text) is None:return False
+    match=NUMBERED.fullmatch(text)
+    if match and not all(ln.bold for ln in para_lines):
+        return bool(COMMON.fullmatch(match['title']))
+    return True
 
 
 def _vertical_gap(above: TextLine, below: TextLine) -> float:
@@ -778,13 +776,20 @@ def _same_column_flow(
 ) -> bool:
     """Decide whether ``below`` continues the paragraph containing ``above``."""
     gap = _vertical_gap(above, below)
+    if LIST_START.match(below.text) and not _is_heading_like([below],params):return False
     # Consecutive lines of one paragraph routinely have slightly overlapping boxes, because
     # a line box covers ascender to descender while the leading is smaller than that.  Only
     # a real backwards step — the reading order leaving a column — should break here, and
     # that is orders of magnitude larger than the normal overlap.
     if gap < -params.line_overlap_tolerance * typical_height:
         return False
-    if gap > params.paragraph_gap_factor * typical_height:
+    limit = params.paragraph_gap_factor * typical_height
+    if above.block_hint is not None and above.block_hint == below.block_hint:
+        # Native PDF grouping corroborates a continuation, but never overrides
+        # column overlap or a font-size change below. Large title lines have
+        # larger leading than the document-wide body median.
+        limit = max(limit, .6 * min(above.height, below.height))
+    if gap > limit:
         return False
     # A change of type size starts a new block.  A heading is set larger than the body, and its
     # taller box makes the gap to the next line negative, so the gap tests above cannot see the
@@ -869,7 +874,17 @@ def assemble_paragraphs(
             merged.append(grp)
 
     paragraphs: list[Paragraph] = []
+    expanded = []
     for grp in merged:
+        # A compact keyword list is a vertical list, not a prose paragraph.
+        # Preserve item boundaries for translation and original-row placement.
+        keyword_list = bool(re.match(r"^\s*(Keywords?|Key words|关键词)\s*[:：]\s*$", grp[0].text, re.I)) and len(grp)>1
+        if keyword_list and all(len(line.text)<100 for line in grp):
+            expanded.extend(([line], "paragraph" if i==0 else "list_item") for i,line in enumerate(grp))
+        else:
+            explicit='list_item' if LIST_START.match(grp[0].text) and not _is_heading_like(grp,params) else None
+            expanded.append((grp,explicit))
+    for grp, explicit_kind in expanded:
         raw = "\n".join(ln.text for ln in grp)
         text = clean_text(raw)
         if not text:
@@ -890,7 +905,7 @@ def assemble_paragraphs(
                 ),
                 font_size=median(font_sizes) if font_sizes else None,
                 bold=all(ln.bold for ln in grp),
-                kind="heading" if _is_heading_like(grp, params) else "paragraph",
+                kind=explicit_kind or ("heading" if _is_heading_like(grp, params) else "paragraph"),
             )
         )
     return paragraphs
@@ -903,6 +918,19 @@ def _should_merge(prev: list[TextLine], nxt: list[TextLine], params: LayoutParam
     if _is_heading_like(prev, params) or _is_heading_like(nxt, params):
         return False
     last, first = prev[-1], nxt[0]
+    if last.page_index != first.page_index:
+        # PageView returns blocks rooted on this page. Keep page fragments
+        # independently anchored; a merged block would hide the continuation
+        # on the next page and squeeze its entire translation into page one.
+        return False
+    if last.page_index == first.page_index:
+        overlap = min(last.bbox.x1, first.bbox.x1) - max(last.bbox.x0, first.bbox.x0)
+        if overlap > 0 and first.bbox.y0 >= last.bbox.y0:
+            # A gap/type-size boundary inside a column is an intentional split,
+            # not a page/column continuation to undo using lowercase text.
+            return False
+    if last.font_size and first.font_size and abs(last.font_size-first.font_size) > params.paragraph_size_tolerance * max(last.font_size,first.font_size):
+        return False
     last_text = last.text.rstrip()
     first_text = first.text.lstrip()
     if not last_text or not first_text:
@@ -952,6 +980,9 @@ def build_sections(
     Returns ``(sections, path_by_index, section_id_by_index)`` where the paths
     are the "chapter title" context sent to the translator.
     """
+    # 在运行时导入，避免 blocks 的 Paragraph 类型导入造成模块初始化循环。
+    from .blocks import in_references_section, is_reference_like, is_reference_section_heading
+
     body_sizes = [p.font_size for p in paragraphs if p.kind == "paragraph" and p.font_size]
     body_size = median(body_sizes) if body_sizes else None
 
@@ -961,6 +992,11 @@ def build_sections(
     section_id_by_index: dict[int, str] = {}
 
     for idx, para in enumerate(paragraphs):
+        if is_reference_section_heading(para.text):
+            para.kind = "heading"
+        elif in_references_section([title for _, title, _ in stack]) and is_reference_like(para.text):
+            # 参考条目即使字号像标题，也不能开启新章节并丢失参考文献上下文。
+            para.kind = "paragraph"
         if para.kind == "heading":
             level = _level_from_heading(para.text, para.font_size, body_size)
             while stack and stack[-1][0] >= level:
@@ -1025,8 +1061,16 @@ def analyse(
     ordered: list[tuple[int, int, TextLine]] = []
 
     position = 0
+    marginal = []
     for page_index in sorted(lines_by_page):
-        lines = lines_by_page[page_index]
+        lines = []
+        for ln in lines_by_page[page_index]:
+            if ln.non_horizontal:
+                marginal.append(Paragraph(text=clean_text(ln.text), raw_text=ln.text,
+                    lines=[ln], page_indices=[page_index], bbox=ln.bbox,
+                    font_size=ln.font_size, bold=ln.bold, kind="header"))
+            else:
+                lines.append(ln)
         for ln in lines:
             ln.page_index = page_index
         if not lines:
@@ -1067,6 +1111,7 @@ def analyse(
                     position += 1
 
     furniture, body = classify_furniture(ordered, params)
+    furniture.extend(marginal)
     paragraphs = assemble_paragraphs(body, lines_by_page, params, furniture=furniture)
     sections, path_by_index, section_id_by_index = build_sections(paragraphs)
     for idx, para in enumerate(paragraphs):

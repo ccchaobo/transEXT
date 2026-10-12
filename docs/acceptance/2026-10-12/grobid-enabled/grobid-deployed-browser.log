@@ -1,0 +1,79 @@
+PASS 空文献库不显示无效加载更多按钮: 
+PASS 空文献库显示导入入口: 
+PASS 导入入口可通过键盘打开文件选择: 
+PASS 导入后显示解析等待状态: 
+PASS 重开排队文献后继续等待: 
+PASS 真实 worker 解析完成后自动显示正文和目录: 
+PASS 桌面阅读区域受视口约束: {'viewport': [1440, 900], 'body': [1440, 900], 'source': [723, 843], 'target': [723, 4487]}
+PASS 译文面板独立滚动: [723, 4487]
+PASS 末尾译文可滚动到可视区域: 
+PASS 视图 overlay 切换控件始终可达: 
+PASS 覆盖视图长译文保持覆盖并提示完整阅读入口: overlay
+PASS 覆盖视图确实绘制了译文: 
+PASS 覆盖选中段落置于上层: 
+PASS 覆盖视图一键显示原文: 
+PASS 覆盖视图一键恢复译文: 
+PASS 覆盖译文字号可调整: 
+PASS 手动放大字号实际改变文字大小: 
+PASS 视图 source_only 切换控件始终可达: 
+PASS 视图 target_only 切换控件始终可达: 
+PASS 视图 stacked 切换控件始终可达: 
+PASS 视图 side_by_side 切换控件始终可达: 
+PASS 没有遮挡的短译文可保留覆盖视图: 
+PASS 新对照视图左侧保持原文右侧覆盖译文: 
+PASS 新对照视图保存后可重新打开: 
+PASS 独立排版译文可切换为完整原文: 
+PASS 独立排版可恢复译文: 
+PASS AI 快捷问题仅填入输入框，不自动发送: 
+PASS AI 问答界面显示回答与来源: 
+PASS 原文划词可发送术语解释及选中上下文: 
+PASS 公式解释请求携带实际公式上下文: 
+PASS AI 来源可跳转到对应页段落: 
+PASS 下一页与页尾禁用状态: 
+PASS 第一页禁用上一页: 
+PASS 目标语言切换同步更新导出: 
+PASS 实际下载双语 Markdown: 
+PASS 点击译文同步选中原文位置: 
+PASS 左右对照点击译文时原文位置不变: 
+PASS 左右对照明确显示原文固定: 
+PASS 左右对照滚动译文时原文滚动位置不变: 
+PASS 左右对照原文面板悬浮位置不变: 
+PASS 上下对照仍可点击译文定位原文: 
+PASS 联动滚动到页尾不会回弹: {'requested': 3611.333251953125, 'actual': 3611.333251953125}
+PASS 实际提交译文修正并刷新显示: 
+PASS 翻译设置可打开且密钥留空: 
+PASS 超长译文末尾仍在可视区域: 
+PASS 新对照超长段落自然展开且没有内滚条: {'height': 5670, 'scroll': 5670, 'overflow': 'visible', 'position': 'absolute', 'sheet': 7804, 'text': 5580}
+PASS 译文页面可以长于左侧原页: 
+PASS 自然展开译文末尾可通过整侧滚动读到: 
+PASS 超长译文不会自动退出覆盖: 
+PASS 超长译文限制在原文高度内且背景不透明: {'height': 189, 'scroll': 2871, 'sourceHeight': 188.7701247672277, 'background': 'rgb(255, 255, 255)'}
+PASS 覆盖模式完整段落可读: 
+PASS 完整段落关闭按钮始终可达: 
+PASS 重新打开仍保留覆盖模式: 
+PASS 覆盖视图翻页仍保留覆盖: 
+PASS 1024px 视口没有横向溢出: 
+PASS 1024px 视口视图控件可达: 
+PASS 1024px 视口可返回文献库并导出: 
+PASS 768px 视口没有横向溢出: 
+PASS 768px 视口视图控件可达: 
+PASS 768px 视口可返回文献库并导出: 
+PASS 768px 视口实际使用侧栏导出: 
+PASS 390px 视口没有横向溢出: 
+PASS 390px 视口视图控件可达: 
+PASS 390px 视口可返回文献库并导出: 
+PASS 390px 视口实际使用侧栏导出: 
+PASS 窄屏设置面板关闭按钮可达: 
+PASS 窄屏 AI 助手没有横向溢出: 
+PASS 窄屏 AI 输入可操作: 
+PASS 窄屏 AI 发送按钮处于视口内: 
+PASS 长模型名称不破坏窄屏布局: 
+PASS 文献库有文件类型标识和中文状态: 
+PASS 真实 PDF 同时检出栅格图片与矢量图形: [[0.09666666666666666, 0.6125, 0.43666666666666665, 0.7775], [0.5466666666666666, 0.335, 0.9033333333333333, 0.5275]]
+PASS 原页分带覆盖从顶部到底部的全部画面: 
+PASS 图片与矢量图不会被分页切开: 
+PASS 右侧实际画面仍包含矢量图蓝色区域: {'vector_blue': 27656, 'raster_red': 14181}
+PASS 右侧实际画面仍包含栅格图片红色区域: {'vector_blue': 27656, 'raster_red': 14181}
+PASS 译文保持原来的左右栏位: 
+PASS 浏览器无未捕获脚本错误: 
+REPORT D:\transEXT\research-reader\var\browser-acceptance\grobid-deployed-final: 78 PASS, 0 FAIL

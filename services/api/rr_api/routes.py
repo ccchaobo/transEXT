@@ -13,10 +13,12 @@ drift from it and the generated OpenAPI document describes the real shapes.
 from __future__ import annotations
 
 import uuid
+import json
+import re
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Body, File, HTTPException, Query, Request, UploadFile
-from fastapi.responses import FileResponse, PlainTextResponse, Response
+from fastapi.responses import FileResponse, PlainTextResponse, Response, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 
@@ -66,6 +68,45 @@ from .exports import export_document_markdown
 
 router = APIRouter(prefix="/api/v1")
 
+from rr_services.assistant import AssistantRequest, AssistantError, prepare_context, answer_question, resolve_assistant_config
+from rr_services.assistant import assistant_capabilities
+from rr_services.assistant_stream import stream_answer
+
+
+@router.get('/assistant/capabilities',tags=['assistant'])
+def get_assistant_capabilities(request: Request):
+    with _session(request) as session:return assistant_capabilities(resolve_assistant_config(session))
+
+
+@router.post('/documents/{document_id}/assistant/stream',tags=['assistant'])
+async def ask_assistant_stream(request: Request,document_id: str,payload: AssistantRequest):
+    try:
+        with _session(request) as session:
+            context=prepare_context(session,document_id,payload);config=resolve_assistant_config(session)
+        if config is None:raise AssistantError('translation_not_configured','请先配置翻译服务、模型和 API Key。',409)
+    except AssistantError as error:raise HTTPException(error.status,detail={'error_code':error.code,'message':error.message})
+    async def events():
+        generator=stream_answer(config,context,payload,client=getattr(request.app.state,'assistant_async_client',None))
+        try:
+            async for kind,value in generator:
+                if await request.is_disconnected():break
+                yield f'event: {kind}\ndata: {json.dumps(value,ensure_ascii=False)}\n\n'
+        finally:await generator.aclose()
+    return StreamingResponse(events(),media_type='text/event-stream',headers={'Cache-Control':'no-store','X-Accel-Buffering':'no'})
+
+
+@router.post("/documents/{document_id}/assistant", tags=["assistant"])
+def ask_assistant(request: Request, document_id: str, payload: AssistantRequest) -> dict:
+    try:
+        with _session(request) as session:
+            context = prepare_context(session, document_id, payload)
+            config = resolve_assistant_config(session)
+        return answer_question(config, context, payload,
+            client=getattr(request.app.state, "assistant_client", None))
+    except AssistantError as exc:
+        raise HTTPException(status_code=exc.status,
+            detail={"error_code": exc.code, "message": exc.message}) from exc
+
 #: Target languages the UI offers.  This is not a limit of the provider, only of what has been
 #: exercised; anything else can be passed explicitly.
 TARGET_LANGUAGES = ("zh", "en", "ja", "de", "fr", "es", "ru")
@@ -97,7 +138,7 @@ def _queue(request: Request):
 
 def _document(session, document_id: str) -> Document:
     document = session.get(Document, document_id)
-    if document is None:
+    if document is None or document.deleted_at is not None:
         raise LookupError(f"no document {document_id!r}")
     return document
 
@@ -154,6 +195,7 @@ class PageView(BaseModel):
 class OutlineView(BaseModel):
     outline: list[dict]
     note: str | None = None
+    source: str | None = None
 
 
 class TranslationPlanView(BaseModel):
@@ -196,9 +238,10 @@ def list_documents(
     offset: int = Query(default=0, ge=0),
 ) -> dict:
     with _session(request) as session:
-        total = session.scalar(select(func.count()).select_from(Document)) or 0
+        total = session.scalar(select(func.count()).select_from(Document).where(Document.deleted_at.is_(None))) or 0
         rows = session.scalars(
             select(Document)
+            .where(Document.deleted_at.is_(None))
             .order_by(Document.imported_at.desc())
             .limit(limit)
             .offset(offset)
@@ -364,7 +407,20 @@ def get_page(
     with _session(request) as session:
         document = _document(session, document_id)
         page = _page(session, document, page_index)
-        return reads.page_payload(session, page, target_language=target_language)
+        payload = reads.page_payload(session, page, target_language=target_language)
+        if document.format == "pdf":
+            from rr_adapters.pdf_visuals import visual_regions
+            try:
+                payload["page"]["visual_regions"] = visual_regions(_workspace(request).resolve(document.source_path), page_index)
+                from rr_services.translation_policy import inside_graphic
+                for block in payload["blocks"]:
+                    spans = block["spans"]
+                    if spans and all(inside_graphic(span["bbox"], payload["page"]["visual_regions"]) for span in spans):
+                        block["translatable"] = False
+
+            except (OSError, ValueError, RuntimeError):
+                payload["page"]["warnings"].append("无法读取图形区域，译文页的图表保护范围可能不完整。")
+        return payload
 
 
 @router.get("/documents/{document_id}/pages/{page_index}/{kind}.png", tags=["reading"])
@@ -397,6 +453,40 @@ def get_outline(request: Request, document_id: str) -> dict:
         if revision is None:
             return {"outline": [], "note": "the document has not been parsed"}
         entries = reads.outline(session, revision.id)
+        if document.format=='pdf':
+            import pymupdf
+            with pymupdf.open(_workspace(request).resolve(document.source_path)) as original:
+                bookmarks=original.get_toc()
+            from document_core.navigation import navigation_level
+            # One article-title bookmark must not hide the recognised sections.
+            if bookmarks and (len(bookmarks)>1 or navigation_level(bookmarks[0][1]) is not None):
+                blocks=list(session.scalars(select(Block).where(Block.revision_id==revision.id)))
+                native=[];stack=[]
+                normalize=lambda text:re.sub(r'\W+','',text).casefold()
+                for level,title,page_number in bookmarks:
+                    if not title.strip() or page_number<1 or page_number>document.page_count:continue
+                    page_index=page_number-1
+                    matching=next((b for b in blocks if b.page_index==page_index and normalize(b.clean_text or b.raw_text)==normalize(title)),None)
+                    while stack and stack[-1][0]>=level:stack.pop()
+                    stack.append((level,title))
+                    native.append({'block_id':matching.id if matching else None,'page_index':page_index,'page_number':page_number,
+                        'title':title,'type':'heading','level':level,'section_path':[t for _,t in stack],
+                        'source':'pdf_bookmark','anchor_quality':'block' if matching else 'page'})
+                if native:return {'outline':native,'source':'pdf_bookmark'}
+        if document.format == "pdf" and entries:
+            from rr_adapters.pdf_visuals import visual_regions
+            from rr_services.translation_policy import graphic_text
+            from rr_storage import SourceSpanRow
+            try:
+                regions = {index: visual_regions(_workspace(request).resolve(document.source_path), index)
+                           for index in {entry["page_index"] for entry in entries}}
+                spans = {}
+                for span in session.scalars(select(SourceSpanRow).where(SourceSpanRow.revision_id == revision.id)):
+                    spans.setdefault(span.block_id, []).append(span)
+                # Chart axes and table values can be bold, but are not navigation headings.
+                entries = [entry for entry in entries if not graphic_text([span for key in entry.get("block_ids",[entry["block_id"]]) for span in spans.get(key,[])], regions)]
+            except (OSError, ValueError):
+                pass  # The original outline remains available when visual inspection fails.
         if len(entries) <= 1:
             # Said out loud rather than presented as navigation: a one-entry outline would
             # assert that the document has one section, which has not been established.

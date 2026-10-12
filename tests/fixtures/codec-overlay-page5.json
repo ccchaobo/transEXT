@@ -1,0 +1,539 @@
+{
+  "page": {
+    "index": 4,
+    "page_number": 5,
+    "printed_label": null,
+    "width_pt": 595.2760009765625,
+    "height_pt": 841.8900146484375,
+    "rotation": 0,
+    "display_width": 595.2760009765625,
+    "display_height": 841.8900146484375,
+    "source_kind": "text",
+    "ocr_applied": false,
+    "text_chars": 4762,
+    "warnings": [],
+    "preview_url": "/api/v1/documents/doc_ee94e17b17e84072a321/pages/4/preview.png",
+    "thumbnail_url": "/api/v1/documents/doc_ee94e17b17e84072a321/pages/4/thumbnail.png",
+    "visual_regions": []
+  },
+  "blocks": [
+    {
+      "id": "blk_87617b4d3b1c0152cb09",
+      "page_index": 4,
+      "order": 113,
+      "type": "paragraph",
+      "text": "While Self-Rubrics tailors complex instructions based on instruction metadata, not all instructions are equally effective for instruction tuning, regardless of their complexity (Chen et al., 2023b; Zhou et al., 2023a). Intuitively, exposing the target LLM to instructions it finds challenging can effectively identify its areas for improvement. Therefore, it is crucial to select the most impactful instructions for aligning the target LLM. We therefore introduce Contrastive Filtering, a method to select the instructions that can effectively enhance the target LLM ft. For clarity, we define the space of all natural language sequences as N. We have the strong LLM fs : N →N, the",
+      "raw_text": "While Self-Rubrics tailors complex instructions\nbased on instruction metadata, not all instructions\nare equally effective for instruction tuning, regard-\nless of their complexity (Chen et al., 2023b; Zhou\net al., 2023a). Intuitively, exposing the target LLM\nto instructions it ﬁnds challenging can effectively\nidentify its areas for improvement. Therefore, it is\ncrucial to select the most impactful instructions for\naligning the target LLM.\nWe therefore introduce Contrastive Filtering, a\nmethod to select the instructions that can effec-\ntively enhance the target LLM ft. For clarity, we\ndeﬁne the space of all natural language sequences\nas N. We have the strong LLM fs : N →N, the",
+      "translatable": true,
+      "is_body": true,
+      "confidence": {
+        "score": 0.8,
+        "level": "high",
+        "source": "layout"
+      },
+      "spans": [
+        {
+          "page_index": 4,
+          "bbox": [
+            0.1181695774285702,
+            0.4552448735732981,
+            0.4857226011027169,
+            0.47085988020756986
+          ],
+          "raw_bbox": [
+            70.34351348876953,
+            445.477783203125,
+            289.1390075683594,
+            458.62390136718744
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 0,
+          "text_end": 47
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.47134039548698425,
+            0.4857149624290039,
+            0.486955402121256
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            431.9271240234375,
+            289.13446044921875,
+            445.0732421875
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 48,
+          "text_end": 99
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.4874347574362059,
+            0.48875284758477444,
+            0.5030497640704776
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            418.37744140625006,
+            290.9428405761719,
+            431.52355957031256
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 100,
+          "text_end": 153
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.5035291193854277,
+            0.4857135269735411,
+            0.5191441260196994
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            404.8277587890625,
+            289.13360595703125,
+            417.973876953125
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 154,
+          "text_end": 204
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.5196234813346493,
+            0.4857243441557789,
+            0.5352384879689212
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            391.27807617187494,
+            289.1400451660156,
+            404.4241943359375
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 205,
+          "text_end": 257
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.535717843283871,
+            0.48634897234718094,
+            0.5513328499181427
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            377.72839355468756,
+            289.5118713378906,
+            390.87451171875006
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 258,
+          "text_end": 309
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.5518133651975572,
+            0.4857148598964709,
+            0.5674283718318289
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            364.177734375,
+            289.1343994140625,
+            377.3238525390625
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 310,
+          "text_end": 362
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.5679077271467788,
+            0.48602917337656654,
+            0.5835227337810507
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            350.62805175781244,
+            289.3215026855469,
+            363.774169921875
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 363,
+          "text_end": 416
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.5840020890960005,
+            0.2999193222763617,
+            0.5996170957302722
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            337.07836914062506,
+            178.53477478027344,
+            350.22448730468756
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 417,
+          "text_end": 441
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.1373582718428644,
+            0.6002223796873982,
+            0.48571306557714233,
+            0.61583738632167
+          ],
+          "raw_bbox": [
+            81.76608276367188,
+            323.42266845703136,
+            289.1333312988281,
+            336.5687866210938
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 442,
+          "text_end": 489
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.61631674163662,
+            0.488753001383574,
+            0.6319317482708917
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            309.87298583984375,
+            290.94293212890625,
+            323.01910400390625
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 490,
+          "text_end": 539
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.6324111035858416,
+            0.4857071186902248,
+            0.6486949022316701
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            295.76025390625,
+            289.1297912597656,
+            309.46942138671875
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 540,
+          "text_end": 589
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.6485054655350633,
+            0.4857102971987497,
+            0.664120472169335
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            282.77362060546886,
+            289.1316833496094,
+            295.91973876953125
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 590,
+          "text_end": 639
+        },
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.6645997549865059,
+            0.485721934641252,
+            0.6890135995683773
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            261.81634521484375,
+            289.13861083984375,
+            282.3701171875001
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 640,
+          "text_end": 683
+        }
+      ],
+      "pages": [
+        4
+      ],
+      "section_path": [
+        "Instruction Selection via Contrastive Filtering"
+      ],
+      "section_id": "sec_0014",
+      "level": null,
+      "cross_page": false,
+      "human_edited": false,
+      "table": null,
+      "metadata": {
+        "reasons": [
+          "default body block"
+        ],
+        "cross_page": false,
+        "font_size": 10.945,
+        "bold": false,
+        "non_horizontal": false,
+        "text_structure": {
+          "parts": [
+            {
+              "kind": "paragraph",
+              "marker": "",
+              "text": "While Self-Rubrics tailors complex instructions based on instruction metadata, not all instructions are equally effective for instruction tuning, regardless of their complexity (Chen et al., 2023b; Zhou et al., 2023a). Intuitively, exposing the target LLM to instructions it finds challenging can effectively identify its areas for improvement. Therefore, it is crucial to select the most impactful instructions for aligning the target LLM. We therefore introduce Contrastive Filtering, a method to select the instructions that can effectively enhance the target LLM ft. For clarity, we define the space of all natural language sequences as N. We have the strong LLM fs : N →N, the",
+              "indent_em": 0,
+              "first_indent_em": 0,
+              "hanging_em": 0
+            }
+          ],
+          "has_list": false,
+          "version": 1
+        }
+      },
+      "translation_status": "ok",
+      "bbox": [
+        0.1181695774285702,
+        0.4552448735732981,
+        0.488753001383574,
+        0.6890135995683773
+      ],
+      "translation": {
+        "id": "tr_adefa6ff7bf648e2a565c369",
+        "block_id": "blk_87617b4d3b1c0152cb09",
+        "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+        "language": "en",
+        "target_language": "zh",
+        "provider": "deepseek",
+        "model": "deepseek-v4.1-flash",
+        "version": 1,
+        "status": "ok",
+        "origin": "machine",
+        "stale": false,
+        "error_code": null,
+        "created_at": "2026-10-12T17:18:02.372190",
+        "usage": {
+          "prompt_tokens": 367,
+          "completion_tokens": 4464,
+          "total_tokens": 4831
+        },
+        "issues": [],
+        "raw_status": "ok",
+        "is_current": true,
+        "created_by": "worker",
+        "prompt_version": "v2-structure",
+        "glossary_version": "none",
+        "is_human": false,
+        "error_message": null,
+        "structure": {
+          "parts": [
+            {
+              "kind": "paragraph",
+              "text": "虽然 Self-Rubrics 根据指令元数据定制复杂指令，但并非所有指令对指令微调都同样有效，无论其复杂度如何 (Chen et al., 2023b; Zhou et al., 2023a)。直观地说，让目标 LLM 接触它认为具有挑战性的指令，可以有效地识别其需要改进的领域。因此，选择最具影响力的指令来对齐目标 LLM 至关重要。因此，我们引入 Contrastive Filtering，一种选择能够有效增强目标 LLM ft 的指令的方法。为清晰起见，我们将所有自然语言序列的空间定义为 N。我们有强 LLM fs : N →N，",
+              "first_indent_em": 0
+            }
+          ],
+          "preserved": true
+        }
+      }
+    },
+    {
+      "id": "blk_cdbd35451885d31c3827",
+      "page_index": 4,
+      "order": 114,
+      "type": "formula",
+      "text": "target LLM ft : N →N, and a scoring function",
+      "raw_text": "target LLM ft : N →N, and a scoring function",
+      "translatable": false,
+      "is_body": false,
+      "confidence": {
+        "score": 0.7,
+        "level": "medium",
+        "source": "heuristic"
+      },
+      "spans": [
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.6806953493979713,
+            0.4857157826892684,
+            0.7051091939798424
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            248.265625,
+            289.13494873046875,
+            268.81939697265614
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 0,
+          "text_end": 44
+        }
+      ],
+      "pages": [
+        4
+      ],
+      "section_path": [
+        "Instruction Selection via Contrastive Filtering"
+      ],
+      "section_id": "sec_0014",
+      "level": null,
+      "cross_page": false,
+      "human_edited": false,
+      "table": null,
+      "metadata": {
+        "reasons": [
+          "symbol density"
+        ],
+        "cross_page": false,
+        "font_size": 11.018,
+        "bold": false,
+        "non_horizontal": false,
+        "text_structure": {
+          "parts": [
+            {
+              "kind": "paragraph",
+              "marker": "",
+              "text": "target LLM ft : N →N, and a scoring function",
+              "indent_em": 0,
+              "first_indent_em": 0,
+              "hanging_em": 0
+            }
+          ],
+          "has_list": false,
+          "version": 1
+        }
+      },
+      "translation_status": "none",
+      "bbox": [
+        0.11903140181864005,
+        0.6806953493979713,
+        0.4857157826892684,
+        0.7051091939798424
+      ],
+      "translation": null
+    },
+    {
+      "id": "blk_cfa19ec95a1ff9d47446",
+      "page_index": 4,
+      "order": 115,
+      "type": "formula",
+      "text": "S : N →R to evaluate response quality. In prac-",
+      "raw_text": "S : N →R to evaluate response quality. In prac-",
+      "translatable": false,
+      "is_body": false,
+      "confidence": {
+        "score": 0.7,
+        "level": "medium",
+        "source": "heuristic"
+      },
+      "spans": [
+        {
+          "page_index": 4,
+          "bbox": [
+            0.11903140181864005,
+            0.6967896388494139,
+            0.488764023630878,
+            0.721203483431285
+          ],
+          "raw_bbox": [
+            70.85653686523438,
+            234.71600341796875,
+            290.9494934082032,
+            255.2697753906249
+          ],
+          "raw_space": "raw_pdf",
+          "polygon": null,
+          "text_start": 0,
+          "text_end": 47
+        }
+      ],
+      "pages": [
+        4
+      ],
+      "section_path": [
+        "Instruction Selection via Contrastive Filtering"
+      ],
+      "section_id": "sec_0014",
+      "level": null,
+      "cross_page": false,
+      "human_edited": false,
+      "table": null,
+      "metadata": {
+        "reasons": [
+          "symbol density"
+        ],
+        "cross_page": false,
+        "font_size": 11.018,
+        "bold": false,
+        "non_horizontal": false,
+        "text_structure": {
+          "parts": [
+            {
+              "kind": "paragraph",
+              "marker": "",
+              "text": "S : N →R to evaluate response quality. In prac-",
+              "indent_em": 0,
+              "first_indent_em": 0,
+              "hanging_em": 0
+            }
+          ],
+          "has_list": false,
+          "version": 1
+        }
+      },
+      "translation_status": "none",
+      "bbox": [
+        0.11903140181864005,
+        0.6967896388494139,
+        0.488764023630878,
+        0.721203483431285
+      ],
+      "translation": null
+    }
+  ]
+}

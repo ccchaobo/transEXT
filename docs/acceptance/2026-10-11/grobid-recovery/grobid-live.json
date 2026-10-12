@@ -1,0 +1,5 @@
+{
+  "fixture": "self-authored PDF",
+  "passed": false,
+  "error": "ConnectError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。"
+}

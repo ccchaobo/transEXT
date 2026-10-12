@@ -112,6 +112,9 @@ class TestConfiguration:
             "RR_TRANSLATION_API_KEY=file-key\n\nmalformed line\n",
             encoding="utf-8",
         )
+        # Track absence as well: delenv on an already-absent key does not
+        # register undo, so load_env_file would pollute later integration tests.
+        monkeypatch.setenv("RR_TRANSLATION_MODEL", "will-be-cleared")
         monkeypatch.delenv("RR_TRANSLATION_MODEL", raising=False)
         monkeypatch.setenv("RR_TRANSLATION_API_KEY", "already-set")
         loaded = load_env_file(env_file)

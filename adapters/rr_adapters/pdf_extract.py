@@ -368,13 +368,16 @@ class PdfTextExtractor:
                         text=text,
                         bbox=norm_box,
                         page_index=page_index,
-                        font_size=round(sum(sizes) / len(sizes), 3) if sizes else None,
+                        # Inline superscripts/subscripts must not turn a body
+                        # line into a different paragraph type size.
+                        font_size=round(dominant.get("size", 0), 3) if sizes else None,
                         font_name=dominant.get("font"),
                         bold=_looks_bold(dominant),
                         italic=_looks_italic(dominant),
                         colour=dominant.get("color"),
                         block_hint=block.get("number"),
                         source="text",
+                        non_horizontal=abs(line.get("dir", (1, 0))[1]) > .5,
                         spans=[
                             (
                                 _transform_box(to_norm, BBox(*s["bbox"])).x0,

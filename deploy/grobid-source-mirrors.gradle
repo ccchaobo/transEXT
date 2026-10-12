@@ -1,0 +1,13 @@
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+settingsEvaluated { settings ->
+    settings.pluginManagement.repositories.clear()
+    settings.pluginManagement.repositories.maven { url = uri('https://maven.aliyun.com/repository/gradle-plugin/') }
+    settings.pluginManagement.repositories.maven { url = uri('https://repo.huaweicloud.com/repository/maven/') }
+}
+allprojects { project ->
+    project.repositories.whenObjectAdded { repository ->
+        if (repository instanceof MavenArtifactRepository && repository.url.scheme in ['http','https']) {
+            repository.url = uri('https://repo.huaweicloud.com/repository/maven/')
+        }
+    }
+}

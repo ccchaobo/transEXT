@@ -334,6 +334,16 @@ def body_font_size(paragraphs: list[Paragraph]) -> float | None:
     """
     from collections import Counter
 
+    # Tables can contain hundreds of short cells in a smaller font. Counting
+    # those blocks makes table type masquerade as body type (5.8pt on BrLP).
+    # Use sustained prose as evidence, retaining the fallback for sparse pages.
+    prose = Counter()
+    for p in paragraphs:
+        if p.font_size and p.kind == "paragraph" and len(p.text) > 100 and not is_reference_like(p.text):
+            prose[round(p.font_size, 1)] += len(p.text)
+    if prose:
+        return prose.most_common(1)[0][0]
+
     sizes = [
         round(p.font_size, 1)
         for p in paragraphs
@@ -365,6 +375,18 @@ def classify_paragraph(
         # not distinguish them, and the distinction is visible from the position.
         kind = BlockType.HEADER if paragraph.bbox.y0 < MID_PAGE else BlockType.FOOTER
         return TypeDecision(kind, Confidence(0.9, ConfidenceLevel.HIGH, "layout"), ["layout label"])
+
+    # 章节边界优先于格式猜测；正文中出现完整引文也仍然保留翻译资格。
+    if is_reference_section_heading(text):
+        return TypeDecision(
+            BlockType.HEADING, Confidence(0.95, ConfidenceLevel.HIGH, "heuristic"),
+            ["explicit references heading"],
+        )
+    if in_references_section(path):
+        return TypeDecision(
+            BlockType.REFERENCE, Confidence(0.8, ConfidenceLevel.HIGH, "heuristic"),
+            ["inside a references section"],
+        )
 
     # The order of the checks below encodes which evidence is trusted most.  Two
     # orderings were wrong when measured, and both are recorded because they look
@@ -403,22 +425,6 @@ def classify_paragraph(
             ["author-like line near the top"],
         )
 
-    # 5. Bibliography, checked BEFORE the layout's heading label.  A bibliography entry is
-    #    short and often set slightly larger, which is the layout stage's own test for a
-    #    heading, so accepting that label first typed 5 corpus references as headings — and
-    #    a reference read as a heading is translated, DOIs and author names included.
-    if is_reference_like(text):
-        return TypeDecision(
-            BlockType.REFERENCE, Confidence(0.85, ConfidenceLevel.HIGH, "heuristic"),
-            ["bibliography entry shape"],
-        )
-
-    if in_references_section(path) and not is_reference_section_heading(text):
-        return TypeDecision(
-            BlockType.REFERENCE, Confidence(0.8, ConfidenceLevel.HIGH, "heuristic"),
-            ["inside a references section"],
-        )
-
     # 6. A figure or table caption.  The layout stage never emits one — it has no notion of a
     #    caption — so before this rule existed every caption in the corpus came back as an
     #    ordinary paragraph (measured: 0 of 4).  Checked after the bibliography tests and
@@ -446,6 +452,8 @@ def classify_paragraph(
 
     # 8. A heading label from the layout stage.  The section's own heading reaches here,
     #    which is why the check above excludes it.
+    if paragraph.kind=='list_item':
+        return TypeDecision(BlockType.LIST_ITEM,Confidence(0.9,ConfidenceLevel.HIGH,'layout'),['explicit list marker'])
     is_heading = paragraph.kind == "heading" or paragraph.level is not None
     if is_heading:
         confidence = 0.9 if len(text) <= HEADING_MAX_CHARS else 0.6

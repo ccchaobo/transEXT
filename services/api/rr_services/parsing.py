@@ -25,7 +25,8 @@ from sqlalchemy.orm import Session
 
 from document_core.blocks import body_font_size, classify_paragraph
 from document_core.layout import LayoutResult, Paragraph, analyse
-from document_core.models import ConfidenceLevel, ParseStatus
+from document_core.models import ConfidenceLevel, ParseStatus, BlockType, Confidence
+from document_core.blocks import TypeDecision
 from rr_adapters.pdf_extract import (
     PdfExtraction,
     PdfTextExtractor,
@@ -48,7 +49,7 @@ from .settings import Settings
 #: The parser identity recorded on the revision.  Bumping this invalidates an identical
 #: re-parse, which is what should happen when the algorithm changes.
 PARSER_NAME = "pdf_text"
-PARSER_VERSION = "1.0.0"
+PARSER_VERSION = "1.0.5"
 
 #: Formats whose text can be read today.  An image needs OCR and a DOCX needs conversion;
 #: both adapters exist but are not wired into this stage yet, and saying so plainly is
@@ -106,17 +107,35 @@ class ParseService:
         source = self.workspace.resolve(document.source_path)
         extraction = self.extractor.extract(source)
 
-        revision = self._create_revision(session, document, extraction)
         self.queue.set_stage(session, lease, "layout", "ordering blocks")
         layout = analyse(extraction.lines_by_page)
 
-        outcome = ParseOutcome(revision_id=revision.id, status=ParseStatus.SUCCEEDED.value)
+        outcome = ParseOutcome(revision_id="", status=ParseStatus.SUCCEEDED.value)
         outcome.warnings.extend(extraction.warnings)
         outcome.warnings.extend(layout.warnings)
+        grobid_types = {}
+        if self.settings.grobid_url:
+            from rr_adapters.grobid import GrobidClient
+            from .grobid_assist import apply_structure
+            import httpx
+            self.queue.set_stage(session, lease, "layout", "checking optional GROBID structure")
+            # 网络等待不持有 SQLite 写锁；活动修订仍然保持原值。
+            session.commit()
+            try:
+                auxiliary = GrobidClient(self.settings.grobid_url, self.settings.grobid_timeout_seconds).analyse(source)
+                grobid_types = apply_structure(layout, auxiliary)
+                outcome.stats["grobid"] = {"status":"ok","matched_blocks":len(grobid_types),"hints":len(auxiliary.hints)}
+            except (OSError, ValueError, httpx.HTTPError) as error:
+                outcome.warnings.append(f"GROBID 辅助解析不可用（{type(error).__name__}），已使用原解析结果。")
+                outcome.stats["grobid"] = {"status":"fallback","matched_blocks":0}
+        else:
+            outcome.stats["grobid"] = {"status":"disabled","matched_blocks":0}
 
+        revision = self._create_revision(session, document, extraction)
+        outcome.revision_id = revision.id
         self.queue.set_stage(session, lease, "persist", "saving pages and blocks")
         self._persist_pages(session, lease, document, revision, extraction, outcome)
-        self._persist_blocks(session, lease, document, revision, extraction, layout, outcome)
+        self._persist_blocks(session, lease, document, revision, extraction, layout, outcome, grobid_types)
 
         # Rendering runs after the pages exist so a failure here attaches to a page that is
         # already readable.  It is its own stage because it is the slowest part and because a
@@ -285,6 +304,7 @@ class ParseService:
         extraction: PdfExtraction,
         layout: LayoutResult,
         outcome: ParseOutcome,
+        grobid_types: dict | None = None,
     ) -> None:
         body_size = body_font_size(layout.paragraphs)
 
@@ -298,7 +318,20 @@ class ParseService:
             decision = classify_paragraph(
                 paragraph, position=order, page_index=page_index, body_size=body_size
             )
+            if paragraph.lines and all(line.non_horizontal for line in paragraph.lines):
+                decision = TypeDecision(BlockType.HEADER, Confidence(.95, ConfidenceLevel.HIGH, "text-direction"),
+                    ["non-horizontal marginal text retained in the original page"])
+            elif paragraph.kind == "list_item":
+                decision = TypeDecision(BlockType.LIST_ITEM, Confidence(.95, ConfidenceLevel.HIGH, "native-list"),
+                    ["keyword list item preserves its original row"])
 
+            hint = (grobid_types or {}).get(order)
+            if hint in {"heading","paragraph","abstract","caption"} and decision.type not in {
+                BlockType.REFERENCE, BlockType.HEADER, BlockType.FOOTER, BlockType.PAGE_NUMBER,
+                BlockType.FORMULA, BlockType.TABLE, BlockType.TABLE_CELL, BlockType.FIGURE,
+            }:
+                decision = TypeDecision(BlockType(hint), Confidence(.9, ConfidenceLevel.HIGH, "grobid+text"),
+                    ["GROBID structure corroborated by source text"])
             block = self._build_block(
                 revision=revision,
                 document=document,
@@ -308,6 +341,8 @@ class ParseService:
                 page_index=page_index,
                 extraction=extraction,
             )
+            if hint:
+                block.extra = {**block.extra,"grobid_type":hint}
             session.add(block)
             outcome.blocks += 1
             if decision.type.is_translatable:
@@ -376,6 +411,7 @@ class ParseService:
                 "cross_page": len(paragraph.page_indices) > 1,
                 "font_size": paragraph.font_size,
                 "bold": paragraph.bold,
+                "non_horizontal": bool(paragraph.lines) and all(line.non_horizontal for line in paragraph.lines),
             },
         )
 
@@ -439,6 +475,7 @@ class ParseService:
         revision.warnings = list(dict.fromkeys(outcome.warnings))
         revision.issues = outcome.issues
         revision.stats = {
+            **outcome.stats,
             "pages": outcome.pages,
             "blocks": outcome.blocks,
             "translatable_blocks": outcome.translatable_blocks,

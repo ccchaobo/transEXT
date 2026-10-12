@@ -24,6 +24,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from document_core.models import BlockType
+from document_core.text_structure import translation_input,structure,translation_parts
 from rr_adapters.translation import (
     PROMPT_VERSION,
     TranslationOutcome,
@@ -31,7 +32,8 @@ from rr_adapters.translation import (
     TranslationUnit,
 )
 from rr_contracts import ErrorCode
-from rr_storage import Block, Document, Term, Translation, utcnow
+from rr_storage import Block, Document, Term, Translation, SourceSpanRow, utcnow
+from .translation_policy import is_number_label, graphic_text
 
 #: Bumped whenever the *meaning* of a cache key input changes, so that old rows can never be
 #: mistaken for new ones even though every field still matches.
@@ -269,6 +271,16 @@ class TranslationService:
             )
         )
 
+        regions_by_page = {}
+        spans_by_block = {}
+        if self.workspace is not None and document.format == "pdf":
+            from rr_adapters.pdf_visuals import visual_regions
+            source = self.workspace.resolve(document.source_path)
+            for span in session.scalars(select(SourceSpanRow).where(SourceSpanRow.revision_id == revision_id)):
+                spans_by_block.setdefault(span.block_id, []).append(span)
+            for page_index in {s.page_index for spans in spans_by_block.values() for s in spans}:
+                # 图形读取失败应终止本次计划，不把未确认的图内文字发往服务。
+                regions_by_page[page_index] = visual_regions(source, page_index)
         candidates: list[PlannedUnit] = []
         for block in blocks:
             if wanted is not None and block.id not in wanted:
@@ -277,9 +289,10 @@ class TranslationService:
                 plan.skipped_non_translatable += 1
                 continue
             text = (block.clean_text or block.raw_text or "").strip()
-            if not text:
+            if not text or is_number_label(text) or graphic_text(spans_by_block.get(block.id, []), regions_by_page):
                 plan.skipped_non_translatable += 1
                 continue
+            text=translation_input(block.raw_text or text,spans_by_block.get(block.id,[]),block_type=block.type,fallback=text)
             candidates.append(
                 PlannedUnit(
                     block_id=block.id,
@@ -289,7 +302,7 @@ class TranslationService:
                     text=text,
                     context=_context_for(block, text),
                     cache_key=cache_key(
-                        text_hash=block.text_hash or _hash(text),
+                        text_hash=_hash(text),
                         revision_id=revision_id,
                         source_language=source_language,
                         target_language=target_language,
@@ -325,6 +338,14 @@ class TranslationService:
 
         for unit in candidates:
             unit.reusable = existing.get(unit.cache_key)
+        if not force and candidates:
+            humans=session.scalars(select(Translation).where(Translation.block_id.in_([u.block_id for u in candidates]),
+                Translation.revision_id==revision_id,Translation.target_language==target_language,
+                Translation.origin=='human',Translation.is_current.is_(True),Translation.stale.is_(False),Translation.status==STATUS_OK)).all()
+            for row in humans:
+                unit=next(u for u in candidates if u.block_id==row.block_id)
+                # A prompt change cannot discard an explicit human correction.
+                if row.source_hash in {_hash(unit.text),_hash(next(b.clean_text or b.raw_text for b in blocks if b.id==unit.block_id))}:unit.reusable=row
         plan.units = candidates
         return plan
 
@@ -408,6 +429,10 @@ class TranslationService:
     ) -> Translation:
         """Write one translation, superseding any earlier version of the same block."""
         status = STATUS_OK if result.ok else (result.status or STATUS_FAILED)
+        value=structure(unit.text,block_type=unit.block_type)
+        if status==STATUS_OK and value['has_list'] and not translation_parts(value,result.text or '')['preserved']:
+            status=STATUS_FAILED;result.status=STATUS_FAILED;result.error_code=ErrorCode.TRANSLATION_FAILED.value
+            result.error_message='译文丢失原列表编号或分点结构，请核对后重试此块。'
         if status == "unknown":
             status = STATUS_UNKNOWN
 

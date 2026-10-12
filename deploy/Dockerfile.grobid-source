@@ -1,0 +1,31 @@
+# Official GROBID tag sources must be prepared in the build context.
+ARG JAVA_BASE_IMAGE=eclipse-temurin:21-jdk-noble
+FROM ${JAVA_BASE_IMAGE} AS builder
+USER root
+RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org/debian|https://repo.huaweicloud.com/debian|g' /etc/apt/sources.list.d/debian.sources; else sed -i 's|http://archive.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g;s|http://security.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources; fi \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-21-jdk-headless unzip git \
+    && apt-get clean
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=${JAVA_HOME}/bin:${PATH}
+WORKDIR /opt/grobid-source
+COPY . .
+RUN sh build-tools/gradle-9.6.1/bin/gradle assemble --no-daemon --max-workers=1 --init-script source-mirrors.gradle
+RUN mkdir -p /opt/grobid \
+    && unzip -q grobid-service/build/distributions/grobid-service-*.zip -d /opt/grobid \
+    && mv /opt/grobid/grobid-service-* /opt/grobid/grobid-service \
+    && unzip -q grobid-home/build/distributions/grobid-home-*.zip -d /opt/grobid \
+    && chmod -R 755 /opt/grobid/grobid-home/pdfalto
+FROM ${JAVA_BASE_IMAGE}
+USER root
+RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org/debian|https://repo.huaweicloud.com/debian|g' /etc/apt/sources.list.d/debian.sources; else sed -i 's|http://archive.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g;s|http://security.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources; fi \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends libxml2 libfontconfig \
+    && apt-get clean
+COPY --from=builder /opt/grobid /opt/grobid
+WORKDIR /opt/grobid
+ENV LD_LIBRARY_PATH=/opt/grobid/grobid-home/lib/lin-64
+ENV GROBID_SERVICE_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED"
+LABEL rr.project="research-reader" org.opencontainers.image.version="0.9.1" org.opencontainers.image.revision="523bb8e97f357e93682dc4eaa6d22faa8b5b93de"
+ENTRYPOINT ["/bin/sh"]
+CMD ["/opt/grobid/grobid-service/bin/grobid-service"]

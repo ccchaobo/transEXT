@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "name": "真实论文目录排除图表、单词、数值，包含 5.5 节",
+      "passed": true,
+      "headings": 43
+    },
+    {
+      "name": "真实 PDF 分点恢复，使用既有译文而非重新翻译",
+      "passed": true,
+      "reused_translation_blocks": 255
+    },
+    {
+      "name": "段落卡片同样保留编号和悬挂缩进",
+      "passed": true
+    },
+    {
+      "name": "完整回答结束前已显示第一段文字",
+      "passed": true
+    },
+    {
+      "name": "公开摘要、思考强度、真实耗时和来源可见；无原始思考文本",
+      "passed": true
+    },
+    {
+      "name": "停止后部分回答保留并关闭上游连接，无自动重试",
+      "passed": true,
+      "stats": {
+        "closed": 2,
+        "calls": 2
+      }
+    },
+    {
+      "name": "390px 助手不造成整页横向溢出",
+      "passed": true
+    },
+    {
+      "name": "真实 BrLP 隔离副本 21 页几何与图表保护回归",
+      "passed": true
+    },
+    {
+      "name": "原件指纹保持一致",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "browser_channel": "msedge",
+  "ai_service": "controlled streaming fixture; no external AI requests",
+  "user_library_modified": false
+}

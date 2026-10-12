@@ -1,0 +1,116 @@
+[1/28] tests: pytest tests ...
+      [PASS]   56.0s  exit 0  -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+[2/28] tests: pytest tests (verbose collection) ...
+      [PASS]    3.7s  exit 0  -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+[3/28] contract: check_rotation ...
+      [PASS]    0.3s  exit 0  PASS: all 16 corner mappings match the measured table; round trip and range checks pass
+[4/28] contract: verify_rotation ...
+      [PASS]    2.3s  exit 0  PASS: the transform places all 16 markers where PyMuPDF rendered them and preserves handedness at every rotation, and the handedness test detects a deliberate m
+[5/28] contract: verify_coordinate_fix ...
+      [PASS]    1.3s  exit 0  PASS: text-frame -> raw -> normalised lands on every marker for all rotations
+[6/28] layout: measure_layout ...
+      [PASS]    0.7s  exit 0  >= 200 sampled blocks               : PASS  (409)
+[7/28] layout: measure_line_order ...
+      [PASS]    0.6s  exit 0  POOLED line-order accuracy: 1.0000   (matched 928 lines, 0 inverted pairs of 32964)
+[8/28] layout: measure_reading_order ...
+      [PASS]    1.3s  exit 0  PASS
+[9/28] layout: measure_segmentation ...
+      [PASS]    0.7s  exit 0  blocks addressable on their own: 235/246 = 0.9553
+[10/28] layout: measure_block_types ...
+      [PASS]    0.8s  exit 0  (132 structural blocks skipped: no table/figure extraction exists, so they cannot be classified and are not errors of this classifier)
+[11/28] layout: verify_layout_metrics ...
+      [PASS]    0.6s  exit 0  sample: ['鈥淎', 'labeling,鈥�', '鈥淥n', 'predictors,鈥�', '鈥淎', 'protocols,鈥�', '鈥淩eproducibility', 'corpus,鈥�', '鈥淐onfidence', 'recall,鈥�']
+[12/28] layout: verify_column_order ...
+      [PASS]    0.5s  exit 0  L/R switches: 2 over 42 paragraphs
+[13/28] extract: spike_extract ...
+      [PASS]    1.3s  exit 0  [PASS] zip bomb rejected: archive expands 1029x to 220 MiB
+[14/28] ocr: spike_ocr ...
+      [PASS]  106.3s  exit 0  rapidocr     scan_e_grayscale           0.0334  PASS
+[15/28] ocr: check_confidence_signal ...
+      [PASS]  400.0s  exit 0  (50% would mean the signal is worthless)
+[16/28] ocr: check_dpi_reproducible ...
+      [PASS]  119.0s  exit 0  VERDICT: the differences across resolutions are reproducible; render
+[17/28] storage: smoke_storage ...
+      [PASS]    1.0s  exit 0  SMOKE OK
+[18/28] environment: env_inventory ...
+      [PASS]    0.5s  exit 0  PyMuPDF: Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License
+[19/28] contract: gen_openapi ...
+      [PASS]    2.2s  exit 0  GET                          /health
+[20/28] contract: check_openapi ...
+      [PASS]    0.2s  exit 0  PASS: D:\transEXT\research-reader\packages\contracts\openapi.json
+[21/28] evidence: evidence_parse ...
+      [PASS]    1.9s  exit 0  reference    1
+[22/28] evidence: evidence_worker ...
+      [PASS]    2.0s  exit 0  units         total=0 done=0 failed=0 skipped=0
+[23/28] evidence: evidence_translation ...
+      [PASS]    1.9s  exit 0  skipped (not body)  : 3
+[24/28] product: verify_frontend_contract ...
+      [PASS]    2.8s  exit 0  FRONTEND CONTRACT: PASS - every field app.js reads is present in the real payload
+[25/28] product: verify_overlay_alignment ...
+      [PASS]   13.0s  exit 0  OVERLAY ALIGNMENT: PASS - box coverage tracks page ink (median row r=+0.972 against its mirror's +0.334, median column r=+0.995 against +0.356) over 18 text pag
+[26/28] product: verify_live_acceptance ...
+      [PASS]   11.5s  exit 0  [PASS] clearing the panel settings restores the refusal  -- HTTP 200
+[27/28] product: verify_checks_can_fail ...
+      [PASS]   31.9s  exit 0  all 7 checks fail when their defect is reintroduced
+[28/28] perf: perf_harness ...
+      [PASS]  166.1s  exit 0  stage                     n    p50 ms    p95 ms    max ms  fail
+
+====================================================================================================
+FULL VERIFICATION
+====================================================================================================
+
+-- tests -------------------------------------------------------------------------------------------
+  [PASS] pytest tests                       exit   0     56.0s  -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+  [PASS] pytest tests (verbose collection)  exit   0      3.7s  -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+-- contract ----------------------------------------------------------------------------------------
+  [PASS] check_rotation                     exit   0      0.3s  PASS: all 16 corner mappings match the measured table; round trip and range checks pass
+  [PASS] verify_rotation                    exit   0      2.3s  PASS: the transform places all 16 markers where PyMuPDF rendered them and preserves handedness at every rotation, and the handedness test detects a deliberate m
+  [PASS] verify_coordinate_fix              exit   0      1.3s  PASS: text-frame -> raw -> normalised lands on every marker for all rotations
+
+-- layout ------------------------------------------------------------------------------------------
+  [PASS] measure_layout                     exit   0      0.7s  >= 200 sampled blocks               : PASS  (409)
+  [PASS] measure_line_order                 exit   0      0.6s  POOLED line-order accuracy: 1.0000   (matched 928 lines, 0 inverted pairs of 32964)
+  [PASS] measure_reading_order              exit   0      1.3s  PASS
+  [PASS] measure_segmentation               exit   0      0.7s  blocks addressable on their own: 235/246 = 0.9553
+  [PASS] measure_block_types                exit   0      0.8s  (132 structural blocks skipped: no table/figure extraction exists, so they cannot be classified and are not errors of this classifier)
+  [PASS] verify_layout_metrics              exit   0      0.6s  sample: ['鈥淎', 'labeling,鈥�', '鈥淥n', 'predictors,鈥�', '鈥淎', 'protocols,鈥�', '鈥淩eproducibility', 'corpus,鈥�', '鈥淐onfidence', 'recall,鈥�']
+  [PASS] verify_column_order                exit   0      0.5s  L/R switches: 2 over 42 paragraphs
+
+-- extract -----------------------------------------------------------------------------------------
+  [PASS] spike_extract                      exit   0      1.3s  [PASS] zip bomb rejected: archive expands 1029x to 220 MiB
+
+-- ocr ---------------------------------------------------------------------------------------------
+  [PASS] spike_ocr                          exit   0    106.3s  rapidocr     scan_e_grayscale           0.0334  PASS
+  [PASS] check_confidence_signal            exit   0    400.0s  (50% would mean the signal is worthless)
+  [PASS] check_dpi_reproducible             exit   0    119.0s  VERDICT: the differences across resolutions are reproducible; render
+
+-- storage -----------------------------------------------------------------------------------------
+  [PASS] smoke_storage                      exit   0      1.0s  SMOKE OK
+
+-- environment -------------------------------------------------------------------------------------
+  [PASS] env_inventory                      exit   0      0.5s  PyMuPDF: Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License
+
+-- contract ----------------------------------------------------------------------------------------
+  [PASS] gen_openapi                        exit   0      2.2s  GET                          /health
+  [PASS] check_openapi                      exit   0      0.2s  PASS: D:\transEXT\research-reader\packages\contracts\openapi.json
+
+-- evidence ----------------------------------------------------------------------------------------
+  [PASS] evidence_parse                     exit   0      1.9s  reference    1
+  [PASS] evidence_worker                    exit   0      2.0s  units         total=0 done=0 failed=0 skipped=0
+  [PASS] evidence_translation               exit   0      1.9s  skipped (not body)  : 3
+
+-- product -----------------------------------------------------------------------------------------
+  [PASS] verify_frontend_contract           exit   0      2.8s  FRONTEND CONTRACT: PASS - every field app.js reads is present in the real payload
+  [PASS] verify_overlay_alignment           exit   0     13.0s  OVERLAY ALIGNMENT: PASS - box coverage tracks page ink (median row r=+0.972 against its mirror's +0.334, median column r=+0.995 against +0.356) over 18 text pag
+  [PASS] verify_live_acceptance             exit   0     11.5s  [PASS] clearing the panel settings restores the refusal  -- HTTP 200
+  [PASS] verify_checks_can_fail             exit   0     31.9s  all 7 checks fail when their defect is reintroduced
+
+-- perf --------------------------------------------------------------------------------------------
+  [PASS] perf_harness                       exit   0    166.1s  stage                     n    p50 ms    p95 ms    max ms  fail
+
+====================================================================================================
+28/28 entry points PASS in 15.5 minutes
+====================================================================================================
+
+per-entry data kept under C:\Users\1\AppData\Local\Temp\rr-verify-all-hdffipxa

@@ -1,0 +1,25 @@
+  pdf_a_single_column                 33/ 33  1.000
+  pdf_b_two_column                    34/ 34  1.000
+  pdf_c_formula_footnote              35/ 35  1.000
+  pdf_d_mixed_language                28/ 28  1.000
+  pdf_e_hyphenation                   27/ 27  1.000
+  pdf_f_two_column_wide_table         32/ 32  1.000
+  pdf_g_deep_sections                 26/ 26  1.000
+  pdf_h_no_references                 20/ 20  1.000
+
+OVERALL block-type accuracy: 235/235 = 1.0000
+  (132 structural blocks skipped: no table/figure extraction exists, so they cannot be classified and are not errors of this classifier)
+  (10 matches excluded: the block's text is part of a longer paragraph, so the pipeline merged blocks and comparing types would measure segmentation)
+  (1 matches excluded: block and paragraph are different content, which is a matcher error and not the classifier's)
+
+PER TRUE TYPE
+  paragraph    126/126  1.000
+  heading       78/ 78  1.000
+  title          8/  8  1.000
+  author         8/  8  1.000
+  abstract       7/  7  1.000
+  caption        4/  4  1.000
+  formula        2/  2  1.000
+  footnote       2/  2  1.000
+
+TOP CONFUSIONS (true -> predicted)

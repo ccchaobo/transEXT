@@ -1,0 +1,26 @@
+{
+  "fixture": "self-authored PDF",
+  "passed": true,
+  "title": "A controlled parsing experiment",
+  "hints": [
+    {
+      "kind": "abstract",
+      "text": "This artificial paper evaluates an arithmetic mean of two inputs.",
+      "pages": [
+        0
+      ]
+    },
+    {
+      "kind": "abstract",
+      "text": "The score is S=(x+y)/2. The text is only a software test fixture.",
+      "pages": [
+        0
+      ]
+    },
+    {
+      "kind": "reference",
+      "text": "A. Example. A fictional study. Test Journal, 2025.",
+      "pages": []
+    }
+  ]
+}

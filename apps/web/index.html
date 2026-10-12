@@ -5,10 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>科研文献对照阅读器</title>
 <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/ui.css">
+  <link rel="stylesheet" href="/library.css">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#/" id="brand">科研文献对照阅读器</a>
+  <a class="brand" href="#/" id="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5C8 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-5-1-9 1Zm0 0v15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="brand-copy">科研文献对照阅读器<span class="brand-subtitle">阅读 · 翻译 · AI 答疑</span></span>
+  </a>
   <nav class="topbar-actions">
     <span id="translation-badge" class="badge badge-unknown" title="翻译服务状态">翻译：检查中</span>
     <button id="settings-button" class="button" type="button" title="配置翻译服务">翻译设置</button>
@@ -24,9 +29,9 @@
         <option value="ru">Русский</option>
       </select>
     </label>
-    <label class="button file-button">
+    <label class="button file-button" tabindex="0" role="button" aria-label="导入文献">
       导入文献
-      <input type="file" id="file-input" accept=".pdf,.docx,.png,.jpg,.jpeg" hidden>
+      <input type="file" id="file-input" accept=".pdf,.docx,.png,.jpg,.jpeg" multiple hidden>
     </label>
   </nav>
 </header>
@@ -50,6 +55,14 @@
     <button id="settings-clear" class="button danger" type="button">清除面板设置</button>
     <button id="settings-close" class="button" type="button">关闭</button>
   </div>
+</dialog>
+
+<dialog id="overlay-block-dialog" class="settings-dialog full-block-dialog">
+  <div class="full-block-head">
+    <h2>段落对照</h2>
+    <button id="overlay-block-close" class="button" type="button">关闭</button>
+  </div>
+  <div id="overlay-block-content"></div>
 </dialog>
 
 <main id="view" class="view"></main>

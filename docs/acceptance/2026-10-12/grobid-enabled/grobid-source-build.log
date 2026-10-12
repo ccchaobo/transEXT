@@ -1,0 +1,117 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            BuildKit is currently disabled; enable it by removing the DOCKER_BUILDKIT=0
+            environment-variable.
+
+Sending build context to Docker daemon  944.9MB
+
+Step 1/20 : ARG JAVA_BASE_IMAGE=eclipse-temurin:21-jdk-noble
+Step 2/20 : FROM ${JAVA_BASE_IMAGE} AS builder
+ ---> 633840537d1c
+Step 3/20 : USER root
+ ---> Using cache
+ ---> 31e6b1b94221
+Step 4/20 : RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org/debian|https://repo.huaweicloud.com/debian|g' /etc/apt/sources.list.d/debian.sources; else sed -i 's|http://archive.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g;s|http://security.ubuntu.com/ubuntu|https://repo.huaweicloud.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources; fi     && apt-get update     && apt-get install -y --no-install-recommends openjdk-21-jdk-headless unzip git     && apt-get clean
+ ---> Using cache
+ ---> 12e7fb1b3d48
+Step 5/20 : ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ ---> Using cache
+ ---> 8927c33c1efe
+Step 6/20 : ENV PATH=${JAVA_HOME}/bin:${PATH}
+ ---> Using cache
+ ---> 96c62cbe0b42
+Step 7/20 : WORKDIR /opt/grobid-source
+ ---> Using cache
+ ---> 43f597d7a7ed
+Step 8/20 : COPY . .
+ ---> 8b0451622ab4
+Step 9/20 : RUN sh build-tools/gradle-9.6.1/bin/gradle assemble --no-daemon --max-workers=1 --init-script source-mirrors.gradle
+ ---> Running in a33a0b13c20a
+Welcome to Gradle 9.6.1!
+
+Here are the highlights of this release:
+ - Improved Configuration Cache hit rates
+ - Additional CLI rendering options
+ - Important project hierarchy lookup deprecations
+
+For more details see https://docs.gradle.org/9.6.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.6.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+Checking git under /opt/grobid-source
+Current Git revision: 
+
+> Task :assemble UP-TO-DATE
+> Task :grobid-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :grobid-core:compileKotlin
+w: file:///opt/grobid-source/grobid-core/src/main/kotlin/org/grobid/core/utilities/LabelUtils.kt:85:33 'static fun equals(p0: CharSequence!, p1: CharSequence!): Boolean' is deprecated. Deprecated in Java.
+w: file:///opt/grobid-source/grobid-core/src/main/kotlin/org/grobid/core/utilities/LabelUtils.kt:89:33 'static fun equals(p0: CharSequence!, p1: CharSequence!): Boolean' is deprecated. Deprecated in Java.
+
+> Task :grobid-core:compileJava
+[91mNote: Some input files use or override a deprecated API.[0m[91m
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+[0m
+> Task :grobid-core:processResources
+> Task :grobid-core:classes
+> Task :grobid-core:jar
+> Task :grobid-core:shadowJar
+> Task :grobid-core:sourceJar
+> Task :grobid-core:assemble
+> Task :grobid-home:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :grobid-home:compileKotlin NO-SOURCE
+> Task :grobid-home:compileJava NO-SOURCE
+> Task :grobid-home:processResources NO-SOURCE
+> Task :grobid-home:classes UP-TO-DATE
+> Task :grobid-home:jar
+> Task :grobid-home:packageGrobidHome
+> Task :grobid-home:sourceJar
+> Task :grobid-home:assemble
+> Task :grobid-service:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :grobid-trainer:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :grobid-trainer:compileKotlin NO-SOURCE
+
+> Task :grobid-trainer:compileJava
+[91mNote: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+[0m[91mNote: /opt/grobid-source/grobid-trainer/src/main/java/org/grobid/trainer/evaluation/EvaluationDOIMatching.java uses unchecked or unsafe operations.[0m[91m
+Note: Recompile with -Xlint:unchecked for details.
+[0m
+> Task :grobid-trainer:processResources
+> Task :grobid-trainer:classes
+> Task :grobid-trainer:jar
+> Task :grobid-service:compileKotlin NO-SOURCE
+
+> Task :grobid-service:compileJava[91mNote: /opt/grobid-source/grobid-service/src/main/java/org/grobid/service/process/GrobidRestProcessTraining.java uses or overrides a deprecated API.
+[0m[91mNote: Recompile with -Xlint:deprecation for details.
+[0m
+
+> Task :grobid-service:processResources
+> Task :grobid-service:classes
+> Task :grobid-service:jar
+> Task :grobid-service:startScripts
+> Task :grobid-service:distTar SKIPPED
+> Task :grobid-service:distZip
+> Task :grobid-service:shadowJar
+> Task :grobid-service:startShadowScripts
+> Task :grobid-service:shadowDistTar SKIPPED
+> Task :grobid-service:shadowDistZip SKIPPED
+> Task :grobid-service:sourceJar
+> Task :grobid-service:assemble
+> Task :grobid-trainer:shadowJar
+> Task :grobid-trainer:sourceJar
+> Task :grobid-trainer:assemble
+
+[Incubating] Problems report is available at: file:///opt/grobid-source/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 6m 26s
+22 actionable tasks: 22 executed
+unexpected EOF

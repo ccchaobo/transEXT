@@ -1,0 +1,3023 @@
+{
+  "document": "doc_7f670dd5a6dd4b95a3ee",
+  "filename": "磁共振成像-有代码.pdf",
+  "revision": "rev_0185ae80ba694595a4602248",
+  "original_hash_matches": true,
+  "translation_status": "succeeded",
+  "pages": [
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_300b56218e36d0a499d2",
+          "left": 0.0713548,
+          "top": 0.0706448,
+          "width": 0.852685,
+          "height": 0.0660591,
+          "pixels": 766,
+          "font": 28.4042,
+          "pixelHeight": 81,
+          "overflowing": false
+        },
+        {
+          "id": "blk_19ba8f0a3c38f80e159e",
+          "left": 0.0713548,
+          "top": 0.138704,
+          "width": 0.848709,
+          "height": 0.014830300000000001,
+          "pixels": 762,
+          "font": 15.9754,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_05d96b21023068761304",
+          "left": 0.0713548,
+          "top": 0.153534,
+          "width": 0.8127719999999999,
+          "height": 0.0347233,
+          "pixels": 730,
+          "font": 18.7254,
+          "pixelHeight": 43,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7f46b283c1b16bcfc416",
+          "left": 0.0713548,
+          "top": 0.25711,
+          "width": 0.288056,
+          "height": 0.017386,
+          "pixels": 259,
+          "font": 16.4387,
+          "pixelHeight": 21,
+          "overflowing": false
+        },
+        {
+          "id": "blk_e77d96b1b6d4277eac88",
+          "left": 0.0713548,
+          "top": 0.28384899999999996,
+          "width": 0.288056,
+          "height": 0.0108486,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_25d6968109b3b06c9d6a",
+          "left": 0.0713548,
+          "top": 0.29669799999999996,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8395a16e71d3efb5cd86",
+          "left": 0.0713548,
+          "top": 0.309442,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_737b70c84297ce069fea",
+          "left": 0.0713548,
+          "top": 0.322185,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_21124bce192351117401",
+          "left": 0.0713548,
+          "top": 0.33493,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b45248c9719c7d61a28e",
+          "left": 0.0713548,
+          "top": 0.347673,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b6a0fb96b0bd53d32521",
+          "left": 0.0713548,
+          "top": 0.360417,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 259,
+          "font": 11.6503,
+          "pixelHeight": 13,
+          "overflowing": false
+        },
+        {
+          "id": "blk_efb67c22aac79fbd7e1c",
+          "left": 0.0713548,
+          "top": 0.37316000000000005,
+          "width": 0.288056,
+          "height": 0.0287316,
+          "pixels": 259,
+          "font": 13.1503,
+          "pixelHeight": 35,
+          "overflowing": false
+        },
+        {
+          "id": "blk_3898d50f6f62e3be98b7",
+          "left": 0.371411,
+          "top": 0.258451,
+          "width": 0.557239,
+          "height": 0.0160449,
+          "pixels": 500,
+          "font": 16.4387,
+          "pixelHeight": 20,
+          "overflowing": false
+        },
+        {
+          "id": "blk_643facd10b1a10e2dd8a",
+          "left": 0.371411,
+          "top": 0.28395499999999996,
+          "width": 0.557239,
+          "height": 0.269428,
+          "pixels": 500,
+          "font": 13.1503,
+          "pixelHeight": 330,
+          "overflowing": false
+        },
+        {
+          "id": "blk_835a1456ed8c0dc8ce84",
+          "left": 0.0713548,
+          "top": 0.588829,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0dd19405bbe51cefd2f2",
+          "left": 0.0713548,
+          "top": 0.612594,
+          "width": 0.8572839999999999,
+          "height": 0.161564,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 198,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.1490562974200174e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 0,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_af3bf611936fbd9dfb17",
+          "left": 0.0713548,
+          "top": 0.0757941,
+          "width": 0.632863,
+          "height": 0.030194299999999997,
+          "pixels": 568,
+          "font": 16.4387,
+          "pixelHeight": 37,
+          "overflowing": false
+        },
+        {
+          "id": "blk_19d85fbbbae090e5a334",
+          "left": 0.0713548,
+          "top": 0.107988,
+          "width": 0.8572839999999999,
+          "height": 0.207266,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 254,
+          "overflowing": false
+        },
+        {
+          "id": "blk_dbc68d43babcc5666fed",
+          "left": 0.0713548,
+          "top": 0.317255,
+          "width": 0.8572839999999999,
+          "height": 0.07848720000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 96,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f6417a00f10b2dcbacf5",
+          "left": 0.0713548,
+          "top": 0.397742,
+          "width": 0.8572839999999999,
+          "height": 0.0707207,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 87,
+          "overflowing": false
+        },
+        {
+          "id": "blk_39dfaa7a22aeb489742a",
+          "left": 0.09423569999999999,
+          "top": 0.470462,
+          "width": 0.8344159999999999,
+          "height": 0.18709199999999998,
+          "pixels": 749,
+          "font": 16.4387,
+          "pixelHeight": 229,
+          "overflowing": false
+        },
+        {
+          "id": "blk_ad21755d4c014327aa06",
+          "left": 0.0713547,
+          "top": 0.659554,
+          "width": 0.857291,
+          "height": 0.207495,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 254,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0985b76c9d2622496a4f",
+          "left": 0.0713548,
+          "top": 0.869049,
+          "width": 0.8572839999999999,
+          "height": 0.0697021,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 85,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.672165234143044e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 1,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_64bcf26deead247a5a84",
+          "left": 0.0713548,
+          "top": 0.0757941,
+          "width": 0.8572839999999999,
+          "height": 0.0462915,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 57,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b73469e306250b3d2938",
+          "left": 0.0713548,
+          "top": 0.124086,
+          "width": 0.8572839999999999,
+          "height": 0.111902,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 137,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f6f2c8b2916270f6b7c6",
+          "left": 0.0713548,
+          "top": 0.244071,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_a5bb1ee54434d7fdd015",
+          "left": 0.0713548,
+          "top": 0.267836,
+          "width": 0.8572839999999999,
+          "height": 0.0758805,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 93,
+          "overflowing": false
+        },
+        {
+          "id": "blk_86bd93baf6c074a5e931",
+          "left": 0.0713548,
+          "top": 0.34571599999999997,
+          "width": 0.8572839999999999,
+          "height": 0.015496099999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_2e5d69be43074f9d66f1",
+          "left": 0.0713548,
+          "top": 0.363213,
+          "width": 0.8572839999999999,
+          "height": 0.30124300000000004,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 369,
+          "overflowing": false
+        },
+        {
+          "id": "blk_2f1968e8b9e2b5db573d",
+          "left": 0.0713548,
+          "top": 0.666456,
+          "width": 0.8572839999999999,
+          "height": 0.015497499999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0510ff28de043cdfc818",
+          "left": 0.0713548,
+          "top": 0.683953,
+          "width": 0.8572839999999999,
+          "height": 0.18773399999999998,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 230,
+          "overflowing": false
+        },
+        {
+          "id": "blk_23dcd89cdb6fbf9b54dd",
+          "left": 0.0713548,
+          "top": 0.8736879999999999,
+          "width": 0.8572839999999999,
+          "height": 0.014982800000000001,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_5c2f807cde5790501373",
+          "left": 0.0713548,
+          "top": 0.89067,
+          "width": 0.8572839999999999,
+          "height": 0.0475129,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 58,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.774334690649251e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 2,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_9941b5f84f733d7a84c4",
+          "left": 0.0713548,
+          "top": 0.0757941,
+          "width": 0.8572839999999999,
+          "height": 0.316228,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 388,
+          "overflowing": false
+        },
+        {
+          "id": "blk_daea92b0e891ab22ba49",
+          "left": 0.0713548,
+          "top": 0.394022,
+          "width": 0.8572839999999999,
+          "height": 0.0149827,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7fca9d20e8dfa98b6ed7",
+          "left": 0.0713548,
+          "top": 0.41100499999999995,
+          "width": 0.8572839999999999,
+          "height": 0.0747673,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 92,
+          "overflowing": false
+        },
+        {
+          "id": "blk_ff59c11bcdf356131ad0",
+          "left": 0.0713548,
+          "top": 0.487772,
+          "width": 0.8572839999999999,
+          "height": 0.0149827,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_738be0318efb0e3beaf9",
+          "left": 0.0713548,
+          "top": 0.504755,
+          "width": 0.8572839999999999,
+          "height": 0.10696199999999999,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 131,
+          "overflowing": false
+        },
+        {
+          "id": "blk_03f3c5287c61e0f15038",
+          "left": 0.0713548,
+          "top": 0.613716,
+          "width": 0.8572839999999999,
+          "height": 0.0149841,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0b97a726bbdf9319f947",
+          "left": 0.0713548,
+          "top": 0.6307,
+          "width": 0.8572839999999999,
+          "height": 0.20275500000000002,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 249,
+          "overflowing": false
+        },
+        {
+          "id": "blk_c1589fb8c7facf1f6c6c",
+          "left": 0.0713548,
+          "top": 0.8354550000000001,
+          "width": 0.8572839999999999,
+          "height": 0.015496099999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7ca00721924902a5bf36",
+          "left": 0.0713548,
+          "top": 0.8529519999999999,
+          "width": 0.8572839999999999,
+          "height": 0.08579919999999999,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 105,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.877621831989032e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 3,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_8c27c13355d3d1786034",
+          "left": 0.0713548,
+          "top": 0.0757941,
+          "width": 0.8572839999999999,
+          "height": 0.30385100000000004,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 373,
+          "overflowing": false
+        },
+        {
+          "id": "blk_9574a7ce3d9167c0d084",
+          "left": 0.0713548,
+          "top": 0.38164499999999996,
+          "width": 0.8572839999999999,
+          "height": 0.0797072,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 98,
+          "overflowing": false
+        },
+        {
+          "id": "blk_fdea6e84f3c7cbaee7bb",
+          "left": 0.0713548,
+          "top": 0.46847,
+          "width": 0.85729,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b95ec27985d4568bd289",
+          "left": 0.0713547,
+          "top": 0.829186,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_d460dc3f01b25610fcf6",
+          "left": 0.0713547,
+          "top": 0.852951,
+          "width": 0.8572839999999999,
+          "height": 0.08579940000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 105,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.251291499945964e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 4,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_e0ee31af3d540e6a8a11",
+          "left": 0.0713548,
+          "top": 0.54512,
+          "width": 0.8572839999999999,
+          "height": 0.0597819,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 73,
+          "overflowing": false
+        },
+        {
+          "id": "blk_6895a9526c1029436695",
+          "left": 0.0713548,
+          "top": 0.6069019999999999,
+          "width": 0.857292,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_fbdc05525cdbb81119ea",
+          "left": 0.0713548,
+          "top": 0.8310590000000001,
+          "width": 0.857288,
+          "height": 0.0151197,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_3bcc250cacf44c8accff",
+          "left": 0.0713547,
+          "top": 0.8481789999999999,
+          "width": 0.857288,
+          "height": 0.090572,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 111,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.879676396285504e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 5,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_569eb0367a6a51193959",
+          "left": 0.0713548,
+          "top": 0.0754164,
+          "width": 0.8572960000000001,
+          "height": 0.025876899999999998,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 32,
+          "overflowing": false
+        },
+        {
+          "id": "blk_1549e0b92cbd46976fb4",
+          "left": 0.0713547,
+          "top": 0.103293,
+          "width": 0.857294,
+          "height": 0.0345118,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 42,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b60febaff0f718505605",
+          "left": 0.0713544,
+          "top": 0.203737,
+          "width": 0.857287,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b4573edb83a3f43142a3",
+          "left": 0.0713544,
+          "top": 0.22123400000000001,
+          "width": 0.857287,
+          "height": 0.107933,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 132,
+          "overflowing": false
+        },
+        {
+          "id": "blk_68f2d904680709c4d145",
+          "left": 0.0713544,
+          "top": 0.329167,
+          "width": 0.8572839999999999,
+          "height": 0.0182139,
+          "pixels": 770,
+          "font": 16.1887,
+          "pixelHeight": 22,
+          "overflowing": false
+        },
+        {
+          "id": "blk_a3e67d1cdef6da0ec00a",
+          "left": 0.0713455,
+          "top": 0.34738100000000005,
+          "width": 0.857299,
+          "height": 0.0967263,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 119,
+          "overflowing": false
+        },
+        {
+          "id": "blk_29edb92ed1454b2db615",
+          "left": 0.0713544,
+          "top": 0.44610700000000003,
+          "width": 0.857297,
+          "height": 0.012800899999999999,
+          "pixels": 770,
+          "font": 14.332,
+          "pixelHeight": 16,
+          "overflowing": false
+        },
+        {
+          "id": "blk_107dbddaf85b2151caf1",
+          "left": 0.0988123,
+          "top": 0.458908,
+          "width": 0.8298390000000001,
+          "height": 0.0160985,
+          "pixels": 745,
+          "font": 16.4387,
+          "pixelHeight": 20,
+          "overflowing": false
+        },
+        {
+          "id": "blk_597fda54a1103daf5bc6",
+          "left": 0.0713545,
+          "top": 0.475006,
+          "width": 0.857295,
+          "height": 0.0160437,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 20,
+          "overflowing": false
+        },
+        {
+          "id": "blk_220fc9ea89a950e68ccd",
+          "left": 0.0713545,
+          "top": 0.49105,
+          "width": 0.857299,
+          "height": 0.0182139,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 22,
+          "overflowing": false
+        },
+        {
+          "id": "blk_5934c137cc9922018c69",
+          "left": 0.0713545,
+          "top": 0.509264,
+          "width": 0.857291,
+          "height": 0.0324994,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 40,
+          "overflowing": false
+        },
+        {
+          "id": "blk_abba97c274a82d076aec",
+          "left": 0.0713545,
+          "top": 0.543763,
+          "width": 0.857293,
+          "height": 0.0300059,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 37,
+          "overflowing": false
+        },
+        {
+          "id": "blk_c331925264cbaaeeadf3",
+          "left": 0.0713545,
+          "top": 0.6101059999999999,
+          "width": 0.857292,
+          "height": 0.014755899999999999,
+          "pixels": 770,
+          "font": 16.082,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_82fed8d9bde5d2c0c430",
+          "left": 0.0713545,
+          "top": 0.7033419999999999,
+          "width": 0.8572960000000001,
+          "height": 0.0516963,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 63,
+          "overflowing": false
+        },
+        {
+          "id": "blk_bd82314bf7131a08d59a",
+          "left": 0.0713548,
+          "top": 0.848959,
+          "width": 0.8572839999999999,
+          "height": 0.015496000000000001,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_a6c296028a6ae2cfe32e",
+          "left": 0.0988127,
+          "top": 0.866455,
+          "width": 0.8298260000000001,
+          "height": 0.0114033,
+          "pixels": 745,
+          "font": 12.6887,
+          "pixelHeight": 14,
+          "overflowing": false
+        },
+        {
+          "id": "blk_1d450b4b21153e0228b5",
+          "left": 0.0713548,
+          "top": 0.877859,
+          "width": 0.857295,
+          "height": 0.0522068,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 64,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.924285133545148e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 6,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_a5ef1f4273a1030c5399",
+          "left": 0.0713548,
+          "top": 0.167022,
+          "width": 0.857297,
+          "height": 0.068304,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 84,
+          "overflowing": false
+        },
+        {
+          "id": "blk_1990f20a8d3241b35996",
+          "left": 0.0713549,
+          "top": 0.298238,
+          "width": 0.857295,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_541eb6d133138c6c6766",
+          "left": 0.0713548,
+          "top": 0.377965,
+          "width": 0.857292,
+          "height": 0.0319768,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 39,
+          "overflowing": false
+        },
+        {
+          "id": "blk_170c834f8ee898bff69d",
+          "left": 0.0713547,
+          "top": 0.423722,
+          "width": 0.857293,
+          "height": 0.0321957,
+          "pixels": 770,
+          "font": 16.1887,
+          "pixelHeight": 39,
+          "overflowing": false
+        },
+        {
+          "id": "blk_ab73d0bdb004cd890d0e",
+          "left": 0.0713547,
+          "top": 0.455917,
+          "width": 0.857287,
+          "height": 0.0160972,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 20,
+          "overflowing": false
+        },
+        {
+          "id": "blk_6f613e45546226f7986b",
+          "left": 0.0713547,
+          "top": 0.472015,
+          "width": 0.8573000000000001,
+          "height": 0.0965843,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 118,
+          "overflowing": false
+        },
+        {
+          "id": "blk_1e6693172bc38d3f3286",
+          "left": 0.0713547,
+          "top": 0.5685990000000001,
+          "width": 0.47592399999999996,
+          "height": 0.0322828,
+          "pixels": 427,
+          "font": 16.4387,
+          "pixelHeight": 40,
+          "overflowing": false
+        },
+        {
+          "id": "blk_fde1af6c718e0e7a6c55",
+          "left": 0.0713547,
+          "top": 0.602882,
+          "width": 0.857288,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_cdaef2b6f975b600f3fd",
+          "left": 0.0713547,
+          "top": 0.620379,
+          "width": 0.857288,
+          "height": 0.127999,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 157,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b1eeca86d2cd82d95fcd",
+          "left": 0.0713547,
+          "top": 0.7535620000000001,
+          "width": 0.8572839999999999,
+          "height": 0.0217667,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8bc775fa92579495fb55",
+          "left": 0.0713547,
+          "top": 0.777329,
+          "width": 0.8572839999999999,
+          "height": 0.08107760000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 99,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8da7813cc33ef7b8c06a",
+          "left": 0.0713548,
+          "top": 0.8662040000000001,
+          "width": 0.857161,
+          "height": 0.043443699999999995,
+          "pixels": 770,
+          "font": 13.1503,
+          "pixelHeight": 53,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.898331857350335e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 7,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_de991c59f0be1eed2a78",
+          "left": 0.0713548,
+          "top": 0.253076,
+          "width": 0.8574930000000001,
+          "height": 0.059583899999999995,
+          "pixels": 770,
+          "font": 14.7936,
+          "pixelHeight": 73,
+          "overflowing": false
+        },
+        {
+          "id": "blk_403e4f42dee2752dcdfe",
+          "left": 0.0713548,
+          "top": 0.326318,
+          "width": 0.85746,
+          "height": 0.0127561,
+          "pixels": 770,
+          "font": 14.2936,
+          "pixelHeight": 16,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b70e1991c2f1ace084ed",
+          "left": 0.0713548,
+          "top": 0.5163139999999999,
+          "width": 0.8572839999999999,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_e9004dd70078a4cad7bf",
+          "left": 0.0713548,
+          "top": 0.533811,
+          "width": 0.8572839999999999,
+          "height": 0.204463,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 251,
+          "overflowing": false
+        },
+        {
+          "id": "blk_4efc7618040981896ece",
+          "left": 0.0713548,
+          "top": 0.740274,
+          "width": 0.8572839999999999,
+          "height": 0.015497499999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f1d2bc050a1bacb9b8e7",
+          "left": 0.0713548,
+          "top": 0.7577710000000001,
+          "width": 0.8572839999999999,
+          "height": 0.123975,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 152,
+          "overflowing": false
+        },
+        {
+          "id": "blk_85004ac3b78c668daa96",
+          "left": 0.0713548,
+          "top": 0.8837470000000001,
+          "width": 0.857294,
+          "height": 0.0151197,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.369305769413856e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 8,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_912bbf7f9016d5506797",
+          "left": 0.0713548,
+          "top": 0.378474,
+          "width": 0.857461,
+          "height": 0.074534,
+          "pixels": 770,
+          "font": 14.7936,
+          "pixelHeight": 91,
+          "overflowing": false
+        },
+        {
+          "id": "blk_44e2be6f0b4eb3c8f137",
+          "left": 0.0713547,
+          "top": 0.473193,
+          "width": 0.857298,
+          "height": 0.159351,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 195,
+          "overflowing": false
+        },
+        {
+          "id": "blk_37d26d1948cf9113d161",
+          "left": 0.0713548,
+          "top": 0.634544,
+          "width": 0.857289,
+          "height": 0.188562,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 231,
+          "overflowing": false
+        },
+        {
+          "id": "blk_6cf7ff81e9b979ffa995",
+          "left": 0.0713548,
+          "top": 0.825106,
+          "width": 0.8572839999999999,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_c49e0ad24af66c7c12b4",
+          "left": 0.0713548,
+          "top": 0.842604,
+          "width": 0.8572839999999999,
+          "height": 0.09580450000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 117,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.6122047792085397e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 9,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_4131c8b1d00b3005ef55",
+          "left": 0.0713548,
+          "top": 0.490375,
+          "width": 0.8572839999999999,
+          "height": 0.175071,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 215,
+          "overflowing": false
+        },
+        {
+          "id": "blk_3c5e1e842049a79b7193",
+          "left": 0.0713548,
+          "top": 0.6674469999999999,
+          "width": 0.8572839999999999,
+          "height": 0.256778,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 315,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.4455071573624707e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 10,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_85faff8af21d318effb0",
+          "left": 0.0713548,
+          "top": 0.7406860000000001,
+          "width": 0.8572839999999999,
+          "height": 0.0919763,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 113,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7c1ac7802d1d985a4dbc",
+          "left": 0.0713548,
+          "top": 0.834662,
+          "width": 0.7866219999999999,
+          "height": 0.015497499999999999,
+          "pixels": 706,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_70f51cf84155aeda413c",
+          "left": 0.0713548,
+          "top": 0.8521599999999999,
+          "width": 0.8572839999999999,
+          "height": 0.086591,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 106,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.361894539422039e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 11,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_5482dbb4939330cc96ce",
+          "left": 0.0713547,
+          "top": 0.6756310000000001,
+          "width": 0.8574769999999999,
+          "height": 0.07434,
+          "pixels": 770,
+          "font": 14.7936,
+          "pixelHeight": 91,
+          "overflowing": false
+        },
+        {
+          "id": "blk_d704f0de410424632c1b",
+          "left": 0.0713547,
+          "top": 0.76771,
+          "width": 0.8572839999999999,
+          "height": 0.127999,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 157,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.681272712219297e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 12,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_a5466796190eface5b11",
+          "left": 0.0713548,
+          "top": 0.523979,
+          "width": 0.8572839999999999,
+          "height": 0.015496099999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_d67be99b4612ec3ef1d4",
+          "left": 0.0713548,
+          "top": 0.541476,
+          "width": 0.8572839999999999,
+          "height": 0.15554,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 191,
+          "overflowing": false
+        },
+        {
+          "id": "blk_001083e2b79094adbae5",
+          "left": 0.0713549,
+          "top": 0.6990149999999999,
+          "width": 0.8572960000000001,
+          "height": 0.014982800000000001,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_213d062458560c26b8d4",
+          "left": 0.0713549,
+          "top": 0.715998,
+          "width": 0.8572960000000001,
+          "height": 0.04595780000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 56,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f4df30b8aae8b9d4f0a5",
+          "left": 0.0713549,
+          "top": 0.761956,
+          "width": 0.649975,
+          "height": 0.018244800000000002,
+          "pixels": 584,
+          "font": 16.4387,
+          "pixelHeight": 22,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f4c7a28a0f2a587fa1d3",
+          "left": 0.0713547,
+          "top": 0.841342,
+          "width": 0.857289,
+          "height": 0.0149841,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_2f8f80248b49d4e95522",
+          "left": 0.0713547,
+          "top": 0.858326,
+          "width": 0.857289,
+          "height": 0.0435977,
+          "pixels": 770,
+          "font": 15.1887,
+          "pixelHeight": 53,
+          "overflowing": false
+        },
+        {
+          "id": "blk_5fd1a9f231ad55359d37",
+          "left": 0.0713547,
+          "top": 0.9019240000000001,
+          "width": 0.857294,
+          "height": 0.0361096,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 44,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.984771556637568e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 13,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_136ed1ef9a593b4c21e5",
+          "left": 0.0713548,
+          "top": 0.34123800000000004,
+          "width": 0.857526,
+          "height": 0.0743413,
+          "pixels": 770,
+          "font": 14.7936,
+          "pixelHeight": 91,
+          "overflowing": false
+        },
+        {
+          "id": "blk_537961399acb477fa602",
+          "left": 0.0713547,
+          "top": 0.43097,
+          "width": 0.857292,
+          "height": 0.0958437,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 118,
+          "overflowing": false
+        },
+        {
+          "id": "blk_543d2e8996b78c898661",
+          "left": 0.0713547,
+          "top": 0.528814,
+          "width": 0.8572839999999999,
+          "height": 0.0149841,
+          "pixels": 770,
+          "font": 16.0103,
+          "pixelHeight": 18,
+          "overflowing": false
+        },
+        {
+          "id": "blk_b6785d67b1bb3252e3ff",
+          "left": 0.0713547,
+          "top": 0.545798,
+          "width": 0.8572839999999999,
+          "height": 0.0274991,
+          "pixels": 770,
+          "font": 14.6887,
+          "pixelHeight": 34,
+          "overflowing": false
+        },
+        {
+          "id": "blk_44fbfb769529d969686a",
+          "left": 0.0713547,
+          "top": 0.5732970000000001,
+          "width": 0.857288,
+          "height": 0.161063,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 197,
+          "overflowing": false
+        },
+        {
+          "id": "blk_5aa20f3e853f73abae85",
+          "left": 0.0713547,
+          "top": 0.7363599999999999,
+          "width": 0.8572839999999999,
+          "height": 0.015496099999999999,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_6be0d1022523d5e55f2c",
+          "left": 0.0713547,
+          "top": 0.753856,
+          "width": 0.8572839999999999,
+          "height": 0.142877,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 175,
+          "overflowing": false
+        },
+        {
+          "id": "blk_a324545dcb53d860e32f",
+          "left": 0.0713547,
+          "top": 0.898733,
+          "width": 0.8572839999999999,
+          "height": 0.0400178,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 49,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.5570947454210966e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 14,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_29bb4c1d07b8c2a9f7e6",
+          "left": 0.0713549,
+          "top": 0.22067,
+          "width": 0.8572839999999999,
+          "height": 0.127999,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 157,
+          "overflowing": false
+        },
+        {
+          "id": "blk_6e566244289f5c61c0b2",
+          "left": 0.0713549,
+          "top": 0.35675199999999996,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_ff97ba74a40fca99b654",
+          "left": 0.0713549,
+          "top": 0.380518,
+          "width": 0.8572839999999999,
+          "height": 0.0945843,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 116,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f1ca0fc037a95d76b2e3",
+          "left": 0.0713549,
+          "top": 0.477102,
+          "width": 0.857287,
+          "height": 0.175071,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 215,
+          "overflowing": false
+        },
+        {
+          "id": "blk_011183feda3ca8e872b6",
+          "left": 0.0713549,
+          "top": 0.654173,
+          "width": 0.8572839999999999,
+          "height": 0.158974,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 195,
+          "overflowing": false
+        },
+        {
+          "id": "blk_079caead07fd67b8a844",
+          "left": 0.0713549,
+          "top": 0.815148,
+          "width": 0.8572839999999999,
+          "height": 0.111902,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 137,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.630465763044711e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 15,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_53fbdcf20c2508006c10",
+          "left": 0.0713548,
+          "top": 0.0775161,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_ed1319e018c05eba90d3",
+          "left": 0.0713548,
+          "top": 0.101282,
+          "width": 0.8572839999999999,
+          "height": 0.144096,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 177,
+          "overflowing": false
+        },
+        {
+          "id": "blk_2e0af73bd230f9932f81",
+          "left": 0.0713548,
+          "top": 0.252105,
+          "width": 0.8573059999999999,
+          "height": 0.0217667,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_29b5f73ca2c04eb8a629",
+          "left": 0.0713548,
+          "top": 0.275872,
+          "width": 0.8573059999999999,
+          "height": 0.0800062,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 98,
+          "overflowing": false
+        },
+        {
+          "id": "blk_51e0e49eda59c88cf414",
+          "left": 0.0713548,
+          "top": 0.362361,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_192e0888d41f9fcdd82c",
+          "left": 0.0713548,
+          "top": 0.38612699999999994,
+          "width": 0.8572839999999999,
+          "height": 0.0783552,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 96,
+          "overflowing": false
+        },
+        {
+          "id": "blk_536a19058ead83495d19",
+          "left": 0.0713548,
+          "top": 0.466482,
+          "width": 0.8572839999999999,
+          "height": 0.07848720000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 96,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8e0d0cd7b0521faaec2d",
+          "left": 0.0713548,
+          "top": 0.546969,
+          "width": 0.8572839999999999,
+          "height": 0.207266,
+          "pixels": 770,
+          "font": 16.1887,
+          "pixelHeight": 254,
+          "overflowing": false
+        },
+        {
+          "id": "blk_d394c75ee06fa8d3a973",
+          "left": 0.0713548,
+          "top": 0.7562350000000001,
+          "width": 0.8572839999999999,
+          "height": 0.182516,
+          "pixels": 770,
+          "font": 15.6887,
+          "pixelHeight": 224,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.606156137065831e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 16,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_f32362d198b543f38c48",
+          "left": 0.0713548,
+          "top": 0.0756621,
+          "width": 0.8572839999999999,
+          "height": 0.079706,
+          "pixels": 770,
+          "font": 14.9387,
+          "pixelHeight": 98,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7f7fd2cdfe97fb6200af",
+          "left": 0.0713548,
+          "top": 0.163442,
+          "width": 0.857291,
+          "height": 0.0215367,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 26,
+          "overflowing": false
+        },
+        {
+          "id": "blk_08c991c5bf73cb716d93",
+          "left": 0.0713548,
+          "top": 0.186979,
+          "width": 0.857291,
+          "height": 0.0638389,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 78,
+          "overflowing": false
+        },
+        {
+          "id": "blk_1d913522acdacf36995b",
+          "left": 0.0713548,
+          "top": 0.258926,
+          "width": 0.857291,
+          "height": 0.0211111,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 26,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.666644203814684e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 17,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_df74ab28a8237b5e7874",
+          "left": 0.0713548,
+          "top": 0.785458,
+          "width": 0.848369,
+          "height": 0.0217654,
+          "pixels": 762,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7292a4c90c29be04fc73",
+          "left": 0.0988127,
+          "top": 0.8092239999999999,
+          "width": 0.820912,
+          "height": 0.0275876,
+          "pixels": 737,
+          "font": 16.4387,
+          "pixelHeight": 34,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0405250119ba268ed346",
+          "left": 0.0713548,
+          "top": 0.8388110000000001,
+          "width": 0.8572839999999999,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f0e6738a8dbdef1116b2",
+          "left": 0.0988127,
+          "top": 0.856309,
+          "width": 0.8298260000000001,
+          "height": 0.011402,
+          "pixels": 745,
+          "font": 12.6887,
+          "pixelHeight": 14,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8c656e8acf54ca751d6a",
+          "left": 0.0713547,
+          "top": 0.867711,
+          "width": 0.857291,
+          "height": 0.07055600000000001,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 87,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 3.9583103905727057e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 18,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_84a12d7d9ae3cd8e2613",
+          "left": 0.0713548,
+          "top": 0.0745285,
+          "width": 0.857293,
+          "height": 0.0154974,
+          "pixels": 770,
+          "font": 16.832,
+          "pixelHeight": 19,
+          "overflowing": false
+        },
+        {
+          "id": "blk_eda81a3cce8bb223c624",
+          "left": 0.0713548,
+          "top": 0.09202590000000001,
+          "width": 0.857293,
+          "height": 0.0640111,
+          "pixels": 770,
+          "font": 16.1887,
+          "pixelHeight": 78,
+          "overflowing": false
+        },
+        {
+          "id": "blk_86902fb8dcacb03c1758",
+          "left": 0.0713547,
+          "top": 0.156037,
+          "width": 0.857286,
+          "height": 0.0117798,
+          "pixels": 770,
+          "font": 12.6887,
+          "pixelHeight": 14,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f599595ff547a881b745",
+          "left": 0.0713547,
+          "top": 0.167817,
+          "width": 0.857286,
+          "height": 0.0522081,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 64,
+          "overflowing": false
+        },
+        {
+          "id": "blk_0674398836d0e207bf93",
+          "left": 0.0713547,
+          "top": 0.227017,
+          "width": 0.857285,
+          "height": 0.0216335,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_7c809a7361a6ebce30a9",
+          "left": 0.0713548,
+          "top": 0.638327,
+          "width": 0.85745,
+          "height": 0.0448292,
+          "pixels": 770,
+          "font": 14.7936,
+          "pixelHeight": 55,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8a084f0756e7087d31d0",
+          "left": 0.0713548,
+          "top": 0.7144159999999999,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_f0ca6593a61fac71ad0f",
+          "left": 0.0713548,
+          "top": 0.738182,
+          "width": 0.8572839999999999,
+          "height": 0.0797072,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 98,
+          "overflowing": false
+        },
+        {
+          "id": "blk_cfc76ea4c5df243f1271",
+          "left": 0.0713548,
+          "top": 0.824908,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 770,
+          "font": 19.7254,
+          "pixelHeight": 27,
+          "overflowing": false
+        },
+        {
+          "id": "blk_8adee746da3bc1c50b4c",
+          "left": 0.0713548,
+          "top": 0.848674,
+          "width": 0.8572839999999999,
+          "height": 0.0481571,
+          "pixels": 770,
+          "font": 16.1887,
+          "pixelHeight": 59,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 4.388257087706293e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 19,
+      "aligned": true
+    },
+    {
+      "boxes": [
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        },
+        {
+          "w": 898,
+          "h": 1226,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_025f6dac70ffbe0472b2",
+          "left": 0.0713548,
+          "top": 0.339954,
+          "width": 0.857294,
+          "height": 0.0639865,
+          "pixels": 770,
+          "font": 16.4387,
+          "pixelHeight": 78,
+          "overflowing": false
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "graphic_collisions": [],
+      "coordinate_error": 1.0856984133944536e-07,
+      "narrow_prose": [],
+      "unusable_frames": [],
+      "index": 20,
+      "aligned": true
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "page-01-110.png",
+    "page-03-110.png",
+    "page-05-110.png",
+    "page-09-110.png",
+    "page-11-110.png",
+    "page-15-110.png",
+    "page-21-110.png"
+  ],
+  "browser": "154.0.8037.98",
+  "responsive": [
+    {
+      "boxes": [
+        {
+          "w": 574,
+          "h": 784,
+          "top": 172.03125
+        },
+        {
+          "w": 574,
+          "h": 784,
+          "top": 172.03125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_300b56218e36d0a499d2",
+          "left": 0.0713548,
+          "top": 0.0706448,
+          "width": 0.852685,
+          "height": 0.0660591,
+          "pixels": 489,
+          "font": 18.1559,
+          "pixelHeight": 52,
+          "overflowing": false,
+          "text": "大脑潜在进展：通过潜在扩散在3D脑MRI上实现基于个体的时空疾病进展"
+        },
+        {
+          "id": "blk_19ba8f0a3c38f80e159e",
+          "left": 0.0713548,
+          "top": 0.138704,
+          "width": 0.848709,
+          "height": 0.014830300000000001,
+          "pixels": 487,
+          "font": 10.8584,
+          "pixelHeight": 12,
+          "overflowing": false,
+          "text": "Lemuel Puglisia,∗, Daniel C. Alexanderb, 代表阿尔茨海默病神经影像学倡议组织1,"
+        },
+        {
+          "id": "blk_05d96b21023068761304",
+          "left": 0.0713548,
+          "top": 0.153534,
+          "width": 0.8127719999999999,
+          "height": 0.0347233,
+          "pixels": 467,
+          "font": 11.8584,
+          "pixelHeight": 27,
+          "overflowing": false,
+          "text": "the Australian Imaging Biomarkers and Lifestyle flagship study of aging2和Daniele Ravìc"
+        },
+        {
+          "id": "blk_7f46b283c1b16bcfc416",
+          "left": 0.0713548,
+          "top": 0.25711,
+          "width": 0.288056,
+          "height": 0.017386,
+          "pixels": 165,
+          "font": 10.5076,
+          "pixelHeight": 14,
+          "overflowing": false,
+          "text": "文章信息"
+        },
+        {
+          "id": "blk_e77d96b1b6d4277eac88",
+          "left": 0.0713548,
+          "top": 0.28384899999999996,
+          "width": 0.288056,
+          "height": 0.0108486,
+          "pixels": 165,
+          "font": 8.15563,
+          "pixelHeight": 9,
+          "overflowing": false,
+          "text": "关键词："
+        },
+        {
+          "id": "blk_25d6968109b3b06c9d6a",
+          "left": 0.0713548,
+          "top": 0.29669799999999996,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "疾病进展"
+        },
+        {
+          "id": "blk_8395a16e71d3efb5cd86",
+          "left": 0.0713548,
+          "top": 0.309442,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "时空模型"
+        },
+        {
+          "id": "blk_737b70c84297ce069fea",
+          "left": 0.0713548,
+          "top": 0.322185,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "生成模型"
+        },
+        {
+          "id": "blk_21124bce192351117401",
+          "left": 0.0713548,
+          "top": 0.33493,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "扩散模型"
+        },
+        {
+          "id": "blk_b45248c9719c7d61a28e",
+          "left": 0.0713548,
+          "top": 0.347673,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "脑部磁共振成像"
+        },
+        {
+          "id": "blk_b6a0fb96b0bd53d32521",
+          "left": 0.0713548,
+          "top": 0.360417,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 165,
+          "font": 7.65563,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "阿尔茨海默病"
+        },
+        {
+          "id": "blk_efb67c22aac79fbd7e1c",
+          "left": 0.0713548,
+          "top": 0.37316000000000005,
+          "width": 0.288056,
+          "height": 0.0287316,
+          "pixels": 165,
+          "font": 8.40563,
+          "pixelHeight": 23,
+          "overflowing": false,
+          "text": "脑潜在进展"
+        },
+        {
+          "id": "blk_3898d50f6f62e3be98b7",
+          "left": 0.371411,
+          "top": 0.258451,
+          "width": 0.557239,
+          "height": 0.0160449,
+          "pixels": 320,
+          "font": 10.5076,
+          "pixelHeight": 13,
+          "overflowing": false,
+          "text": "摘 要"
+        },
+        {
+          "id": "blk_643facd10b1a10e2dd8a",
+          "left": 0.371411,
+          "top": 0.28395499999999996,
+          "width": 0.557239,
+          "height": 0.269428,
+          "pixels": 320,
+          "font": 8.40563,
+          "pixelHeight": 211,
+          "overflowing": false,
+          "text": "纵向磁共振成像(MRI)数据集的日益普及促进了人工智能(AI)驱动的疾病进展建模，使得预测个体患者未来的医学扫描成为可能。然而，尽管AI取得了显著进步，当前方法仍面临挑战，包括实现患者特异性个体化、确保时空一致性、高效利用纵向数据以及管理3D扫描的大量内存需求。为了应对这些挑战，我们提出了Brain Latent Progression (BrLP)，一种新颖的时空模型，旨在预测3D脑部MRI中的个体水平疾病进展。BrLP的关键贡献有四个方面：(i) 它在一个小的潜在空间中运行，减轻了高维成像数据带来的计算挑战；(ii) 它显式地整合了受试者元数据以增强预测的个体化；(iii) 它通过一个辅助模型结合了疾病动态的先验知识，促进了纵向数据的整合；(iv) 它引入了潜在平均稳定(LAS)算法，该算法 (a) 在推理时强制预测进展的时空一致性，并且 (b) 允许我们在全局和体素级别推导出预测的不确定性度量。我们在来自2,805名受试者的11,730个T1加权(T1w)脑部MRI上训练和评估BrLP，并在包含来自962名受试者的2,257个MRI的外部测试集上验证其泛化能力。我们的实验将BrLP生成的MRI扫描与真实的随访MRI进行比较，展示了与现有方法相比的最先进准确性。代码公开可用，网址为：https://github.com/ LemuelPuglisi/BrLP."
+        },
+        {
+          "id": "blk_835a1456ed8c0dc8ce84",
+          "left": 0.0713548,
+          "top": 0.588829,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 492,
+          "font": 12.6084,
+          "pixelHeight": 17,
+          "overflowing": false,
+          "text": "1. 引言"
+        },
+        {
+          "id": "blk_0dd19405bbe51cefd2f2",
+          "left": 0.0713548,
+          "top": 0.612594,
+          "width": 0.8572839999999999,
+          "height": 0.161564,
+          "pixels": 492,
+          "font": 10.5076,
+          "pixelHeight": 127,
+          "overflowing": false,
+          "text": "神经退行性疾病是现代医疗保健中最紧迫的挑战之一，因为这些疾病会导致脑功能和生活质量不可逆地下降。迄今为止尚无有效治愈方法，患者和照护者面临长期痛苦，而医疗系统则难以应对不断攀升的成本和资源需求。应对这一危机需要向主动策略转变范式，优先考虑早期干预、精准医学和综合照护。这些疾病以极其复杂著称，表现出与不同分子亚型相关的广泛神经病理学变异（Tijms, Vromen, Mjaavatten, Holstege, Reus, van der Lee, Wesenhagen, Lorenzini, Vermunt, Venkatraghavan et al., 2024）。此外，它们在脑区之间表现不均，通过多种机制并以不同速度进展，反映出其病理生理学的复杂本质（Young, Marinescu, Oxtoby, Bocchetta, Yong, Firth, Cash, Thomas, Dick, Cardoso et al., 2018）。解决这一问题需要开发先进工具，以加深我们对疾病机制的理解，"
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "viewport": 1440
+    },
+    {
+      "boxes": [
+        {
+          "w": 366,
+          "h": 500,
+          "top": 212.578125
+        },
+        {
+          "w": 366,
+          "h": 500,
+          "top": 212.578125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_300b56218e36d0a499d2",
+          "left": 0.0713548,
+          "top": 0.0706448,
+          "width": 0.852685,
+          "height": 0.0660591,
+          "pixels": 312,
+          "font": 11.5768,
+          "pixelHeight": 33,
+          "overflowing": false,
+          "text": "大脑潜在进展：通过潜在扩散在3D脑MRI上实现基于个体的时空疾病进展"
+        },
+        {
+          "id": "blk_19ba8f0a3c38f80e159e",
+          "left": 0.0713548,
+          "top": 0.138704,
+          "width": 0.848709,
+          "height": 0.014830300000000001,
+          "pixels": 311,
+          "font": 6.78953,
+          "pixelHeight": 7,
+          "overflowing": false,
+          "text": "Lemuel Puglisia,∗, Daniel C. Alexanderb, 代表阿尔茨海默病神经影像学倡议组织1,"
+        },
+        {
+          "id": "blk_05d96b21023068761304",
+          "left": 0.0713548,
+          "top": 0.153534,
+          "width": 0.8127719999999999,
+          "height": 0.0347233,
+          "pixels": 297,
+          "font": 7.78953,
+          "pixelHeight": 17,
+          "overflowing": false,
+          "text": "the Australian Imaging Biomarkers and Lifestyle flagship study of aging2和Daniele Ravìc"
+        },
+        {
+          "id": "blk_7f46b283c1b16bcfc416",
+          "left": 0.0713548,
+          "top": 0.25711,
+          "width": 0.288056,
+          "height": 0.017386,
+          "pixels": 105,
+          "font": 6.69994,
+          "pixelHeight": 9,
+          "overflowing": false,
+          "text": "文章信息"
+        },
+        {
+          "id": "blk_e77d96b1b6d4277eac88",
+          "left": 0.0713548,
+          "top": 0.28384899999999996,
+          "width": 0.288056,
+          "height": 0.0108486,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "关键词："
+        },
+        {
+          "id": "blk_25d6968109b3b06c9d6a",
+          "left": 0.0713548,
+          "top": 0.29669799999999996,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "疾病进展"
+        },
+        {
+          "id": "blk_8395a16e71d3efb5cd86",
+          "left": 0.0713548,
+          "top": 0.309442,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "时空模型"
+        },
+        {
+          "id": "blk_737b70c84297ce069fea",
+          "left": 0.0713548,
+          "top": 0.322185,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "生成模型"
+        },
+        {
+          "id": "blk_21124bce192351117401",
+          "left": 0.0713548,
+          "top": 0.33493,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "扩散模型"
+        },
+        {
+          "id": "blk_b45248c9719c7d61a28e",
+          "left": 0.0713548,
+          "top": 0.347673,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "脑部磁共振成像"
+        },
+        {
+          "id": "blk_b6a0fb96b0bd53d32521",
+          "left": 0.0713548,
+          "top": 0.360417,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 105,
+          "font": 5.10969,
+          "pixelHeight": 5,
+          "overflowing": false,
+          "text": "阿尔茨海默病"
+        },
+        {
+          "id": "blk_efb67c22aac79fbd7e1c",
+          "left": 0.0713548,
+          "top": 0.37316000000000005,
+          "width": 0.288056,
+          "height": 0.0287316,
+          "pixels": 105,
+          "font": 5.35969,
+          "pixelHeight": 14,
+          "overflowing": false,
+          "text": "脑潜在进展"
+        },
+        {
+          "id": "blk_3898d50f6f62e3be98b7",
+          "left": 0.371411,
+          "top": 0.258451,
+          "width": 0.557239,
+          "height": 0.0160449,
+          "pixels": 204,
+          "font": 6.69994,
+          "pixelHeight": 8,
+          "overflowing": false,
+          "text": "摘 要"
+        },
+        {
+          "id": "blk_643facd10b1a10e2dd8a",
+          "left": 0.371411,
+          "top": 0.28395499999999996,
+          "width": 0.557239,
+          "height": 0.269428,
+          "pixels": 204,
+          "font": 5.35969,
+          "pixelHeight": 135,
+          "overflowing": false,
+          "text": "纵向磁共振成像(MRI)数据集的日益普及促进了人工智能(AI)驱动的疾病进展建模，使得预测个体患者未来的医学扫描成为可能。然而，尽管AI取得了显著进步，当前方法仍面临挑战，包括实现患者特异性个体化、确保时空一致性、高效利用纵向数据以及管理3D扫描的大量内存需求。为了应对这些挑战，我们提出了Brain Latent Progression (BrLP)，一种新颖的时空模型，旨在预测3D脑部MRI中的个体水平疾病进展。BrLP的关键贡献有四个方面：(i) 它在一个小的潜在空间中运行，减轻了高维成像数据带来的计算挑战；(ii) 它显式地整合了受试者元数据以增强预测的个体化；(iii) 它通过一个辅助模型结合了疾病动态的先验知识，促进了纵向数据的整合；(iv) 它引入了潜在平均稳定(LAS)算法，该算法 (a) 在推理时强制预测进展的时空一致性，并且 (b) 允许我们在全局和体素级别推导出预测的不确定性度量。我们在来自2,805名受试者的11,730个T1加权(T1w)脑部MRI上训练和评估BrLP，并在包含来自962名受试者的2,257个MRI的外部测试集上验证其泛化能力。我们的实验将BrLP生成的MRI扫描与真实的随访MRI进行比较，展示了与现有方法相比的最先进准确性。代码公开可用，网址为：https://github.com/ LemuelPuglisi/BrLP."
+        },
+        {
+          "id": "blk_835a1456ed8c0dc8ce84",
+          "left": 0.0713548,
+          "top": 0.588829,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 314,
+          "font": 8.03953,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "1. 引言"
+        },
+        {
+          "id": "blk_0dd19405bbe51cefd2f2",
+          "left": 0.0713548,
+          "top": 0.612594,
+          "width": 0.8572839999999999,
+          "height": 0.161564,
+          "pixels": 314,
+          "font": 6.69994,
+          "pixelHeight": 81,
+          "overflowing": false,
+          "text": "神经退行性疾病是现代医疗保健中最紧迫的挑战之一，因为这些疾病会导致脑功能和生活质量不可逆地下降。迄今为止尚无有效治愈方法，患者和照护者面临长期痛苦，而医疗系统则难以应对不断攀升的成本和资源需求。应对这一危机需要向主动策略转变范式，优先考虑早期干预、精准医学和综合照护。这些疾病以极其复杂著称，表现出与不同分子亚型相关的广泛神经病理学变异（Tijms, Vromen, Mjaavatten, Holstege, Reus, van der Lee, Wesenhagen, Lorenzini, Vermunt, Venkatraghavan et al., 2024）。此外，它们在脑区之间表现不均，通过多种机制并以不同速度进展，反映出其病理生理学的复杂本质（Young, Marinescu, Oxtoby, Bocchetta, Yong, Firth, Cash, Thomas, Dick, Cardoso et al., 2018）。解决这一问题需要开发先进工具，以加深我们对疾病机制的理解，"
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "viewport": 1024
+    },
+    {
+      "boxes": [
+        {
+          "w": 738,
+          "h": 1008,
+          "top": 210.96875
+        },
+        {
+          "w": 738,
+          "h": 1008,
+          "top": 567.28125
+        }
+      ],
+      "panels": [
+        {
+          "id": "blk_300b56218e36d0a499d2",
+          "left": 0.0713548,
+          "top": 0.0706448,
+          "width": 0.852685,
+          "height": 0.0660591,
+          "pixels": 629,
+          "font": 23.3434,
+          "pixelHeight": 67,
+          "overflowing": false,
+          "text": "大脑潜在进展：通过潜在扩散在3D脑MRI上实现基于个体的时空疾病进展"
+        },
+        {
+          "id": "blk_19ba8f0a3c38f80e159e",
+          "left": 0.0713548,
+          "top": 0.138704,
+          "width": 0.848709,
+          "height": 0.014830300000000001,
+          "pixels": 626,
+          "font": 13.4609,
+          "pixelHeight": 15,
+          "overflowing": false,
+          "text": "Lemuel Puglisia,∗, Daniel C. Alexanderb, 代表阿尔茨海默病神经影像学倡议组织1,"
+        },
+        {
+          "id": "blk_05d96b21023068761304",
+          "left": 0.0713548,
+          "top": 0.153534,
+          "width": 0.8127719999999999,
+          "height": 0.0347233,
+          "pixels": 600,
+          "font": 15.4609,
+          "pixelHeight": 35,
+          "overflowing": false,
+          "text": "the Australian Imaging Biomarkers and Lifestyle flagship study of aging2和Daniele Ravìc"
+        },
+        {
+          "id": "blk_7f46b283c1b16bcfc416",
+          "left": 0.0713548,
+          "top": 0.25711,
+          "width": 0.288056,
+          "height": 0.017386,
+          "pixels": 213,
+          "font": 13.5097,
+          "pixelHeight": 18,
+          "overflowing": false,
+          "text": "文章信息"
+        },
+        {
+          "id": "blk_e77d96b1b6d4277eac88",
+          "left": 0.0713548,
+          "top": 0.28384899999999996,
+          "width": 0.288056,
+          "height": 0.0108486,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "关键词："
+        },
+        {
+          "id": "blk_25d6968109b3b06c9d6a",
+          "left": 0.0713548,
+          "top": 0.29669799999999996,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "疾病进展"
+        },
+        {
+          "id": "blk_8395a16e71d3efb5cd86",
+          "left": 0.0713548,
+          "top": 0.309442,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "时空模型"
+        },
+        {
+          "id": "blk_737b70c84297ce069fea",
+          "left": 0.0713548,
+          "top": 0.322185,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "生成模型"
+        },
+        {
+          "id": "blk_21124bce192351117401",
+          "left": 0.0713548,
+          "top": 0.33493,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "扩散模型"
+        },
+        {
+          "id": "blk_b45248c9719c7d61a28e",
+          "left": 0.0713548,
+          "top": 0.347673,
+          "width": 0.288056,
+          "height": 0.010744400000000001,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "脑部磁共振成像"
+        },
+        {
+          "id": "blk_b6a0fb96b0bd53d32521",
+          "left": 0.0713548,
+          "top": 0.360417,
+          "width": 0.288056,
+          "height": 0.0107431,
+          "pixels": 213,
+          "font": 10.0572,
+          "pixelHeight": 11,
+          "overflowing": false,
+          "text": "阿尔茨海默病"
+        },
+        {
+          "id": "blk_efb67c22aac79fbd7e1c",
+          "left": 0.0713548,
+          "top": 0.37316000000000005,
+          "width": 0.288056,
+          "height": 0.0287316,
+          "pixels": 213,
+          "font": 10.8072,
+          "pixelHeight": 29,
+          "overflowing": false,
+          "text": "脑潜在进展"
+        },
+        {
+          "id": "blk_3898d50f6f62e3be98b7",
+          "left": 0.371411,
+          "top": 0.258451,
+          "width": 0.557239,
+          "height": 0.0160449,
+          "pixels": 411,
+          "font": 13.2597,
+          "pixelHeight": 16,
+          "overflowing": false,
+          "text": "摘 要"
+        },
+        {
+          "id": "blk_643facd10b1a10e2dd8a",
+          "left": 0.371411,
+          "top": 0.28395499999999996,
+          "width": 0.557239,
+          "height": 0.269428,
+          "pixels": 411,
+          "font": 10.8072,
+          "pixelHeight": 272,
+          "overflowing": false,
+          "text": "纵向磁共振成像(MRI)数据集的日益普及促进了人工智能(AI)驱动的疾病进展建模，使得预测个体患者未来的医学扫描成为可能。然而，尽管AI取得了显著进步，当前方法仍面临挑战，包括实现患者特异性个体化、确保时空一致性、高效利用纵向数据以及管理3D扫描的大量内存需求。为了应对这些挑战，我们提出了Brain Latent Progression (BrLP)，一种新颖的时空模型，旨在预测3D脑部MRI中的个体水平疾病进展。BrLP的关键贡献有四个方面：(i) 它在一个小的潜在空间中运行，减轻了高维成像数据带来的计算挑战；(ii) 它显式地整合了受试者元数据以增强预测的个体化；(iii) 它通过一个辅助模型结合了疾病动态的先验知识，促进了纵向数据的整合；(iv) 它引入了潜在平均稳定(LAS)算法，该算法 (a) 在推理时强制预测进展的时空一致性，并且 (b) 允许我们在全局和体素级别推导出预测的不确定性度量。我们在来自2,805名受试者的11,730个T1加权(T1w)脑部MRI上训练和评估BrLP，并在包含来自962名受试者的2,257个MRI的外部测试集上验证其泛化能力。我们的实验将BrLP生成的MRI扫描与真实的随访MRI进行比较，展示了与现有方法相比的最先进准确性。代码公开可用，网址为：https://github.com/ LemuelPuglisi/BrLP."
+        },
+        {
+          "id": "blk_835a1456ed8c0dc8ce84",
+          "left": 0.0713548,
+          "top": 0.588829,
+          "width": 0.8572839999999999,
+          "height": 0.0217654,
+          "pixels": 633,
+          "font": 16.2109,
+          "pixelHeight": 22,
+          "overflowing": false,
+          "text": "1. 引言"
+        },
+        {
+          "id": "blk_0dd19405bbe51cefd2f2",
+          "left": 0.0713548,
+          "top": 0.612594,
+          "width": 0.8572839999999999,
+          "height": 0.161564,
+          "pixels": 633,
+          "font": 13.5097,
+          "pixelHeight": 163,
+          "overflowing": false,
+          "text": "神经退行性疾病是现代医疗保健中最紧迫的挑战之一，因为这些疾病会导致脑功能和生活质量不可逆地下降。迄今为止尚无有效治愈方法，患者和照护者面临长期痛苦，而医疗系统则难以应对不断攀升的成本和资源需求。应对这一危机需要向主动策略转变范式，优先考虑早期干预、精准医学和综合照护。这些疾病以极其复杂著称，表现出与不同分子亚型相关的广泛神经病理学变异（Tijms, Vromen, Mjaavatten, Holstege, Reus, van der Lee, Wesenhagen, Lorenzini, Vermunt, Venkatraghavan et al., 2024）。此外，它们在脑区之间表现不均，通过多种机制并以不同速度进展，反映出其病理生理学的复杂本质（Young, Marinescu, Oxtoby, Bocchetta, Yong, Firth, Cash, Thomas, Dick, Cardoso et al., 2018）。解决这一问题需要开发先进工具，以加深我们对疾病机制的理解，"
+        }
+      ],
+      "collisions": [],
+      "bodyOverflow": false,
+      "viewport": 768
+    }
+  ],
+  "assistant": {
+    "boxes": [
+      {
+        "w": 637,
+        "h": 869,
+        "top": 172.03125
+      },
+      {
+        "w": 637,
+        "h": 869,
+        "top": 172.03125
+      }
+    ],
+    "panels": [
+      {
+        "id": "blk_300b56218e36d0a499d2",
+        "left": 0.0713548,
+        "top": 0.0706448,
+        "width": 0.852685,
+        "height": 0.0660591,
+        "pixels": 543,
+        "font": 20.1487,
+        "pixelHeight": 57,
+        "overflowing": false,
+        "text": "大脑潜在进展：通过潜在扩散在3D脑MRI上实现基于个体的时空疾病进展"
+      },
+      {
+        "id": "blk_19ba8f0a3c38f80e159e",
+        "left": 0.0713548,
+        "top": 0.138704,
+        "width": 0.848709,
+        "height": 0.014830300000000001,
+        "pixels": 540,
+        "font": 11.7423,
+        "pixelHeight": 13,
+        "overflowing": false,
+        "text": "Lemuel Puglisia,∗, Daniel C. Alexanderb, 代表阿尔茨海默病神经影像学倡议组织1,"
+      },
+      {
+        "id": "blk_05d96b21023068761304",
+        "left": 0.0713548,
+        "top": 0.153534,
+        "width": 0.8127719999999999,
+        "height": 0.0347233,
+        "pixels": 517,
+        "font": 13.2423,
+        "pixelHeight": 30,
+        "overflowing": false,
+        "text": "the Australian Imaging Biomarkers and Lifestyle flagship study of aging2和Daniele Ravìc"
+      },
+      {
+        "id": "blk_7f46b283c1b16bcfc416",
+        "left": 0.0713548,
+        "top": 0.25711,
+        "width": 0.288056,
+        "height": 0.017386,
+        "pixels": 183,
+        "font": 11.6608,
+        "pixelHeight": 15,
+        "overflowing": false,
+        "text": "文章信息"
+      },
+      {
+        "id": "blk_e77d96b1b6d4277eac88",
+        "left": 0.0713548,
+        "top": 0.28384899999999996,
+        "width": 0.288056,
+        "height": 0.0108486,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "关键词："
+      },
+      {
+        "id": "blk_25d6968109b3b06c9d6a",
+        "left": 0.0713548,
+        "top": 0.29669799999999996,
+        "width": 0.288056,
+        "height": 0.010744400000000001,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "疾病进展"
+      },
+      {
+        "id": "blk_8395a16e71d3efb5cd86",
+        "left": 0.0713548,
+        "top": 0.309442,
+        "width": 0.288056,
+        "height": 0.0107431,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "时空模型"
+      },
+      {
+        "id": "blk_737b70c84297ce069fea",
+        "left": 0.0713548,
+        "top": 0.322185,
+        "width": 0.288056,
+        "height": 0.010744400000000001,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "生成模型"
+      },
+      {
+        "id": "blk_21124bce192351117401",
+        "left": 0.0713548,
+        "top": 0.33493,
+        "width": 0.288056,
+        "height": 0.0107431,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "扩散模型"
+      },
+      {
+        "id": "blk_b45248c9719c7d61a28e",
+        "left": 0.0713548,
+        "top": 0.347673,
+        "width": 0.288056,
+        "height": 0.010744400000000001,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "脑部磁共振成像"
+      },
+      {
+        "id": "blk_b6a0fb96b0bd53d32521",
+        "left": 0.0713548,
+        "top": 0.360417,
+        "width": 0.288056,
+        "height": 0.0107431,
+        "pixels": 183,
+        "font": 8.5782,
+        "pixelHeight": 9,
+        "overflowing": false,
+        "text": "阿尔茨海默病"
+      },
+      {
+        "id": "blk_efb67c22aac79fbd7e1c",
+        "left": 0.0713548,
+        "top": 0.37316000000000005,
+        "width": 0.288056,
+        "height": 0.0287316,
+        "pixels": 183,
+        "font": 9.3282,
+        "pixelHeight": 25,
+        "overflowing": false,
+        "text": "脑潜在进展"
+      },
+      {
+        "id": "blk_3898d50f6f62e3be98b7",
+        "left": 0.371411,
+        "top": 0.258451,
+        "width": 0.557239,
+        "height": 0.0160449,
+        "pixels": 355,
+        "font": 11.6608,
+        "pixelHeight": 14,
+        "overflowing": false,
+        "text": "摘 要"
+      },
+      {
+        "id": "blk_643facd10b1a10e2dd8a",
+        "left": 0.371411,
+        "top": 0.28395499999999996,
+        "width": 0.557239,
+        "height": 0.269428,
+        "pixels": 355,
+        "font": 9.3282,
+        "pixelHeight": 234,
+        "overflowing": false,
+        "text": "纵向磁共振成像(MRI)数据集的日益普及促进了人工智能(AI)驱动的疾病进展建模，使得预测个体患者未来的医学扫描成为可能。然而，尽管AI取得了显著进步，当前方法仍面临挑战，包括实现患者特异性个体化、确保时空一致性、高效利用纵向数据以及管理3D扫描的大量内存需求。为了应对这些挑战，我们提出了Brain Latent Progression (BrLP)，一种新颖的时空模型，旨在预测3D脑部MRI中的个体水平疾病进展。BrLP的关键贡献有四个方面：(i) 它在一个小的潜在空间中运行，减轻了高维成像数据带来的计算挑战；(ii) 它显式地整合了受试者元数据以增强预测的个体化；(iii) 它通过一个辅助模型结合了疾病动态的先验知识，促进了纵向数据的整合；(iv) 它引入了潜在平均稳定(LAS)算法，该算法 (a) 在推理时强制预测进展的时空一致性，并且 (b) 允许我们在全局和体素级别推导出预测的不确定性度量。我们在来自2,805名受试者的11,730个T1加权(T1w)脑部MRI上训练和评估BrLP，并在包含来自962名受试者的2,257个MRI的外部测试集上验证其泛化能力。我们的实验将BrLP生成的MRI扫描与真实的随访MRI进行比较，展示了与现有方法相比的最先进准确性。代码公开可用，网址为：https://github.com/ LemuelPuglisi/BrLP."
+      },
+      {
+        "id": "blk_835a1456ed8c0dc8ce84",
+        "left": 0.0713548,
+        "top": 0.588829,
+        "width": 0.8572839999999999,
+        "height": 0.0217654,
+        "pixels": 546,
+        "font": 13.9923,
+        "pixelHeight": 19,
+        "overflowing": false,
+        "text": "1. 引言"
+      },
+      {
+        "id": "blk_0dd19405bbe51cefd2f2",
+        "left": 0.0713548,
+        "top": 0.612594,
+        "width": 0.8572839999999999,
+        "height": 0.161564,
+        "pixels": 546,
+        "font": 11.6608,
+        "pixelHeight": 140,
+        "overflowing": false,
+        "text": "神经退行性疾病是现代医疗保健中最紧迫的挑战之一，因为这些疾病会导致脑功能和生活质量不可逆地下降。迄今为止尚无有效治愈方法，患者和照护者面临长期痛苦，而医疗系统则难以应对不断攀升的成本和资源需求。应对这一危机需要向主动策略转变范式，优先考虑早期干预、精准医学和综合照护。这些疾病以极其复杂著称，表现出与不同分子亚型相关的广泛神经病理学变异（Tijms, Vromen, Mjaavatten, Holstege, Reus, van der Lee, Wesenhagen, Lorenzini, Vermunt, Venkatraghavan et al., 2024）。此外，它们在脑区之间表现不均，通过多种机制并以不同速度进展，反映出其病理生理学的复杂本质（Young, Marinescu, Oxtoby, Bocchetta, Yong, Firth, Cash, Thomas, Dick, Cardoso et al., 2018）。解决这一问题需要开发先进工具，以加深我们对疾病机制的理解，"
+      }
+    ],
+    "collisions": [],
+    "bodyOverflow": false
+  },
+  "original_toggle": true,
+  "full_paragraph": true,
+  "single_overlay_panels": 16,
+  "passed": true
+}

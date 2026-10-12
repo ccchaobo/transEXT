@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "documents": 3,
+  "blocks": 349,
+  "data_dir": "D:\\transEXT\\research-reader\\var",
+  "model": "deepseek-v4.1-flash",
+  "configuration_sources": {
+    "base_url": "settings",
+    "api_key": "settings",
+    "model": "settings",
+    "name": "settings",
+    "timeout_seconds": "default",
+    "max_concurrency": "default",
+    "max_attempts": "default",
+    "temperature": "default"
+  },
+  "assistant_route": true,
+  "comparison_mode": true,
+  "ui_styles_available": true
+}

@@ -1,0 +1,17 @@
+{
+  "grobid_version": "0.9.1",
+  "source_commit": "523bb8e97f357e93682dc4eaa6d22faa8b5b93de",
+  "enabled": true,
+  "backend_passed": 702,
+  "browser_passed": 78,
+  "real_paper_matched_blocks": 20,
+  "existing_documents_reparsed": false,
+  "source_sha256": {
+    "adapters/rr_adapters/grobid.py": "1a45201bb06899103302d75bb092c6ab7c7c819f5a1498e972d9ed3bb27601a6",
+    "services/api/rr_services/grobid_assist.py": "cfafa54f8fc255f16997fcd6371464eb89b82aa6ced13de0ff34667a92efc040",
+    "scripts/start_reader.ps1": "e2b30eae2ed3e60ed13b6bcf39160af161df90bb45fe1f5015531ea047644ca1",
+    "scripts/verify_grobid_pipeline.py": "4176affd980b21436a2d6fd681cf729f178f1baa0cb52917031e962489a0aba3",
+    "deploy/Dockerfile.grobid-runtime": "e51036442c8c8846ad71147ad56b970ae71fd5ddaa465a0b6dbe6ddf44f264e3",
+    "deploy/grobid-source.compose.yaml": "253ba23844c1c76486d826cbbfdad2c3249cf7056a4e55e90d04676413a4c8da"
+  }
+}

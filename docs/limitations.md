@@ -98,6 +98,10 @@ document rather than silently dropped:
 
 ## 5. Frontend verification is not automated
 
+**2026-10-11 更新：** 已增加可重复运行的真实浏览器验收脚本，78 项通过，涵盖本机 Edge
+及四种窗口尺寸。以下为此前验证受阻时的历史记录；当前验收范围、截图与剩余边界见
+[使用体验验收](usability-audit.md)。
+
 This environment has no browser automation and no headless browser. There is no
 end-to-end UI test.
 
@@ -762,6 +766,12 @@ short suspension window while a smooth `scrollIntoView` is in flight.
 
 ## 34. The overlay view is unverified, and cannot be verified here
 
+**2026-10-11 更新：** 本节以下为早期验证受阻时的历史记录。现已完成本机 Edge 的真实浏览器
+验收，覆盖视图、双向定位、联动滚动及窄屏布局均有执行证据。现参考普通 PDF 阅读采用固定区域、
+不透明白底、字号调整、原文切换和完整段落查看，不再向下自由延伸或自动回退左右对照。
+具体范围和截图见 [使用体验验收](usability-audit.md)；真实翻译质量与真实设备体验
+仍不在该验收范围内。
+
 The 译文覆盖 view is new code in the browser, and **nothing in this repository has ever executed
 it on a page**. There is no browser automation available in this environment — that is ADR 0016's
 whole reason for server-rendering page images — so the panels have never been seen, the text has
@@ -930,3 +940,16 @@ message, the harness reported `DID NOT FAIL`, and the truth was both wrong and w
 
 
 
+
+
+## 2026-10-12：真实 PDF 排版对齐修复
+
+此前原文＋覆盖译文采用分带展开，增加页高会破坏段落位置对齐，已改为固定页框。原有 11px 字号下限也会在小区域中造成不可读的竖条，现以原文字号及页宽进行实测适配。详见 [排版规范](layout-alignment.md)。
+
+竖排边注保留原样；图表内文字和公式维持原件画面。特别长的译文仍可能需要段落内滚动或打开完整对照。浏览器覆盖视图不提供同版式译文 PDF 导出。此处仅按真实 BrLP 文献进行版面验收，不将 21 页通过泛化为所有 PDF 均可保持排版。
+
+## 2026-10-12：文献管理与 Zotero 联动边界
+
+本地分类、标签、回收站、元信息、笔记、搜索与批量操作已通过隔离数据库和 Chrome 验收。Zotero 组件已在真实本机加载，目录读取、抓取预览及格式导出已验收。未在用户真实 Zotero 库制造测试条目或执行更新/合并/删除，因此写入、附件上传与合并的自动检查属于隔离边界测试，不代表已完成真实库写入验收。
+
+本地分类、阅读状态、译文及标注不自动同步为 Zotero 数据；删除本地文献不删除 Zotero 条目。云同步和 Word 引用仍由原生应用负责，流程结束不等于云端一致或引用成功。最新用户取消 Word 插入验收。组件暂为手动发行，自动升级关闭。详见 [Zotero 集成规范](zotero-integration.md)。

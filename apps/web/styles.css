@@ -36,6 +36,12 @@ body {
   min-height: 100vh;
 }
 
+/* A bounded reading workspace is what gives each pane its own scroll range.
+   The library keeps normal document scrolling when it grows beyond the viewport. */
+body.is-reading { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+.is-reading .topbar, .is-reading .footer, .reader-bar, .pane-head { flex-shrink: 0; }
+.is-reading .view { overflow: hidden; }
+
 .topbar {
   display: flex; align-items: center; gap: 16px;
   padding: 10px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
@@ -56,6 +62,7 @@ body {
   border: 1px solid var(--line); border-radius: 6px;
   background: var(--panel); color: var(--ink); cursor: pointer;
   text-decoration: none;
+  white-space: nowrap;
 }
 .button:hover, .file-button:hover { border-color: var(--accent); color: var(--accent); }
 .button[disabled] { opacity: .45; cursor: not-allowed; }
@@ -118,6 +125,7 @@ body {
 /* The column beside the sidebar: the toolbar, then the panes.  The toolbar is outside `.panes` so
    that a mode which hides a pane cannot hide the control that leaves that mode. */
 .reader-main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.sidebar-toggle { display: none; }
 
 .reader-bar {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -149,8 +157,11 @@ body {
 .outline-l3 { padding-left: 30px; color: var(--muted); }
 
 .panes { flex: 1; display: flex; min-width: 0; min-height: 0; }
-.pane { flex: 1 1 50%; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.pane { flex: 1 1 50%; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .pane + .pane { border-left: 1px solid var(--line); }
+.reader[data-mode="overlay_side_by_side"] .pane + .pane {
+  border-left: 0; box-shadow: inset 1px 0 var(--line);
+}
 .pane-head {
   display: flex; align-items: center; gap: 8px; padding: 8px 12px;
   background: var(--panel); border-bottom: 1px solid var(--line);
@@ -221,36 +232,98 @@ body {
    document: the panels cover the source glyphs, they are never composited into a file, and the
    export does not come from here.
 
-   It is deliberately not a box.  An earlier revision gave each panel a border, a scrollbar and an
-   overflow badge, which turned every paragraph into a small widget and made the page read as a
-   form rather than as a translated page.  What it is now: white behind the text, no border, no
-   scrollbar, no badge, text starting exactly where the original started.
-
-   The panel has no `height`, only a `min-height` of the original's area, so the original is always
-   covered and a translation that needs more room simply takes it.  In this direction - English
-   into Chinese - the translation is almost always shorter, so that is rare; when it happens the
-   panel grows over whatever is below it.  That is the trade this makes, and it is the right one:
-   text that cannot be read is worse than text that is in the wrong place, and the reader can move
-   it out of the way by hovering, which drops the background to .55 and lets the original show. */
+   参考普通 PDF 对照阅读：不透明白底遮盖原文，固定在连续文本区域内，
+   正常段落无边框。超长译文可内滚或打开完整段落，不遮盖下方内容。 */
 .overlay-panel {
   position: absolute; box-sizing: border-box;
+  z-index: 2;
   padding: 0;
-  background: rgba(255, 255, 255, .965);
+  background: #fff;
   border: 0;
   color: var(--ink);
-  line-height: 1.2;
+  line-height: 1.45;
+  overflow: auto;
+  scrollbar-width: thin;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
   font-size: 11px;
   font-size: 1.68cqw;
   cursor: text;
 }
-/* Hovering lifts the panel enough to read what it is covering, without moving anything.  The
-   reader can always check whether a panel has hidden a line that was not its own. */
-.overlay-panel.is-peeking { background: rgba(255, 255, 255, .4); }
+.overlay-panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.overlay-mask { position: absolute; background: #fff; pointer-events: none; z-index: 1; }
+.overlay-fallbacks { max-width: 900px; margin: 16px auto; padding: 16px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.overlay-fallbacks h3 { margin: 0 0 8px; }
+.overlay-fallback { padding: 12px 0; border-top: 1px solid var(--line); }
+.overlay-fallback .button { margin-top: 8px; }
+.overlay-fallback.is-selected { outline: 2px solid var(--accent); outline-offset: 2px; }
+.overlay-controls { display: none; }
+.reader[data-mode="overlay"] .overlay-controls { display: flex; flex-wrap: wrap; }
+.reader[data-mode="overlay_side_by_side"] .overlay-controls { display: flex; flex-wrap: wrap; }
+.reader[data-mode="overlay"][data-overlay-original="true"] .overlay-panel { display: none; }
+.reader[data-mode="overlay"][data-overlay-original="true"] .overlay-mask { display: none; }
+.reader[data-mode="overlay"][data-overlay-original="true"] .overlay-fallbacks { display: none; }
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .pane-target .overlay-panel,
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .pane-target .overlay-mask { display: none; }
+.source-text-line { position: absolute; color: transparent; white-space: pre; overflow: hidden;
+  user-select: text; cursor: text; z-index: 3; font-size: 1.68cqw; line-height: 1; }
+.source-text-line::selection { color: transparent; background: rgba(37,99,235,.25); }
+.reader[data-mode="overlay"] .source-text-line,
+.reader[data-mode="overlay_side_by_side"] .pane-target .source-text-line { display: none; }
+.reader[data-overlay-original="true"] .source-text-line { display: block; }
+.assistant-panel { flex: 0 0 340px; width: 340px; min-height: 0; display: flex; flex-direction: column;
+  gap: 8px; background: #fff; border-left: 1px solid var(--line); padding: 12px; overflow: auto; }
+.assistant-panel[hidden] { display: none; }
+.assistant-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.assistant-notice, .assistant-context { font-size: 12px; color: var(--muted); margin: 0; overflow-wrap: anywhere; }
+.assistant-log { flex: 1; min-height: 100px; overflow-y: auto; }
+.assistant-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.assistant-question { width: 100%; flex-shrink: 0; resize: vertical; font: inherit; padding: 8px;
+  border: 1px solid var(--line); border-radius: 6px; }
+.assistant-answer-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; }
+.assistant-answer { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.assistant-user { background: var(--accent-soft); padding: 8px; border-radius: 6px; white-space: pre-wrap; }
+.assistant-source { display: block; white-space: normal; text-align: left; max-width: 100%; margin: 4px 0; }
+@media (max-width: 900px) {
+  .assistant-panel { width: 100%; flex: 0 0 58%; max-height: 58%; border-left: 0; border-top: 1px solid var(--line); }
+  .assistant-log { min-height: 0; }
+  .assistant-head, .assistant-actions { flex-shrink: 0; }
+  .assistant-question { min-height: 64px; max-height: 90px; }
+}
+.full-block-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.full-block-dialog { width: min(780px, 94vw); }
+.full-block-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  position: sticky; top: -20px; padding: 10px 0; background: #fff; z-index: 1; }
 /* The only chrome that survives, and only for the panel the reader clicked: without some mark
    there is no way to tell which paragraph "重新翻译本块" would act on. */
-.overlay-panel.is-selected { box-shadow: 0 0 0 2px var(--accent); }
+.overlay-panel.is-selected { box-shadow: 0 0 0 2px var(--accent); z-index: 10; background: #fff; }
 .overlay-panel.is-stale { color: #92400e; }
 .overlay-text { white-space: pre-wrap; }
+.flow-page { width: 100%; max-width: 900px; margin: 0 auto; padding: 24px;
+  background: #fff; min-height: 100%; border: 1px solid var(--line); line-height: 1.75; }
+.flow-page .flow-block { position: static; width: auto; height: auto; overflow: visible;
+  font-size: inherit; line-height: inherit; margin: 0 0 20px; cursor: text; }
+.flow-block p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.flow-block[data-type="title"] { font-weight: 700; font-size: 1.35em; }
+.flow-block[data-type="heading"] { font-weight: 650; font-size: 1.12em; margin-top: 24px; }
+.flow-original-region { width: 100%; background-repeat: no-repeat; }
+.flow-block .flow-source { display: none; }
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .pane-target .flow-block { display: block; }
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .flow-source { display: block; }
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .flow-translation,
+.reader[data-mode="overlay_side_by_side"][data-overlay-original="true"] .flow-block .note { display: none; }
+@media (max-width: 600px) { .flow-page { padding: 16px; } }
+.layout-page { width: 100%; max-width: 900px; margin: 0 auto; background: #fff;
+  border: 1px solid var(--line); box-shadow: var(--shadow); }
+.layout-band { position: relative; width: 100%; }
+.layout-band-original { position: absolute; left: 0; top: 0; width: 100%; overflow: hidden; }
+.layout-band-original img { position: absolute; left: 0; width: 100%; max-width: none; }
+.layout-mask { position: absolute; background: #fff; pointer-events: none; z-index: 1; }
+.layout-block { position: absolute; overflow: auto; line-height: 1.3;
+  background: #fff; margin: 0; border: 0; }
+.layout-block p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.layout-block[data-type="title"], .layout-block[data-type="heading"] { font-weight: 650; }
+.layout-page .block-box, .layout-page .source-text-line { display: none; }
 
 /* ---------- translation cards ---------- */
 
@@ -265,6 +338,12 @@ body {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .card .tgt { margin: 0; white-space: pre-wrap; }
+.structured-text { white-space:pre-wrap; overflow-wrap:anywhere; }
+.structured-list-item { display:grid; align-items:baseline; column-gap:.2em; }
+.structured-marker { white-space:nowrap; }
+.structured-item-text { min-width:0; white-space:pre-wrap; }
+.structured-part + .structured-part { margin-top:.25em; }
+.layout-block .structured-part + .structured-part { margin-top:.12em; }
 .card h4 { font-size: 15px; margin: 0 0 6px; font-weight: 650; }
 .card .tag {
   display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 3px;
@@ -297,7 +376,7 @@ body {
 .job-status.failed { color: var(--bad); }
 .job-status.cancelled { color: var(--muted); }
 .job-status.running, .job-status.queued { color: var(--accent); }
-.job-detail { color: var(--muted); font-size: 12px; margin: 2px 0 6px; }
+.job-detail { color: var(--muted); font-size: 12px; margin: 2px 0 6px; overflow-wrap: anywhere; }
 
 .spinner {
   display: inline-block; width: 12px; height: 12px; border-radius: 50%;
@@ -307,9 +386,26 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 900px) {
+  .reader { flex-direction: column; }
   .sidebar { display: none; }
+  .reader[data-sidebar-open="true"] .sidebar {
+    display: block; width: 100%; flex: 0 0 auto; max-height: 35%;
+    border-right: 0; border-bottom: 1px solid var(--line);
+  }
+  .sidebar-toggle { display: inline-flex; }
   .panes { flex-direction: column; }
   .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
+}
+
+@media (max-width: 600px) {
+  .topbar { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
+  .brand { flex: 1 0 100%; white-space: nowrap; }
+  .topbar-actions { width: 100%; margin-left: 0; gap: 8px; flex-wrap: wrap; }
+  .field { white-space: nowrap; }
+  .reader-bar { gap: 6px; padding: 6px 10px; }
+  .pane-head { padding: 4px 10px; }
+  .pane-body { padding: 10px; }
+  .footer { padding: 4px 10px; font-size: 11px; }
 }
 
 /* --------------------------------------------------------------- settings panel */
@@ -322,6 +418,7 @@ body {
   padding: 20px 22px;
   color: var(--ink);
   background: var(--panel);
+  max-height: 92vh; max-height: 92dvh; overflow-y: auto;
 }
 .settings-dialog::backdrop { background: rgba(16, 24, 40, .35); }
 .settings-dialog h2 { margin: 0 0 6px; font-size: 16px; }
@@ -356,3 +453,6 @@ body {
 .settings-message.error { color: var(--bad); background: var(--bad-soft); }
 .settings-message.info { color: var(--muted); background: var(--bg); }
 .settings-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+/* 原位重排的标题不能继承流式卡片间距，否则会压住后续段落。 */
+.layout-block.flow-block[data-type] { margin: 0; }

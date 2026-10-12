@@ -25,7 +25,13 @@ from sqlalchemy.orm import Session
 
 from rr_storage import Block, Document, SourceSpanRow
 
-from .reads import latest_translations
+from .reads import latest_translations,outline as navigation_outline
+from document_core.text_structure import structure,translation_parts
+
+
+def structured_markdown(value):
+    return '\n\n'.join(('  '*int(round(part.get('indent_em',0)/1.5))+'- '+_escape((part.get('marker','')+' '+part['text']).strip()))
+        if part['kind']=='list_item' else _escape(part['text']) for part in value.get('parts',[]))
 
 VERBATIM_TYPES = frozenset({"formula", "table", "table_cell", "figure"})
 HEADING_TYPES = frozenset({"title", "heading"})
@@ -74,6 +80,7 @@ def block_to_markdown(
     """One block as Markdown.  Never invents a translation and never omits a marker."""
     lines: list[str] = []
     text = (block.clean_text or block.raw_text or "").strip()
+    semantic=structure(block.raw_text or text,block.spans,block_type=block.type)
     level = block.level or (1 if block.type == "title" else 2)
 
     if block.type in HEADING_TYPES:
@@ -82,7 +89,7 @@ def block_to_markdown(
         # Verbatim means verbatim: fenced and never sent through a translator.
         lines.append(f"```\n{text}\n```")
     else:
-        lines.append(_escape(text))
+        lines.append(structured_markdown(semantic) if semantic['has_list'] else _escape(text))
 
     markers = []
     if block.ocr_revision:
@@ -106,7 +113,9 @@ def block_to_markdown(
             )
         else:
             attribution = "human-corrected" if translation["is_human"] else "machine"
-            lines.append(f"> {_escape(translation['text'])}")
+            formatted=translation_parts(semantic,translation['text'])
+            rendered=structured_markdown(formatted) if semantic['has_list'] and formatted['preserved'] else _escape(translation['text'])
+            lines.append('\n'.join('> '+line for line in rendered.splitlines()))
             lines.append(f"> <sub>translation: {attribution}</sub>")
     if not include_source and include_translation and translation is None:
         lines.append("> _Source omitted and no translation exists; nothing to show._")
@@ -212,19 +221,14 @@ def export_document_markdown(
         )
 
     if outline:
-        headings = [
-            block
-            for block in blocks
-            if block.type in HEADING_TYPES or block.level is not None
-        ]
+        headings=navigation_outline(session,revision_id) if revision_id else []
         if len(headings) > 1:
             head.append("")
             head.append("## Contents")
             head.append("")
-            for block in headings:
-                text = (block.clean_text or block.raw_text or "").strip().replace("\n", " ")
-                depth = max((block.level or 1) - 1, 0)
-                head.append(f"{'  ' * depth}- {text[:120]} (p{block.page_index + 1})")
+            for entry in headings:
+                depth=max(entry['level']-1,0)
+                head.append(f"{'  '*depth}- {entry['title'][:200]} (p{entry['page_number']})")
 
     body: list[str] = []
     for block in blocks:

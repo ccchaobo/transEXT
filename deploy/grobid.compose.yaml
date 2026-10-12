@@ -1,0 +1,10 @@
+services:
+  grobid:
+    image: grobid/grobid:0.9.1-crf
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8070:8070"
+    mem_limit: 4g
+    ulimits:
+      core: 0

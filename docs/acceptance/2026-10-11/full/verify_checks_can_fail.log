@@ -1,0 +1,10 @@
+FAILS AS INTENDED  a control put back inside a pane
+FAILS AS INTENDED  the pane body unable to shrink
+FAILS AS INTENDED  the overlay panel turned back into a box
+FAILS AS INTENDED  the per-block re-translation call removed
+FAILS AS INTENDED  the toolbar put back inside .panes
+FAILS AS INTENDED  the worker ignoring the block list again
+FAILS AS INTENDED  the worker ignoring `force` again
+
+every file was restored byte for byte (3 files)
+all 7 checks fail when their defect is reintroduced

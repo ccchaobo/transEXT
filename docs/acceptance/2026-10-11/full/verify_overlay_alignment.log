@@ -1,0 +1,34 @@
+measured 1024 spans over 31 rendered pages, 14 PDFs
+
+PRIMARY: does the box coverage profile track the page's ink profile?
+  A correct overlay makes these rise and fall together; a vertical mirror reverses one
+  of them and drives the correlation negative.  Compared in 24 bands per axis, which
+  averages away the line pitch that would otherwise dominate the row profile.
+  rows    self r=+0.972   mirrored r=+0.334
+  columns self r=+0.995   mirrored r=+0.356
+  pages with row correlation    >= 0.6: 18/18 = 1.0000
+  pages with column correlation >= 0.6: 18/18 = 1.0000
+  note: on a two-column page the horizontal profile is nearly symmetric, so the
+  column test shows boxes are on text but has little power against a horizontal mirror.
+
+  worst 5 pages by row correlation:
+    rows=+0.952 (mirrored +0.312) columns=+0.998 (mirrored +0.732) boxed=0.457 pdf_a_single_column.pdf p0
+    rows=+nan (mirrored +nan) columns=+nan (mirrored +nan) boxed=0.000 mixed_f_hybrid.pdf p0
+    rows=+0.957 (mirrored +0.405) columns=+0.998 (mirrored +0.563) boxed=0.354 pdf_e_hyphenation.pdf p0
+    rows=+0.957 (mirrored +0.192) columns=+0.994 (mirrored +0.341) boxed=0.323 pdf_g_deep_sections.pdf p0
+    rows=+0.959 (mirrored +0.628) columns=+0.999 (mirrored +0.762) boxed=0.544 pdf_b_two_column.pdf p0
+
+SUPPORTING: every span box against the page's blank margin strips
+  margin strips are pure white on every page measured: 1024/1024
+  median ink density inside span boxes: 0.1262 (> 0 means the box is not on blank paper)
+  spans holding ink: 1024/1024
+
+SUPPORTING: per-span reflection test (noisy at this granularity; see the module doc)
+  not worse than vertical mirror:   825/855 = 0.9649 (a true vertical mirror would score near 0.05)
+  not worse than horizontal mirror: 745/751 = 0.9920 (a true horizontal mirror would score near 0.05)
+
+page-image aspect ratio agreements: 31 pages, 0 disagreed
+
+OVERLAY ALIGNMENT: PASS - box coverage tracks page ink (median row r=+0.972 against its mirror's +0.334, median column r=+0.995 against +0.356) over 18 text pages of 31 rendered (13 carry no boxes to align), every span box holds ink, and every rendered page's aspect ratio matches the declared display box
+E:\anaconda\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa

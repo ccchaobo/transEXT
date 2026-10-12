@@ -52,4 +52,7 @@ def open_runtime(
         workspace = Workspace(settings.workspace_root)
     if queue is None:
         queue = JobQueue(lease_seconds=settings.lease_seconds)
+    from .reference_repair import repair_reference_types
+
+    repair_reference_types(database)
     return Runtime(settings=settings, database=database, workspace=workspace, queue=queue)

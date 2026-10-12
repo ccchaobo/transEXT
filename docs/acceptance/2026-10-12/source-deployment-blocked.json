@@ -1,0 +1,14 @@
+{
+  "reader": {
+    "status": "ok",
+    "documents": 6,
+    "translation_configured": true
+  },
+  "grobid_running": false,
+  "source_build_performed": false,
+  "blockers": [
+    "Sandbox denies Docker Linux named pipe access",
+    "Sandbox denies WSL enumeration",
+    "Approved command channel does not return"
+  ]
+}

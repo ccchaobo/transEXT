@@ -17,7 +17,10 @@
       block has no content" rather than "this block has not been translated". */
 
 import { api, ApiError } from "./api.js";
+import { fillStructuredText } from './text-layout.js';
 import { createSettingsPanel } from "./settings.js";
+import { createAssistantPanel } from "./assistant.js";
+import { createLibrary } from "./library.js";
 
 const state = {
   route: { name: "library" },
@@ -43,6 +46,14 @@ const state = {
   linkSuspendedUntil: 0,
   overlayPanels: [],
   overflowObserver: null,
+  routeVersion: 0,
+  pageVersion: 0,
+  requestedPageIndex: 0,
+  pollingVersion: 0,
+  overlayFontScale: Number(localStorage.getItem("rr.overlayFontScale")) || 100,
+  overlayOriginal: false,
+  assistant: null,
+  library: null,
 };
 
 const els = {
@@ -99,6 +110,7 @@ const BLOCK_LABELS = {
 };
 
 const VERBATIM_TYPES = new Set(["formula", "table", "table_cell", "figure"]);
+const OVERLAY_WARNING = "部分译文较长，已限制在原段落区域内。可在段落内滚动，或选中段落后点“查看本段”阅读完整内容。";
 
 function blockLabel(block) {
   return BLOCK_LABELS[block.type] || block.type;
@@ -114,10 +126,25 @@ function parseHash() {
 }
 
 async function route() {
+  state.library?.dispose();
+  state.library=null;
+  if (state.assistant) state.assistant.dispose();
+  state.assistant = null;
+  const version = ++state.routeVersion;
+  ++state.pageVersion;
   state.route = parseHash();
+  document.body.classList.toggle("is-reading", state.route.name === "reader");
+  document.body.classList.toggle("is-library", state.route.name === "library");
+  clearBanner();
   stopJobPolling();
+  if (state.overflowObserver) state.overflowObserver.disconnect();
+  state.document = null;
+  state.page = null;
+  state.jobs = [];
+  state.selectedBlockId = null;
+  els.footer.textContent = "";
   if (state.route.name === "reader") {
-    await openReader(state.route.documentId);
+    await openReader(state.route.documentId, version);
   } else {
     state.document = null;
     await renderLibrary();
@@ -127,67 +154,23 @@ async function route() {
 /* ------------------------------------------------------------------ library */
 
 async function renderLibrary() {
-  els.view.innerHTML = "";
-  const wrap = el("div", "library");
-  wrap.appendChild(el("h1", null, "文献库"));
-  wrap.appendChild(el("p", "lead",
-    "原件不可变：导入的文件按内容哈希去重，永不改写。解析、翻译与标注都与不可变的原件分开保存。"));
-
-  const list = el("div", "doc-list");
-  wrap.appendChild(list);
-  els.view.appendChild(wrap);
-
-  let payload;
-  try {
-    payload = await api.listDocuments();
-  } catch (error) {
-    reportError(error);
-    list.appendChild(el("p", "empty", "无法读取文献库。"));
-    return;
-  }
-  if (!payload.items.length) {
-    list.appendChild(el("p", "empty", "还没有文献。点击右上角「导入文献」开始。"));
-    return;
-  }
-  for (const doc of payload.items) {
-    list.appendChild(documentCard(doc));
-  }
-}
-
-function documentCard(doc) {
-  const card = el("a", "doc-card");
-  card.href = `#/doc/${doc.id}`;
-  card.appendChild(el("h2", null, doc.title || doc.filename));
-
-  const meta = el("div", "doc-meta");
-  const bits = [
-    `${doc.page_count ?? "?"} 页`,
-    `${doc.block_count} 块`,
-    `${doc.translated_block_count} 已译`,
-    `解析：${doc.parse_status}`,
-    `${(doc.size_bytes / 1024).toFixed(0)} KB`,
-  ];
-  if (doc.warning_count) bits.push(`${doc.warning_count} 条警告`);
-  for (const bit of bits) meta.appendChild(el("span", null, bit));
-  card.appendChild(meta);
-
-  const ratio = doc.block_count ? doc.translated_block_count / doc.block_count : 0;
-  const progress = el("div", "progress");
-  const bar = el("span");
-  bar.style.width = `${Math.round(ratio * 100)}%`;
-  progress.appendChild(bar);
-  card.appendChild(progress);
-  return card;
+  const version=state.routeVersion;
+  state.library=createLibrary({container:els.view,api,onError:reportError,
+    onImport:()=>els.fileInput.click(),isCurrent:()=>version===state.routeVersion});
+  await state.library.load();
 }
 
 /* ------------------------------------------------------------------ reader */
 
-async function openReader(documentId) {
+async function openReader(documentId, version = state.routeVersion) {
   els.view.innerHTML = "";
   clearBanner();
   try {
-    state.document = await api.getDocument(documentId);
+    const document = await api.getDocument(documentId);
+    if (version !== state.routeVersion) return;
+    state.document = document;
   } catch (error) {
+    if (version !== state.routeVersion) return;
     reportError(error);
     els.view.appendChild(el("p", "empty", "无法打开该文献。"));
     return;
@@ -195,19 +178,24 @@ async function openReader(documentId) {
   const doc = state.document;
 
   const saved = await api.getReadingState(documentId).catch(() => ({ reading_state: null }));
+  if (version !== state.routeVersion) return;
   state.pageIndex = Math.min(
     saved.reading_state ? saved.reading_state.page_index : 0,
     Math.max((doc.page_count || 1) - 1, 0),
   );
+  state.requestedPageIndex = state.pageIndex;
 
   const outlinePayload = await api.outline(documentId).catch(() => ({ outline: [] }));
+  if (version !== state.routeVersion) return;
   state.outline = outlinePayload.outline || [];
   state.outlineNote = outlinePayload.note || null;
 
   state.annotations = (await api.listAnnotations(documentId).catch(() => ({ annotations: [] }))).annotations || [];
+  if (version !== state.routeVersion) return;
 
   const reader = el("div", "reader");
   reader.dataset.mode = (saved.reading_state && saved.reading_state.view_mode) || "side_by_side";
+  reader.dataset.overlayOriginal = String(state.overlayOriginal);
   state.linkScrolling = !saved.reading_state || saved.reading_state.link_scrolling !== false;
   reader.appendChild(buildSidebar(doc, outlinePayload));
 
@@ -220,14 +208,35 @@ async function openReader(documentId) {
   main.appendChild(buildToolbar(doc, reader.dataset.mode));
   main.appendChild(buildPanes(doc, reader.dataset.mode));
   reader.appendChild(main);
+  state.assistant = createAssistantPanel({ documentId: doc.id, getPage: () => state.page,
+    onSource: async source => {
+      const loaded = await loadPage(source.page_index);
+      if (loaded) selectBlock(source.block_id, { scroll: true, scrollOther: true });
+    } });
+  reader.appendChild(state.assistant.element);
   els.view.appendChild(reader);
 
-  await loadPage(state.pageIndex);
+  if (doc.active_revision_id) {
+    await loadPage(state.pageIndex);
+  } else {
+    document.getElementById("source-body").appendChild(el("p", "empty",
+      doc.parse_status === "failed" ? "解析失败，请查看左侧任务原因并重试。" :
+        doc.parse_status === "cancelled" ? "解析任务已取消，当前没有可阅读的解析结果。" :
+          "正在等待解析结果，完成后会自动显示。"));
+    document.getElementById("translate-button").disabled = true;
+  }
+  if (version !== state.routeVersion) return;
   await refreshJobs();
+  if (version !== state.routeVersion) return;
+  if (state.jobs.some(isActiveJob) || ["pending", "running"].includes(doc.parse_status) ||
+      (!doc.active_revision_id && state.jobs.some(job => job.status === "succeeded"))) {
+    startJobPolling();
+  }
 }
 
 function buildSidebar(doc, outlinePayload) {
   const sidebar = el("aside", "sidebar");
+  sidebar.id = "reader-sidebar";
 
   const back = el("a", "button", "← 文献库");
   back.href = "#/";
@@ -244,12 +253,14 @@ function buildSidebar(doc, outlinePayload) {
       button.title = `第 ${entry.page_number} 页`;
       button.addEventListener("click", () => {
         if (entry.page_index !== state.pageIndex) {
-          loadPage(entry.page_index).then(() => selectBlock(entry.block_id, { scroll: true }));
+          loadPage(entry.page_index).then(loaded => {
+            if (loaded && entry.block_id) selectBlock(entry.block_id, { scroll: true });
+          });
         } else {
-          selectBlock(entry.block_id, { scroll: true });
+          if(entry.block_id)selectBlock(entry.block_id, { scroll: true });
         }
       });
-      button.dataset.blockId = entry.block_id;
+      if(entry.block_id)button.dataset.blockId = entry.block_id;
       sidebar.appendChild(button);
     }
   }
@@ -262,12 +273,16 @@ function buildSidebar(doc, outlinePayload) {
   sidebar.appendChild(el("h3", null, "详情"));
   const facts = [
     `文件：${doc.filename}`,
-    `解析：${doc.parse_status}`,
-    `翻译：${doc.translate_status}`,
+    `解析：${statusText(doc.parse_status)}`,
+    `翻译：${statusText(doc.translate_status)}`,
     `修订：${doc.active_revision_id || "无"}`,
     `SHA-256：${String(doc.sha256).slice(0, 16)}…`,
   ];
-  for (const fact of facts) sidebar.appendChild(el("p", "job-detail", fact));
+  for (const fact of facts.slice(0, 3)) sidebar.appendChild(el("p", "job-detail", fact));
+  const metadata = el("details", "metadata-details");
+  metadata.appendChild(el("summary", null, "文件指纹与解析版本"));
+  for (const fact of facts.slice(3)) metadata.appendChild(el("p", "job-detail", fact));
+  sidebar.appendChild(metadata);
 
   const actions = el("div");
   actions.style.display = "grid";
@@ -280,14 +295,15 @@ function buildSidebar(doc, outlinePayload) {
   actions.appendChild(original);
 
   const exportLink = el("a", "button", "导出双语 Markdown");
+  exportLink.id = "export-link";
   exportLink.href = api.exportUrl(doc.id, state.targetLanguage);
   actions.appendChild(exportLink);
 
-  const remove = el("button", "button danger", "删除文献");
+  const remove = el("button", "button danger", "移入回收站");
   remove.addEventListener("click", async () => {
-    if (!confirm(`删除「${doc.title || doc.filename}」？原件、解析、翻译与标注都会一并删除，无法撤销。`)) return;
+    if (!confirm(`将「${doc.title || doc.filename}」移入回收站？之后可以恢复，原件、译文与标注会保留。`)) return;
     try {
-      await api.deleteDocument(doc.id);
+      await api.libraryBatch({ids:[doc.id],action:"trash"});
       location.hash = "#/";
     } catch (error) { reportError(error); }
   });
@@ -339,9 +355,13 @@ function buildToolbar(doc, viewMode) {
   const bar = el("div", "reader-bar");
 
   const prev = el("button", "button", "上一页");
-  prev.addEventListener("click", () => gotoPage(state.pageIndex - 1));
+  prev.id = "previous-page";
+  prev.disabled = !doc.active_revision_id || state.pageIndex === 0;
+  prev.addEventListener("click", () => gotoPage(state.requestedPageIndex - 1));
   const next = el("button", "button", "下一页");
-  next.addEventListener("click", () => gotoPage(state.pageIndex + 1));
+  next.id = "next-page";
+  next.disabled = !doc.active_revision_id || state.pageIndex >= (doc.page_count || 1) - 1;
+  next.addEventListener("click", () => gotoPage(state.requestedPageIndex + 1));
   const pageLabel = el("span", "bar-label", "…");
   pageLabel.id = "page-label";
   const nav = el("div", "bar-group");
@@ -350,11 +370,26 @@ function buildToolbar(doc, viewMode) {
   nav.appendChild(next);
   bar.appendChild(nav);
 
+  const sidebarToggle = el("button", "button sidebar-toggle", "目录与详情");
+  sidebarToggle.id = "sidebar-toggle";
+  sidebarToggle.type = "button";
+  sidebarToggle.setAttribute("aria-controls", "reader-sidebar");
+  sidebarToggle.setAttribute("aria-expanded", "false");
+  sidebarToggle.addEventListener("click", () => {
+    const reader = document.querySelector(".reader");
+    const open = reader.dataset.sidebarOpen !== "true";
+    reader.dataset.sidebarOpen = String(open);
+    sidebarToggle.setAttribute("aria-expanded", String(open));
+    sidebarToggle.textContent = open ? "收起目录与详情" : "目录与详情";
+  });
+  bar.appendChild(sidebarToggle);
+
   const mode = el("select");
   mode.id = "view-mode";
   for (const [value, label] of [
     ["side_by_side", "左右对照"], ["stacked", "上下对照"], ["overlay", "译文覆盖"],
     ["source_only", "仅原文"], ["target_only", "仅译文"],
+    ["overlay_side_by_side", "原文＋覆盖译文"],
   ]) {
     const option = el("option", null, label);
     option.value = value;
@@ -362,11 +397,13 @@ function buildToolbar(doc, viewMode) {
   }
   mode.value = viewMode;
   mode.addEventListener("change", async () => {
+    if (els.banner.textContent === OVERLAY_WARNING) clearBanner();
     const reader = document.querySelector(".reader");
     reader.dataset.mode = mode.value;
+    updateScrollControl(mode.value);
     // The overlay is drawn into the source pane, so it has to be built or torn down here rather
     // than waiting for the next page load: switching into it otherwise shows an empty mode.
-    if (state.page) renderSource(state.page);
+    if (state.page) { renderSource(state.page); renderTarget(state.page); }
     await api.putReadingState(doc.id, {
       page_index: state.pageIndex, view_mode: mode.value, zoom: 1,
       link_scrolling: state.linkScrolling,
@@ -375,10 +412,10 @@ function buildToolbar(doc, viewMode) {
   bar.appendChild(labelled("视图", mode));
 
   // The switch for `link_scrolling`.  It was stored and round-tripped through the API while
-  // nothing read it; giving it a control is what makes the stored value mean something.  Both
-  // panes follow each other by default, which is the behaviour the field's default promises.
+  // nothing read it; the preference now applies to stacked comparison. Side-by-side reading
+  // always keeps the original in place while the reader scrolls or selects a translation.
   const linkLabel = el("label", "link-toggle");
-  linkLabel.title = "滚动一侧时，另一侧跟到对应的段落";
+  linkLabel.title = "左右对照固定原文，上下对照可按段落联动。";
   const linkBox = document.createElement("input");
   linkBox.type = "checkbox";
   linkBox.id = "link-scrolling";
@@ -393,8 +430,48 @@ function buildToolbar(doc, viewMode) {
     }).catch(() => {});
   });
   linkLabel.appendChild(linkBox);
-  linkLabel.appendChild(document.createTextNode("联动"));
+  const scrollLabel = el("span", null, ["side_by_side", "overlay_side_by_side"].includes(viewMode) ? "原文固定" : "联动");
+  scrollLabel.id = "scroll-behavior-label";
+  linkLabel.appendChild(scrollLabel);
+  linkBox.disabled = ["side_by_side", "overlay_side_by_side"].includes(viewMode);
+  if (linkBox.disabled) linkBox.checked = false;
+  linkBox.title = "左右对照时原文保持固定；上下对照可使用联动。";
   bar.appendChild(linkLabel);
+
+  const overlayControls = el("div", "bar-group overlay-controls");
+  const fontScale = el("select");
+  fontScale.id = "overlay-font-scale";
+  for (const percent of [80, 100, 120, 140]) {
+    const option = el("option", null, `${percent}%`);
+    option.value = String(percent);
+    fontScale.appendChild(option);
+  }
+  fontScale.value = String(state.overlayFontScale);
+  fontScale.addEventListener("change", () => {
+    state.overlayFontScale = Number(fontScale.value);
+    localStorage.setItem("rr.overlayFontScale", fontScale.value);
+    if (state.page) { renderSource(state.page); renderTarget(state.page); }
+  });
+  overlayControls.appendChild(labelled("译文字号", fontScale));
+  const originalToggle = el("button", "button", state.overlayOriginal ? "显示译文" : "显示原文");
+  originalToggle.id = "overlay-original-toggle";
+  originalToggle.type = "button";
+  originalToggle.setAttribute("aria-pressed", String(state.overlayOriginal));
+  originalToggle.addEventListener("click", () => {
+    state.overlayOriginal = !state.overlayOriginal;
+    document.querySelector(".reader").dataset.overlayOriginal = String(state.overlayOriginal);
+    originalToggle.textContent = state.overlayOriginal ? "显示译文" : "显示原文";
+    originalToggle.setAttribute("aria-pressed", String(state.overlayOriginal));
+    if (state.page && document.querySelector(".reader").dataset.mode === "overlay_side_by_side") renderTarget(state.page);
+  });
+  overlayControls.appendChild(originalToggle);
+  const fullBlock = el("button", "button", "查看本段");
+  fullBlock.id = "overlay-full-block";
+  fullBlock.type = "button";
+  fullBlock.disabled = true;
+  fullBlock.addEventListener("click", () => showOverlayBlock(state.selectedBlockId));
+  overlayControls.appendChild(fullBlock);
+  bar.appendChild(overlayControls);
 
   // Re-translating one block.  The API has accepted `scope: "blocks"` with `force` since the
   // beginning and nothing ever called it.  It acts on the selection, so it also works in the
@@ -410,6 +487,11 @@ function buildToolbar(doc, viewMode) {
   translateButton.id = "translate-button";
   translateButton.addEventListener("click", () => startTranslation(doc.id));
   bar.appendChild(translateButton);
+  const assistantButton = el("button", "button", "AI 阅读助手");
+  assistantButton.id = "assistant-toggle";
+  assistantButton.type = "button";
+  assistantButton.addEventListener("click", () => state.assistant?.toggle());
+  bar.appendChild(assistantButton);
 
   return bar;
 }
@@ -422,24 +504,73 @@ function labelled(text, control) {
   return wrapper;
 }
 
+function updateScrollControl(mode) {
+  const box = document.getElementById("link-scrolling");
+  const label = document.getElementById("scroll-behavior-label");
+  if (!box || !label) return;
+  box.disabled = ["side_by_side", "overlay_side_by_side"].includes(mode);
+  box.checked = !box.disabled && state.linkScrolling;
+  label.textContent = box.disabled ? "原文固定" : "联动";
+}
+
+function showOverlayBlock(blockId) {
+  const block = state.page?.blocks.find(item => item.id === blockId);
+  if (!block) return;
+  const dialog = document.getElementById("overlay-block-dialog");
+  const content = document.getElementById("overlay-block-content");
+  content.dataset.blockId = block.id;
+  content.innerHTML = "";
+  content.appendChild(el("h3", null, "原文"));
+  content.appendChild(fillStructuredText(el('div','full-block-text'),block.text,block.metadata?.text_structure));
+  content.appendChild(el("h3", null, "译文"));
+  content.appendChild(fillStructuredText(el('div','full-block-text'),block.translation?.text || '尚未翻译',block.translation?.structure));
+  if (block.translation?.status === "ok") {
+    const edit = el("button", "button", "修正译文");
+    edit.addEventListener("click", async () => {
+      const replacement = prompt("修正后的译文：", block.translation.text);
+      if (replacement == null || replacement === block.translation.text) return;
+      try {
+        await api.correctTranslation(block.translation.id, replacement);
+        dialog.close();
+        await loadPage(state.pageIndex);
+      } catch (error) { reportError(error); }
+    });
+    content.appendChild(edit);
+  }
+  dialog.showModal();
+}
+
 /* ------------------------------------------------------------------ page load */
 
 async function loadPage(index) {
   const doc = state.document;
-  if (!doc) return;
+  if (!doc || !doc.active_revision_id) return false;
   const total = doc.page_count || 1;
-  if (index < 0 || index >= total) return;
+  if (index < 0 || index >= total) return false;
+  const version = ++state.pageVersion;
+  const routeVersion = state.routeVersion;
+  const language = state.targetLanguage;
+  state.requestedPageIndex = index;
 
   let payload;
   try {
-    payload = await api.page(doc.id, index, state.targetLanguage);
+    payload = await api.page(doc.id, index, language);
   } catch (error) {
+    if (version !== state.pageVersion || routeVersion !== state.routeVersion) return false;
+    state.requestedPageIndex = state.pageIndex;
     reportError(error);
-    return;
+    return false;
   }
+  if (version !== state.pageVersion || routeVersion !== state.routeVersion || language !== state.targetLanguage) return false;
   state.page = payload;
+  if (els.banner.textContent === OVERLAY_WARNING) clearBanner();
   state.pageIndex = index;
   state.selectedBlockId = null;
+  const fullBlock = document.getElementById("overlay-full-block");
+  if (fullBlock) fullBlock.disabled = true;
+  document.getElementById("retranslate-block").disabled = true;
+  document.getElementById("previous-page").disabled = index === 0;
+  document.getElementById("next-page").disabled = index === total - 1;
 
   renderSource(payload);
   renderTarget(payload);
@@ -462,6 +593,7 @@ async function loadPage(index) {
     // preference, not a per-page decision.
     link_scrolling: state.linkScrolling,
   }).catch(() => {});
+  return true;
 }
 
 function gotoPage(index) {
@@ -472,10 +604,12 @@ function gotoPage(index) {
 
 /* ------------------------------------------------------------------ source pane */
 
-function renderSource(payload) {
-  const body = document.getElementById("source-body");
+function renderSource(payload, { bodyId = "source-body", withOverlay = false, anchors = true } = {}) {
+  if (state.overflowObserver) state.overflowObserver.disconnect();
+  state.overlayPanels = [];
+  const body = document.getElementById(bodyId);
   body.innerHTML = "";
-  state.boxes = new Map();
+  if (anchors) state.boxes = new Map();
 
   const page = payload.page;
 
@@ -537,32 +671,54 @@ function renderSource(payload) {
       box.addEventListener("mouseleave", () => highlight(block.id, false));
       box.addEventListener("click", () => selectBlock(block.id, { scroll: false, scrollOther: true }));
       shell.appendChild(box);
-      if (!state.boxes.has(block.id)) state.boxes.set(block.id, []);
-      state.boxes.get(block.id).push(box);
+      if (anchors) {
+        if (!state.boxes.has(block.id)) state.boxes.set(block.id, []);
+        state.boxes.get(block.id).push(box);
+      }
+      const raw = (block.raw_text || block.text || "").slice(span.text_start, span.text_end);
+      if (raw) {
+        const textLine = el("span", "source-text-line", raw);
+        textLine.dataset.blockId = block.id;
+        for (const prop of ["left", "top", "width", "height"]) textLine.style[prop] = box.style[prop];
+        textLine.addEventListener("click", () => selectBlock(block.id, { scroll: false, scrollOther: true }));
+        shell.appendChild(textLine);
+      }
     }
   }
   body.appendChild(shell);
-  renderOverlay(payload, shell);
+  if (withOverlay || document.querySelector(".reader").dataset.mode === "overlay") renderOverlay(payload, shell);
 }
 
 /* ------------------------------------------------------------------ the overlay view */
 
 /** Where a block's text sits on the page, in the page's own normalised coordinates.
  *
- *  A block has one box per span and the spans are per line, so the block's area is their union.
- *  That union is what the translated text has to fit into.  It is not the paragraph's "true"
- *  box - a paragraph whose last line is short has a union that includes the empty space beside
- *  it - so the panel is drawn with a visible border and can be moved out of the way by hovering,
- *  rather than pretending to be an exact match.
+ *  当前页的连续行框决定覆盖区域；跨栏或远距离片段不组成整页白底外框。
+ *  长译文在此区域内滚动，完整内容也可在段落对照窗口中查看。
  */
-function blockArea(block) {
-  const boxes = (block.spans || []).map((span) => span.bbox).filter(Boolean);
+function blockArea(block, pageIndex) {
+  const boxes = (block.spans || []).filter(span => pageIndex === undefined || span.page_index === pageIndex)
+    .map((span) => span.bbox).filter(Boolean);
   if (!boxes.length) return null;
+  // 跨栏或被误合并的远距离片段不能用整页外框覆盖。选最大连续文本区域，
+  // 其余原文片段只沿实际行框遮盖；完整块内容始终可在段落对照中读取。
+  const groups = [];
+  for (const box of boxes) {
+    const group = groups.find(items => items.some(other => {
+      const overlap = Math.min(box[2], other[2]) - Math.max(box[0], other[0]);
+      const gap = Math.max(0, box[1] - other[3], other[1] - box[3]);
+      return overlap > Math.min(box[2] - box[0], other[2] - other[0]) * 0.25 &&
+        gap <= Math.max(box[3] - box[1], other[3] - other[1]) * 1.5;
+    }));
+    if (group) group.push(box);
+    else groups.push([box]);
+  }
+  const primary = groups.sort((a, b) => b.length - a.length)[0];
   return [
-    Math.min(...boxes.map((b) => b[0])),
-    Math.min(...boxes.map((b) => b[1])),
-    Math.max(...boxes.map((b) => b[2])),
-    Math.max(...boxes.map((b) => b[3])),
+    Math.min(...primary.map((b) => b[0])),
+    Math.min(...primary.map((b) => b[1])),
+    Math.max(...primary.map((b) => b[2])),
+    Math.max(...primary.map((b) => b[3])),
   ];
 }
 
@@ -570,7 +726,7 @@ function blockArea(block) {
  *
  *  This is a reading view, not an export and not a translated file.  Filling an English paragraph
  *  with Chinese is a layout problem this does not attempt: the original is covered where the
- *  translation fits and, where it does not, the panel scrolls and says so.  It must never be
+ *  translation is bounded by its source region, with complete paragraph viewing. It must never be
  *  described as producing a same-layout document, and the export does not come from here.
  *
  *  What it is worth: the two panes can only ever be aligned block by block, because one is a page
@@ -579,108 +735,16 @@ function blockArea(block) {
  *  translation where the original is removes the correspondence problem rather than managing it.
  */
 function renderOverlay(payload, shell) {
-  state.overlayPanels = [];
-  if (document.querySelector(".reader").dataset.mode !== "overlay") return;
-
-  for (const block of payload.blocks) {
-    const area = blockArea(block);
-    if (!area) continue;
-
-    // Formulas, figures and tables are shown verbatim and are never covered: they carry meaning
-    // that a translation would destroy, and the classifier already marks them.
-    if (VERBATIM_TYPES.has(block.type)) continue;
-
-    const translation = block.translation;
-    const translated = translation && translation.status === "ok" && translation.text;
-
-    if (!translated) {
-      // Nothing to draw, and drawing an empty panel would hide the original text for no reason.
-      // The block box underneath already marks it; say which of the reasons it is.
-      const boxes = state.boxes.get(block.id) || [];
-      for (const box of boxes) {
-        box.classList.add("is-untranslated");
-        if (!block.translatable) {
-          box.title = `${blockLabel(block)}：不可翻译，按原文保留`;
-        } else if (translation && translation.status !== "ok") {
-          box.title = `${blockLabel(block)}：翻译失败 ${translation.error_code || ""}`.trim();
-        } else {
-          box.title = `${blockLabel(block)}：尚未翻译`;
-        }
-      }
-      continue;
-    }
-
-    const panel = el("div", "overlay-panel");
-    const [x0, y0, x1, y1] = area;
-    panel.style.left = `${x0 * 100}%`;
-    panel.style.top = `${y0 * 100}%`;
-    panel.style.width = `${(x1 - x0) * 100}%`;
-    // Only a minimum.  The original must be covered, so the panel is never shorter than the space
-    // it is replacing; if the translation needs more room it takes it, and the overflow is
-    // reported on the panel's tooltip rather than by a scrollbar or a badge.
-    panel.style.minHeight = `${(y1 - y0) * 100}%`;
-    panel.dataset.blockId = block.id;
-    panel.title = `${blockLabel(block)}：译文覆盖原文。悬停可看到下面的原文。`;
-
-    const text = el("div", "overlay-text");
-    text.textContent = translation.text;
-    panel.appendChild(text);
-
-    if (translation.stale) {
-      panel.classList.add("is-stale");
-      text.title = "原文在该译文生成后发生过变化，译文可能已过期。";
-    }
-
-    panel.addEventListener("mouseenter", () => {
-      panel.classList.add("is-peeking");
-      highlight(block.id, true);
-    });
-    panel.addEventListener("mouseleave", () => {
-      panel.classList.remove("is-peeking");
-      highlight(block.id, false);
-    });
-    panel.addEventListener("click", () => selectBlock(block.id, { scroll: false, scrollOther: false }));
-
-    shell.appendChild(panel);
-    state.overlayPanels.push(panel);
-  }
-
-  measureOverflow(shell);
-}
-
-/** Note, on the panel's own tooltip, the panels whose translation needed more room than the
- *  original had.  Nothing is drawn for it and nothing scrolls: the reader asked for the text to
- *  be put where the original was, so when it does not fit it is allowed to spill and the fact is
- *  recorded where a reader who wonders why can find it.  Silently clipping would be worse, because
- *  a clipped paragraph looks like a complete one.
- */
-function measureOverflow(shell) {
-  const measure = () => {
-    for (const panel of state.overlayPanels) {
-      if (!panel.isConnected) continue;
-      const text = panel.firstElementChild;
-      if (!text) continue;
-      const overflows = text.getBoundingClientRect().height > panel.clientHeight + 1;
-      if (overflows) {
-        panel.dataset.overflowing = "1";
-        panel.title = `${panel.title.replace(/（译文超出原文位置.*?）/, "")}（译文超出原文位置，已向下延伸，可能盖住下一段）`;
-      }
-    }
-  };
-  // Twice: once now, and once after layout has settled.  Container queries mean the font size is
-  // not known until the shell has been laid out, so measuring synchronously gets the wrong
-  // answer for the first page and the right one for every page after it - the sort of bug that
-  // only shows on the first page you open.
-  measure();
-  requestAnimationFrame(measure);
-  if (state.overflowObserver) state.overflowObserver.disconnect();
-  state.overflowObserver = new ResizeObserver(measure);
-  state.overflowObserver.observe(shell);
+  renderFixedOverlay(payload, shell);
 }
 
 /* ------------------------------------------------------------------ translation pane */
 
 function renderTarget(payload) {
+  if (document.querySelector(".reader").dataset.mode === "overlay_side_by_side") {
+    renderFlowTarget(payload);
+    return;
+  }
   const body = document.getElementById("target-body");
   body.innerHTML = "";
   state.cards = new Map();
@@ -691,18 +755,15 @@ function renderTarget(payload) {
     card.dataset.blockId = block.id;
     card.addEventListener("mouseenter", () => highlight(block.id, true));
     card.addEventListener("mouseleave", () => highlight(block.id, false));
-    card.addEventListener("click", () => selectBlock(block.id, { scroll: false, scrollOther: true }));
+    card.addEventListener("click", () => selectBlock(block.id, {
+      scroll: !["side_by_side", "overlay_side_by_side"].includes(document.querySelector(".reader").dataset.mode), scrollOther: false,
+    }));
 
     const tags = el("div");
     tags.style.marginBottom = "4px";
     tags.appendChild(tag(blockLabel(block), null));
 
-    if (block.type === "title") {
-      card.appendChild(el("h4", null, block.text));
-      body.appendChild(finish(card));
-      continue;
-    }
-    if (VERBATIM_TYPES.has(block.type)) {
+    if (VERBATIM_TYPES.has(block.type) || block.translatable === false || /^\d+(?:\.\d+)*\.?$/.test((block.text || "").trim())) {
       tags.appendChild(tag("原样保留，不翻译", "verbatim"));
       card.appendChild(tags);
       const pre = el("pre", "tgt", block.text);
@@ -714,7 +775,7 @@ function renderTarget(payload) {
     }
 
     card.appendChild(tags);
-    card.appendChild(el("p", "src", block.text));
+    card.appendChild(fillStructuredText(el('div','src'),block.text,block.metadata?.text_structure));
 
     const translation = block.translation;
     if (!translation) {
@@ -732,9 +793,9 @@ function renderTarget(payload) {
       card.appendChild(el("p", "tgt", translation.text || ""));
       card.appendChild(el("p", "note bad", `翻译失败：${translation.error_message || translation.error_code || "未知原因"}`));
     } else {
-      const text = el("p", "tgt");
-      text.textContent = translation.text;
+      const text = fillStructuredText(el('div','tgt'),translation.text,translation.structure);
       card.appendChild(text);
+      if(translation.structure?.preserved===false)card.appendChild(el('p','note','译文缺少原分点编号，请重新翻译本段。'));
       if (translation.stale) {
         card.appendChild(el("p", "note", "原文在该译文生成后发生过变化，译文可能已过期。"));
       }
@@ -779,6 +840,192 @@ function renderTarget(payload) {
   }
 }
 
+/** 固定原页坐标；只使用不与其他文字、图表相交的空白。 */
+function comparisonLayout(payload) {
+  const pageIndex = payload.page.index;
+  const protectedAreas = (payload.page.visual_regions || []).map(box => {
+    // Include neighbouring plot titles/legends in large graphic protection.
+    // Inline symbols and rules get no padding that could swallow body prose.
+    const pad=(box[2]-box[0])*(box[3]-box[1])>.005 ? .025 : 0;
+    return [Math.max(0,box[0]-.004),Math.max(0,box[1]-pad),Math.min(1,box[2]+.004),Math.min(1,box[3]+pad)];
+  });
+  const occupied = payload.blocks.flatMap(block => (block.spans || [])
+    .filter(span => span.page_index === pageIndex).map(span => ({id:block.id,area:span.bbox})));
+  for (const block of payload.blocks) if (VERBATIM_TYPES.has(block.type)) {
+    const area = blockArea(block, pageIndex);
+    if (area) protectedAreas.push(area);
+  }
+  const inGraphic = area => protectedAreas.some(box => {
+    const w = Math.max(0,Math.min(area[2],box[2])-Math.max(area[0],box[0]));
+    const h = Math.max(0,Math.min(area[3],box[3])-Math.max(area[1],box[1]));
+    // Even a thin overlap can erase a plotted curve. A label straddling the
+    // graphic edge stays in the original, rather than becoming a white cover.
+    return w>.0005 && h>.0005;
+  });
+  const fallbacks = [];
+  // PDF font boxes can overlap the following formula even when their baselines
+  // do not. Fit prose into an unobstructed rectangle instead of dropping it.
+  const safeFrame = area => {
+    let candidates=[area];
+    for (const box of protectedAreas) candidates=candidates.flatMap(rect => {
+      const w=Math.min(rect[2],box[2])-Math.max(rect[0],box[0]);
+      const h=Math.min(rect[3],box[3])-Math.max(rect[1],box[1]);
+      if(w<=.0005 || h<=.0005)return [rect];
+      return [
+        [rect[0],rect[1],rect[2],Math.min(rect[3],box[1])],
+        [rect[0],Math.max(rect[1],box[3]),rect[2],rect[3]],
+        [rect[0],rect[1],Math.min(rect[2],box[0]),rect[3]],
+        [Math.max(rect[0],box[2]),rect[1],rect[2],rect[3]],
+      ].filter(r=>r[2]-r[0]>=Math.min(.12,(area[2]-area[0])*.75) &&
+        r[2]-r[0]>=(area[2]-area[0])*.75 && r[3]-r[1]>.014);
+    });
+    return candidates.sort((a,b)=>(b[2]-b[0])*(b[3]-b[1])-(a[2]-a[0])*(a[3]-a[1]))[0];
+  };
+  const entries = payload.blocks.flatMap(block => {
+    const area = blockArea(block,pageIndex);
+    if (!area || VERBATIM_TYPES.has(block.type) || block.translatable === false ||
+        /^[\p{P}\p{S}\s\d]+$/u.test((block.text || '').trim()) ||
+        /^\d+(?:\.\d+)*\.?$/.test((block.text || '').trim()) ||
+        !block.translation?.text || block.translation.status !== 'ok' ||
+        block.translation.text.trim() === (block.text || '').trim()) return [];
+    const sourceArea=[...area];
+    const barriers = [...occupied.filter(item => item.id !== block.id).map(item => item.area),...protectedAreas];
+    // 仅扩展短行/标题到空白；正文保持原栏宽，不能横跨栏沟。
+    if (area[2]-area[0] < .3 || ['heading','title','caption'].includes(block.type)) {
+      const column = payload.blocks.filter(item => ['paragraph','abstract'].includes(item.type))
+        .map(item => blockArea(item,pageIndex)).filter(box => box && Math.abs(box[0]-area[0])<.08 && box[2]-box[0]>.3)
+        .sort((a,b)=>Math.abs(a[1]-area[1])-Math.abs(b[1]-area[1]))[0];
+      let right = column ? column[2] : Math.min(.95,area[0]+Math.max(area[2]-area[0],.3));
+      for (const box of barriers) if (box[0]>=area[2]-.001 && box[1]<area[3] && box[3]>area[1])
+        right=Math.min(right,box[0]-.012);
+      area[2]=Math.max(area[2],right);
+    }
+    let bottom = Math.min(.98,area[3]+.018);
+    for (const box of barriers) if (box[1]>=area[3]-.001 && box[0]<area[2] && box[2]>area[0])
+      bottom=Math.min(bottom,box[1]-.002);
+    area[3]=Math.max(area[3],bottom);
+    const frame=safeFrame(area);
+    if(!frame) {
+      fallbacks.push({block,sourceArea,reason:'protected-region'});
+      return [];
+    }
+    return [{block,area:frame,sourceArea}];
+  });
+  // 扩展后的区域也必须彼此避让，避免两块同时占用同一片空白。
+  for (const entry of entries) for (const other of entries) {
+    if (entry===other) continue;
+    if (other.area[1]>=entry.area[1] && other.area[1]<entry.area[3] &&
+        other.area[0]<entry.area[2] && other.area[2]>entry.area[0])
+      entry.area[3]=Math.min(entry.area[3],other.area[1]);
+  }
+  // A fragment embedded on the same baseline cannot carry a rectangular
+  // translation without hiding its neighbour. Retain that original fragment.
+  const safeEntries=entries.filter(entry => {
+    const font=entry.block.metadata?.font_size || 10;
+    const minHeight=Math.max(.004,font*.85/(payload.page.display_height || 842));
+    if(entry.area[3]-entry.area[1]>=minHeight)return true;
+    fallbacks.push({...entry,reason:'insufficient-space'});
+    return false;
+  });
+  return {bands:[{start:0,end:1,entries:safeEntries}],entries:safeEntries,fallbacks,inGraphic};
+}
+
+function renderFlowTarget(payload) {
+  if (state.overflowObserver) state.overflowObserver.disconnect();
+  state.overlayPanels=[];
+  state.cards=new Map();
+  const body=document.getElementById('target-body');
+  renderSource(payload,{bodyId:'target-body',anchors:false});
+  if (state.overlayOriginal) return;
+  const sheet=body.querySelector('.page-shell');
+  if (!sheet) return;
+  sheet.classList.add('layout-page');
+  renderFixedOverlay(payload,sheet);
+}
+
+/** 两种覆盖视图使用同一布局/适配逻辑，避免模式间出现不同的修复结果。 */
+function renderFixedOverlay(payload,sheet) {
+  state.overlayPanels=[];
+  const plan=comparisonLayout(payload);
+  const missing=payload.blocks.filter(block => block.translatable && (!block.translation?.text || block.translation.status!=='ok')).length;
+  // 页外状态不能改变两侧页框的起点。
+  if (missing) sheet.title=`本页有 ${missing} 个段落未成功翻译，已保留原文。`;
+  for (const entry of plan.entries) {
+    for (const span of entry.block.spans || []) {
+      if (span.page_index!==payload.page.index) continue;
+      const mask=el('div','overlay-mask');
+      const [l,t,r,b]=[Math.max(span.bbox[0],entry.area[0]),Math.max(span.bbox[1],entry.area[1]),
+        Math.min(span.bbox[2],entry.area[2]),Math.min(span.bbox[3],entry.area[3])];
+      if(r<=l || b<=t || plan.inGraphic([l,t,r,b]))continue;
+      Object.assign(mask.style,{left:`${l*100}%`,top:`${t*100}%`,width:`${(r-l)*100}%`,height:`${(b-t)*100}%`});
+      sheet.appendChild(mask);
+    }
+    const item=el('article','overlay-panel layout-block');
+    item.dataset.blockId=entry.block.id;
+    item.dataset.type=entry.block.type;
+    item.dataset.fontPt=String(entry.block.metadata?.font_size || 10);
+    item.style.fontWeight=entry.block.metadata?.bold ? '700' : '400';
+    item.tabIndex=0;
+    const [l,t,r,b]=entry.area;
+    Object.assign(item.style,{left:`${l*100}%`,top:`${t*100}%`,width:`${(r-l)*100}%`,height:`${(b-t)*100}%`});
+    item.appendChild(fillStructuredText(el('div','overlay-text'),entry.block.translation.text,entry.block.translation.structure,{fixedFrame:true}));
+    item.addEventListener('click',()=>selectBlock(entry.block.id,{scroll:false,scrollOther:false}));
+    item.addEventListener('dblclick',()=>showOverlayBlock(entry.block.id));
+    item.addEventListener('mouseenter',()=>highlight(entry.block.id,true));
+    item.addEventListener('mouseleave',()=>highlight(entry.block.id,false));
+    item.addEventListener('keydown',event=>{if(event.key==='Enter'){selectBlock(entry.block.id,{scroll:false,scrollOther:false});showOverlayBlock(entry.block.id);}});
+    sheet.appendChild(item);
+    state.cards.set(entry.block.id,item);
+    state.overlayPanels.push(item);
+  }
+  // Keep graph/formula pixels intact, but never silently hide an existing
+  // translation. These cards live after the fixed page, preserving its geometry.
+  if(plan.fallbacks.length) {
+    const section=el('section','overlay-fallbacks');
+    section.appendChild(el('h3','', '图文区域译文'));
+    section.appendChild(el('p','note','以下内容与图表、公式重叠或原区域空间不足，完整译文在此显示。点击可核对原文。'));
+    for(const entry of plan.fallbacks) {
+      const card=el('article','overlay-fallback');
+      card.dataset.blockId=entry.block.id;
+      card.dataset.reason=entry.reason;
+      card.tabIndex=0;
+      card.appendChild(fillStructuredText(el('div','tgt'),entry.block.translation.text,entry.block.translation.structure));
+      const open=el('button','button','核对原文与译文');
+      open.addEventListener('click',()=>showOverlayBlock(entry.block.id));
+      card.appendChild(open);
+      card.addEventListener('click',()=>selectBlock(entry.block.id,{scroll:false,scrollOther:false}));
+      card.addEventListener('keydown',event=>{if(event.key==='Enter' && event.target===card)showOverlayBlock(entry.block.id);});
+      section.appendChild(card);
+      state.cards.set(entry.block.id,card);
+    }
+    sheet.parentNode.appendChild(section);
+  }
+  const resize=()=>{
+    if (!sheet.isConnected) return;
+    for (const item of state.overlayPanels) {
+      const preferred=Number(item.dataset.fontPt)*sheet.clientWidth/payload.page.display_width*state.overlayFontScale/100;
+      const min=Math.max(5,preferred*.65);
+      let size=preferred;
+      item.style.fontSize=`${size}px`;
+      item.style.lineHeight='1.3';
+      // 实测 DOM 字形排版，不能用字符数估算，更不能增加页高。
+      while (state.overlayFontScale===100 && size>min &&
+             (item.scrollHeight>item.clientHeight+1 || item.scrollWidth>item.clientWidth+1)) {
+        size=Math.max(min,size-.25);
+        item.style.fontSize=`${size}px`;
+        item.style.lineHeight='1.18';
+      }
+      item.dataset.overflowing=item.scrollHeight>item.clientHeight+1?'1':'0';
+      item.title=item.dataset.overflowing==='1'?'译文超出区域，可滚动或双击阅读完整段落。':'双击阅读完整段落。';
+    }
+  };
+  resize();
+  requestAnimationFrame(resize);
+  document.fonts?.ready.then(resize);
+  state.overflowObserver=new ResizeObserver(resize);
+  state.overflowObserver.observe(sheet);
+}
+
 function finish(card) {
   if (!state.cards) state.cards = new Map();
   state.cards.set(card.dataset.blockId, card);
@@ -807,9 +1054,16 @@ function highlight(blockId, on) {
 function selectBlock(blockId, { scroll = true, scrollOther = true } = {}) {
   const previous = state.selectedBlockId;
   state.selectedBlockId = blockId;
+  const selectedBlock = state.page?.blocks.find(block => block.id === blockId);
+  if (selectedBlock) state.assistant?.setBlock(selectedBlock);
+  const fullBlock = document.getElementById("overlay-full-block");
+  if (fullBlock) fullBlock.disabled = !blockId;
+  for (const panel of state.overlayPanels) {
+    panel.classList.toggle("is-selected", panel.dataset.blockId === blockId);
+  }
 
   const again = document.getElementById("retranslate-block");
-  if (again) again.disabled = !blockId;
+  if (again) again.disabled = !state.page?.blocks.some(block => block.id === blockId && block.translatable);
 
   if (previous) {
     const oldBoxes = state.boxes ? state.boxes.get(previous) : null;
@@ -884,7 +1138,10 @@ function scrollPaneToBlock(body, anchors, blockId) {
   const nodes = anchors.get(blockId);
   if (!nodes) return false;
   const { top } = anchorBounds(nodes, body);
-  const target = Math.max(0, body.scrollTop + top - PANE_PAD);
+  // Browsers clamp scrollTop to the available range. Record that actual destination,
+  // otherwise the resulting event looks like a user scroll and snaps the other pane back.
+  const target = Math.min(Math.max(0, body.scrollTop + top - PANE_PAD),
+    Math.max(0, body.scrollHeight - body.clientHeight));
   // Record the position this code is about to set. The scroll event it causes arrives on the
   // *other* pane's listener, which would otherwise read it as the reader scrolling and hand the
   // scroll straight back - the two panes would trade positions and neither would settle.
@@ -905,6 +1162,7 @@ function linkPanes(sourceBody, targetBody) {
       state.linkedTo[from.id] = null;
       if (echo !== null && Math.abs(from.scrollTop - echo) < 2) return;
       if (!state.linkScrolling) return;
+      if (["side_by_side", "overlay_side_by_side"].includes(document.querySelector(".reader")?.dataset.mode)) return;
       if (performance.now() < (state.linkSuspendedUntil || 0)) return;
       const blockId = topmostBlock(fromAnchors(), from);
       if (blockId) scrollPaneToBlock(to, toAnchors(), blockId);
@@ -916,6 +1174,7 @@ function linkPanes(sourceBody, targetBody) {
 
 
 async function startTranslation(documentId) {
+  const version = state.routeVersion;
   const button = document.getElementById("translate-button");
   button.disabled = true;
   clearBanner();
@@ -923,13 +1182,14 @@ async function startTranslation(documentId) {
     const plan = await api.startTranslation(documentId, {
       scope: "document", target_language: state.targetLanguage,
     });
+    if (version !== state.routeVersion) return;
     showBanner(
       `已排队：${plan.planned_blocks} 块待处理，其中 ${plan.already_cached} 块已缓存无需重复发送` +
       `（${plan.skipped_non_translatable} 块不可翻译）。`, "info");
     await refreshJobs();
-    startJobPolling();
+    if (version === state.routeVersion) startJobPolling();
   } catch (error) {
-    reportError(error);
+    if (version === state.routeVersion) reportError(error);
   } finally {
     button.disabled = false;
   }
@@ -943,6 +1203,7 @@ async function startTranslation(documentId) {
  *  failure here leaves the page no worse than it was.
  */
 async function retranslateBlock(documentId, blockId) {
+  const version = state.routeVersion;
   if (!blockId) {
     showBanner("先点一个段落（左侧原文的框，或右侧译文的卡片），再按“重新翻译本块”。", "warn");
     return;
@@ -954,11 +1215,12 @@ async function retranslateBlock(documentId, blockId) {
     const plan = await api.startTranslation(documentId, {
       scope: "blocks", block_ids: [blockId], target_language: state.targetLanguage, force: true,
     });
+    if (version !== state.routeVersion) return;
     showBanner(`已排队重新翻译这一段（${plan.would_be_sent} 块将发送）。`, "info");
     await refreshJobs();
-    startJobPolling();
+    if (version === state.routeVersion) startJobPolling();
   } catch (error) {
-    reportError(error);
+    if (version === state.routeVersion) reportError(error);
   } finally {
     if (button) button.disabled = false;
   }
@@ -967,18 +1229,22 @@ async function retranslateBlock(documentId, blockId) {
 async function refreshJobs() {
   const box = document.getElementById("jobs-box");
   if (!box || !state.document) return;
+  const documentId = state.document.id;
+  const version = state.routeVersion;
   let payload;
   try {
-    payload = await api.listJobs(state.document.id);
-  } catch { return; }
+    payload = await api.listJobs(documentId);
+  } catch { return false; }
+  if (version !== state.routeVersion || state.document?.id !== documentId) return;
   state.jobs = payload.jobs || [];
   box.innerHTML = "";
   box.appendChild(el("h3", null, "任务"));
   if (!state.jobs.length) {
     box.appendChild(el("p", "job-detail", "暂无任务。"));
-    return;
+    return true;
   }
   for (const job of state.jobs.slice(0, 6)) box.appendChild(jobRow(job));
+  return true;
 }
 
 function jobRow(job) {
@@ -987,7 +1253,7 @@ function jobRow(job) {
   const running = job.status === "running" || job.status === "queued";
   if (running) line.appendChild(el("span", "spinner"));
   line.appendChild(el("span", `job-status ${job.status}`, statusText(job.status)));
-  line.appendChild(el("span", "spacer", `${job.type} · ${job.done_units}/${job.total_units}`));
+  line.appendChild(el("span", "spacer", `${({parse:"解析",translate:"翻译",ocr:"文字识别",convert:"转换",export:"导出"})[job.type] || job.type} · ${job.done_units}/${job.total_units}`));
   row.appendChild(line);
 
   if (job.result && job.result.translated != null) {
@@ -1018,7 +1284,7 @@ function jobRow(job) {
 
 function statusText(status) {
   return {
-    queued: "排队中", running: "进行中", succeeded: "完成",
+    pending: "待处理", queued: "排队中", running: "进行中", succeeded: "完成",
     partially_succeeded: "部分完成", failed: "失败", cancelled: "已取消",
   }[status] || status;
 }
@@ -1028,33 +1294,52 @@ function shortError(message) {
   return text.length > 160 ? `${text.slice(0, 160)}…` : text;
 }
 
+function isActiveJob(job) {
+  return job.status === "running" || job.status === "queued";
+}
+
 function startJobPolling() {
   stopJobPolling();
-  state.jobsTimer = setInterval(async () => {
-    const active = state.jobs.some((job) => job.status === "running" || job.status === "queued");
-    await refreshJobs();
-    const stillActive = state.jobs.some((job) => job.status === "running" || job.status === "queued");
-    if (active && !stillActive) {
-      // A job just settled: reload the page so new translations appear, and say what happened
-      // rather than silently redrawing.
-      const finished = state.jobs[0];
-      if (finished) {
-        if (finished.status === "partially_succeeded") {
-          showBanner(
-            `翻译部分完成：${finished.error_message || "部分块未成功"}。未成功的块已单独标记，未用占位文本填充。`,
-            "info");
-        } else if (finished.status === "failed") {
-          showBanner(`翻译失败：${shortError(finished.error_message || "")}`, "error");
-        }
-      }
+  const version = state.routeVersion;
+  const pollingVersion = state.pollingVersion;
+  async function poll() {
+    if (version !== state.routeVersion || pollingVersion !== state.pollingVersion || !state.document) return;
+    const previous = new Map(state.jobs.map(job => [job.id, job.status]));
+    const refreshed = await refreshJobs();
+    if (version !== state.routeVersion || pollingVersion !== state.pollingVersion || !state.document) return;
+    if (!refreshed) {
+      state.jobsTimer = setTimeout(poll, 1200);
+      return;
+    }
+    const settled = state.jobs.filter(job => !isActiveJob(job) &&
+      ["queued", "running"].includes(previous.get(job.id)));
+    // A short job may finish before the first refresh, so also reconcile document metadata.
+    let latest;
+    try { latest = await api.getDocument(state.document.id); } catch { /* Retry on next tick. */ }
+    if (version !== state.routeVersion || pollingVersion !== state.pollingVersion || !state.document) return;
+    const changed = latest && ["active_revision_id", "parse_status", "translate_status"]
+      .some(key => latest[key] !== state.document[key]);
+    if (settled.length || changed) {
+      await route();
+      if (state.routeVersion !== version + 1) return;
+      const failed = settled.find(job => ["failed", "partially_succeeded"].includes(job.status));
+      if (failed) showBanner(`任务${statusText(failed.status)}：${shortError(failed.error_message || "请查看任务详情")}`,
+        failed.status === "failed" ? "error" : "info");
+      return;
+    }
+    if (state.jobs.some(isActiveJob)) state.jobsTimer = setTimeout(poll, 1200);
+    else {
       stopJobPolling();
+      // Includes cached/immediately completed translation jobs.
       await loadPage(state.pageIndex);
     }
-  }, 1200);
+  }
+  state.jobsTimer = setTimeout(poll, 1200);
 }
 
 function stopJobPolling() {
-  if (state.jobsTimer) { clearInterval(state.jobsTimer); state.jobsTimer = null; }
+  ++state.pollingVersion;
+  if (state.jobsTimer) { clearTimeout(state.jobsTimer); state.jobsTimer = null; }
 }
 
 /* ------------------------------------------------------------------ chrome */
@@ -1086,31 +1371,47 @@ async function refreshTranslationStatus() {
 }
 
 async function boot() {
+  els.fileInput.closest?.(".file-button")?.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); els.fileInput.click(); }
+  });
+  document.getElementById("overlay-block-close").addEventListener("click", () =>
+    document.getElementById("overlay-block-dialog").close());
   els.targetLanguage.value = state.targetLanguage;
   els.targetLanguage.addEventListener("change", async () => {
     state.targetLanguage = els.targetLanguage.value;
     localStorage.setItem("rr.targetLanguage", state.targetLanguage);
-    if (state.route.name === "reader") await loadPage(state.pageIndex);
+    if (state.route.name === "reader" && state.document) {
+      const exportLink = document.getElementById("export-link");
+      if (exportLink) exportLink.href = api.exportUrl(state.document.id, state.targetLanguage);
+      await loadPage(state.requestedPageIndex);
+    }
   });
 
   els.fileInput.addEventListener("change", async () => {
-    const file = els.fileInput.files[0];
-    if (!file) return;
+    const files=Array.from(els.fileInput.files || []);
+    if (!files.length) return;
+    const library=state.library;
+    const inLibrary=state.route.name==='library';
+    const collectionId=library?.activeCollection();
     clearBanner();
-    showBanner(`正在导入 ${file.name}…`, "info");
-    try {
-      const result = await api.upload(file);
-      if (result.duplicate) {
-        showBanner("这份文件之前已导入过（内容哈希相同），已直接打开原有记录。", "info");
-      } else {
-        showBanner("导入完成，解析任务已排队。解析由后台 worker 执行。", "info");
-      }
-      location.hash = `#/doc/${result.document.id}`;
-      if (location.hash === `#/doc/${result.document.id}`) await route();
-    } catch (error) {
-      reportError(error);
-    } finally {
-      els.fileInput.value = "";
+    const imported=[], failures=[];
+    els.fileInput.disabled=true;
+    for (let index=0;index<files.length;index++) {
+      const file=files[index];
+      showBanner(`正在导入 ${index+1}/${files.length}：${file.name}…`,"info");
+      try {
+        const result=await api.upload(file);
+        imported.push(result);
+        if (collectionId) await api.libraryBatch({ids:[result.document.id],action:'add_collection',collection_id:collectionId});
+      } catch (error) { failures.push(`${file.name}：${error.message}`); }
+    }
+    els.fileInput.value='';els.fileInput.disabled=false;
+    if (!inLibrary && files.length===1 && imported.length===1) {
+      location.hash=`#/doc/${imported[0].document.id}`;
+    } else {
+      if (state.route.name==='library') await state.library?.load();
+      else location.hash='#/';
+      showBanner(`已导入 ${imported.length} 篇，复用或恢复 ${imported.filter(r=>r.duplicate).length} 篇。${failures.length ? '失败：'+failures.join('；') : '解析任务会在后台继续。'}`,failures.length?'error':'info');
     }
   });
 

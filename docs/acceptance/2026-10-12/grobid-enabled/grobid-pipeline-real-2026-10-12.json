@@ -1,0 +1,18 @@
+{
+  "fixture": "self-authored PDF; isolated database",
+  "passed": true,
+  "grobid": {
+    "status": "ok",
+    "matched_blocks": 3,
+    "hints": 4
+  },
+  "warnings": [],
+  "block_count": 8,
+  "matched_types": [
+    "abstract",
+    "abstract",
+    "abstract"
+  ],
+  "source_image_available": true,
+  "all_blocks_have_coordinates": true
+}

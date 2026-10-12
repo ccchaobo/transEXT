@@ -1,0 +1,43 @@
+{
+  "fixture": "自编算术平均数文献，未使用用户文献",
+  "checks": {
+    "actual_worker_parse": true,
+    "visual_regions_wire": true,
+    "comparison_state_persists": true,
+    "real_ai_reply": true,
+    "real_ai_citations": true,
+    "owned_fixture_removed": true
+  },
+  "model": "deepseek-v4.1-flash",
+  "ai": {
+    "answer": "仅依据给出的文献，**x=2、y=4 时 S=3**。\n\n理由：文献 [S1] 直接写明：“For x=2 and y=4, the score S=3.” 同时 [S3] 给出公式 \\(S=(x+y)/2\\)，代入 \\(x=2, y=4\\) 得 \\((2+4)/2=3\\)，与 [S1] 一致。因此答案为 **S=3**。",
+    "model": "deepseek-v4.1-flash",
+    "citations": [
+      {
+        "id": "S1",
+        "block_id": "blk_2d9ae40b63f71092ffaf",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "formula",
+        "text": "For x=2 and y=4, the score S=3."
+      },
+      {
+        "id": "S3",
+        "block_id": "blk_3718d583f5870274927d",
+        "page_index": 0,
+        "page_number": 1,
+        "type": "paragraph",
+        "text": "The score S=(x+y)/2 is the arithmetic mean of x and y."
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 264,
+      "completion_tokens": 297,
+      "total_tokens": 561,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  },
+  "passed": true
+}

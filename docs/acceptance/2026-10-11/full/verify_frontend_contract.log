@@ -1,0 +1,61 @@
+[1] fields the frontend reads, extracted from its source
+  49 property names referenced in app.js
+
+[2] importing and parsing a real corpus PDF
+
+[3] the shapes the frontend depends on
+  ok   UploadAccepted: 6 fields present
+  ok   DocumentList: 4 fields present
+  ok   DocumentSummary (list row): 17 fields present
+  ok   DocumentDetail: 14 fields present
+  ok   DocumentDetail.capabilities: 2 fields present
+  ok   PageView: 4 fields present
+  ok   PageWire: 13 fields present
+  ok   BlockWire: 20 fields present
+  ok   ConfidenceWire: 3 fields present
+  ok   SpanWire: 7 fields present
+  ok   OutlineView: 1 fields present
+  ok   OutlineEntry: 9 fields present
+  ok   translation configuration: 7 fields present
+       configured=False base_url='https://ollama.com/v1' is_default=True
+  ok   translations listing: 2 fields present
+  ok   JobList: 1 fields present
+  ok   JobWire: 20 fields present
+       result payload: {"revision_id": "rev_be13bad576834e9abbbfc7b4", "pages": 2, "blocks": 57, "translatable_blocks": 54, "warnings": [], "stats": {"pages_rendered": 2}}
+  ok   JobEvents: 2 fields present
+  ok   JobEventWire: 5 fields present
+  ok   reading state: 1 fields present
+
+[4] the overlay view's own requirements
+  ok   the overlay view is offered in the mode list
+  ok   every one of 54 translatable blocks has a well-formed union box (2 pages, 1 verbatim blocks left uncovered)
+
+[5] no control can be hidden by the mode it switches away from
+  ok   all 5 controls are built in the toolbar, none inside a pane
+  ok   the toolbar is built outside .panes
+  ok   no mode rule touches the toolbar; 3 modes hide a pane and none takes the controls with it
+  ok   the pane body can shrink below its content, so it scrolls
+  ok   bounded borderless overlay with complete paragraph viewer (position: absolute; box-sizing: border-box; z-index: 2; pa...)
+  ok   a single block can be re-translated, forcing the call
+
+[6] the linked scrolling switch is stored, not just accepted
+  ok   link_scrolling and the overlay view mode both survive a round trip
+  ok   annotation listing: 2 fields present
+
+[7] the pages the frontend requests must exist
+  ok   pages/0/preview.png  324099 bytes
+  ok   pages/0/thumbnail.png  23746 bytes
+  ok   pages/1/preview.png  245893 bytes
+  ok   pages/1/thumbnail.png  17863 bytes
+
+[8] static assets the browser will fetch
+  ok   /  3230 bytes
+  ok   /styles.css  22592 bytes
+  ok   /js/api.js  5050 bytes
+  ok   /js/app.js  68749 bytes
+  ok   /js/assistant.js  8196 bytes
+  ok   /js/settings.js  8684 bytes
+
+FRONTEND CONTRACT: PASS - every field app.js reads is present in the real payload
+E:\anaconda\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa

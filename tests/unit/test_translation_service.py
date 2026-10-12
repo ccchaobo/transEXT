@@ -518,3 +518,38 @@ class TestSummary:
         service = TranslationService(Settings(), provider=provider)
         service.execute(session, service.plan(session, "doc_1"))
         assert provider.glossaries[0] == [("a", "b")]
+
+
+def test_number_labels_never_enter_translation_plan(session):
+    make_document(session, blocks=[("heading", "2"), ("heading", "2.1"),
+                                  ("paragraph", "4"), ("heading", "Methods"),
+                                  ("paragraph", "We used 2.1 mm voxels.")])
+    plan = TranslationService(Settings(), provider=StubProvider()).plan(session, "doc_1")
+    assert [u.text for u in plan.units] == ["Methods", "We used 2.1 mm voxels."]
+    assert plan.skipped_non_translatable == 3
+
+
+def test_graphic_labels_are_skipped_but_caption_and_body_are_planned(session, tmp_path):
+    import pymupdf
+    from rr_storage import SourceSpanRow
+    make_document(session, blocks=[("paragraph", "Axis name"), ("caption", "Figure 1. Results"),
+                                  ("paragraph", "Body text"), ("paragraph", "Mixed body and chart")])
+    pdf = tmp_path / "chart.pdf"
+    with pymupdf.open() as doc:
+        page = doc.new_page(width=600, height=800)
+        page.draw_rect(pymupdf.Rect(300, 300, 540, 500), fill=(.5,.7,1))
+        doc.save(pdf)
+    session.get(Document, "doc_1").source_path = str(pdf)
+    for index, boxes in enumerate([[[.6,.4,.8,.42]], [[.5,.64,.9,.66]],
+                                   [[.1,.1,.4,.15]], [[.6,.4,.8,.42],[.1,.1,.4,.15]]]):
+        for ordinal, box in enumerate(boxes):
+            session.add(SourceSpanRow(block_id=f"blk_{index}", revision_id="rev_1", page_index=0,
+                                      ordinal=ordinal, bbox=box))
+    session.flush()
+    class Workspace:
+        def resolve(self, path):
+            from pathlib import Path
+            return Path(path)
+    plan = TranslationService(Settings(), workspace=Workspace(), provider=StubProvider()).plan(session, "doc_1")
+    assert [u.block_id for u in plan.units] == ["blk_1", "blk_2", "blk_3"]
+    assert plan.skipped_non_translatable == 1

@@ -59,6 +59,16 @@ class Database:
 
     def create_all(self) -> None:
         Base.metadata.create_all(self.engine)
+        # Additive library schema migration. Existing originals/revisions never
+        # change; early bridge installations may have the raw-record table only.
+        if self.engine.dialect.name == "sqlite":
+            with self.engine.begin() as connection:
+                fields={row[1] for row in connection.exec_driver_sql('PRAGMA table_info(zotero_records)')}
+                if fields:
+                    additions={'title':"TEXT NOT NULL DEFAULT ''",'search_text':"TEXT NOT NULL DEFAULT ''",
+                               'item_type':"TEXT NOT NULL DEFAULT ''",'parent_key':"TEXT"}
+                    for name,definition in additions.items():
+                        if name not in fields:connection.exec_driver_sql(f'ALTER TABLE zotero_records ADD COLUMN {name} {definition}')
 
     def drop_all(self) -> None:
         Base.metadata.drop_all(self.engine)

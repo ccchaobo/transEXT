@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "finish_reason": "stop",
+  "answer_chars": 86,
+  "reasoning_chars": 233,
+  "usage": {
+    "prompt_tokens": 244,
+    "completion_tokens": 206,
+    "total_tokens": 450,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "passed": true,
+  "answer": "依据 [S1]，当 \\(x=2\\)、\\(y=4\\) 时，  \n\\[\nS=\\frac{x+y}{2}=\\frac{2+4}{2}=3\n\\]  \n所以 \\(S=3\\)。[S1]",
+  "model": "deepseek-v4.1-flash",
+  "fixture": "Self-authored arithmetic sample. No user document was sent."
+}

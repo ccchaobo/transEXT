@@ -11,6 +11,14 @@ evidence rather than a status claim.
 
 ## Where this is: M1 (the reader) usable, with named gaps
 
+本轮继续修复：翻译保留分点编号与缩进，目录优先 PDF 书签并收紧语义及图表筛选；AI 助手流式回答，支持停止、请求思考强度、真实耗时和公开依据摘要。后端 745 项、前端 22 项及 9 项浏览器联合验收通过；真实服务单次流式请求已验收。详见 [AI 阅读](docs/ai-reading.md)、[结构与流式验收](docs/acceptance/2026-10-12/reader-structure-stream/README.md)。
+
+2026-10-13 修复已有中文在覆盖视图漏显：正文中的数学符号不再导致整段排除，译文框避开相邻独立公式；没有足够安全空间时提供完整译文卡。真实 CodecLM 的 18 页、3 种视图逐段核对译文完整性与图表/公式保护。前端全部 31 项测试通过，详见 [覆盖完整性验收](docs/acceptance/2026-10-13/overlay-coverage/README.md)。
+
+2026-10-12 新增本地文献管理与 Zotero 联动：多文件导入、分类、标签、书目信息和笔记编辑、搜索排序、批量操作、回收站恢复与确认后的永久删除。Zotero 0.1.1 连接组件已在本机加载，可检索本机书目、导出 BibTeX/RIS/APA、网页与 DOI 预览、选 PDF 进入对照阅读，并提供关联与写回入口。真实 Zotero 写入及云同步未作为已完成验收；最新用户不需要 Word 插入验收。
+
+本轮验证为 719 项后端、19 项阅读器前端、6 项连接组件测试；隔离文献管理 Chrome 验收与真实 Zotero 目录浏览器验收通过。真实 BrLP 文献 21 页排版再次通过，原件指纹一致。规范和证据见 [文献管理](docs/library-management.md)、[Zotero 联动](docs/zotero-integration.md)、[排版对齐](docs/layout-alignment.md)。
+
 M0 is the foundation: the coordinate contract, the text cleaning rules, the corpus with recorded
 ground truth, the storage layer, the wire contract, and the measurements that fix the calibrated
 parameters.
@@ -42,9 +50,11 @@ that demonstrates it, and every one of them was run to produce the results in th
 | Storage | SQLite schema, WAL, leased and fenced job queue, retry accounting | `scripts/smoke_storage.py` |
 | Wire contract | Pydantic models, error taxonomy, generated OpenAPI | `tests/unit/test_contracts.py`, `tests/unit/test_openapi_artifact.py` |
 | Corpus | 35 labelled samples with draw-time ground truth | `benchmarks/rr_m0/corpus_generator.py`, `benchmarks/corpus/manifest.json` |
-| HTTP API | 22 routes over the frozen contract; loopback-only, same-origin guard, refusals with reasons | `tests/integration/test_api.py`, `scripts/verify_live_acceptance.py` |
+| HTTP API | 47 OpenAPI paths; loopback-only, same-origin guard; AI streaming, library and Zotero endpoints | `tests/integration/test_api.py`, `tests/integration/test_assistant_stream.py`, `tests/integration/test_library.py`, `tests/integration/test_zotero.py` |
 | Worker | Separate process; leased, fenced, cancellable jobs; per-stage and per-unit status | `tests/unit/test_worker.py`, `scripts/smoke_storage.py` |
-| Reader | Server-rendered page images with normalised-bbox overlays; five view modes; a toolbar that no view mode can hide; linked scrolling; per-block re-translation; outline; annotations; export | `scripts/verify_overlay_alignment.py`, `scripts/verify_frontend_contract.py`, `scripts/verify_checks_can_fail.py` |
+| Reader | Six view modes; fixed-page layout comparison; fixed source; AI reading; outline, per-block re-translation and export | `scripts/verify_real_layout_alignment.py`, `scripts/verify_frontend_contract.py`, `tests/frontend/reader.test.cjs` |
+| Library | 分类、标签、书目信息、笔记、批量操作、回收站、全库检索、分页 | `scripts/verify_library_browser.py`, `tests/integration/test_library.py` |
+| Zotero | 本机目录、PDF 复制、关联与书目写回、抓取预览、原生导出、重复候选；明确冲突和确认门槛 | `scripts/verify_zotero_browser.py`, `tests/integration/test_zotero.py`, `tests/frontend/zotero-bridge.test.cjs` |
 
 **What is PENDING, and why.** These cannot be closed in this environment, and are recorded rather
 than worked around:
@@ -56,12 +66,10 @@ than worked around:
   [limitations §2](docs/limitations.md).
 * **Cost attribution.** The service reports tokens per call; the job records `usage: {}`, so the
   cost of a document cannot be stated. The pre-flight count of blocks to send is now correct.
-* **The new browser features are unexecuted.** There is no browser automation here, so the overlay
-  view and the linked scrolling have never been run on a page. Everything about them that can be
-  checked without a browser is asserted in `verify_frontend_contract.py` §[5], and each of those
-  assertions has been reverted and confirmed to fail. What cannot be checked is whether they are
-  *usable* — and the first round of that came back from the person using it, as a bug report. See
-  [limitations §34](docs/limitations.md), [§36](docs/limitations.md) and [§37](docs/limitations.md).
+* **真实设备和真实论文上的体验仍待验证。** 2026-10-11 已在本机 Edge 的真实渲染环境中完成
+  78 项浏览器检查，并检查桌面、平板和手机窗口尺寸的截图，覆盖导入、解析等待、视图切换、
+  独立及联动滚动、定位、修正译文和实际导出。样例文献与译文均为验收数据，不代表真实翻译质量；
+  没有验收真实手机触控或其他浏览器。见 [使用体验验收](docs/usability-audit.md)。
 * **A real-world document corpus.** Every sample is authored by this repository's generator, so
   the measured layout and OCR figures describe this corpus, not published papers. See
   [limitations §1](docs/limitations.md).
@@ -72,7 +80,7 @@ than worked around:
 
 * Python 3.11 or newer (developed on 3.13.5, Anaconda)
 * Windows, Linux or macOS; developed and measured on Windows 11
-* No network access is required at run time. OCR models ship inside the wheel.
+* 阅读与本地解析不需要网络，OCR 模型随依赖提供；云端翻译与 AI 答疑需要访问已配置的服务。
 
 ## Install
 
@@ -94,6 +102,12 @@ and DOCX; a scanned document is then reported as unreadable rather than as empty
 > distribution.
 
 ## Run it
+
+Windows 可直接运行 `./scripts/start_reader.ps1`，同时启动本地 API 和后台任务，检查服务就绪并保存日志。
+重复运行会复用 API 和脚本记录的后台进程；默认地址 `http://127.0.0.1:8765`。
+可通过 `-PythonPath`、`-Port`、`-DataDir` 指定 Python、端口和数据目录。
+脚本保留已有翻译设置和环境配置；文献、译文、标注不被清空。
+
 
 Two processes, both from the repository root. The API serves the reader and never
 runs a job; the worker runs jobs and serves nothing. They are separate so that a long
@@ -175,15 +189,26 @@ stage yet, so the server declines those formats instead of pretending. A refusal
 reported on the document (`parse_status = failed`), on the job (`error_code`), and in
 the reader — not as a server error and never as an empty success.
 
-### Reading a page: five view modes, and the panes follow each other
+### Reading a page: six view modes, fixed source and optional linking
 
 The reader shows one page at a time and offers **译文覆盖** (the translation drawn where the
-original is), **左右对照**, **上下对照**, **仅原文** and **仅译文**.
+original is), **左右对照**, **上下对照**, **仅原文**, **仅译文** and **原文＋覆盖译文**.
 
-In the two side-by-side modes the two panes follow each other: scrolling either one moves the
-other to the matching paragraph, and the **联动** checkbox turns that off. Off is a reasonable
-choice — the link snaps from paragraph to paragraph, and if you are reading one long paragraph
-you may prefer the other side to stay where you put it.
+“原文＋覆盖译文”左侧保留原页，右侧使用同尺寸的完整原页画面，保留图片、矢量图、公式和栏位。
+图像及图内文字保持原样，不进入翻译计划；图外正文、图注正常翻译，独立章节编号原样显示。
+译文按原段落坐标和栏宽排版，两侧页高一致，不通过切割或拉长页面容纳译文。
+先利用经碰撞检查的空白，再实测换行、行距和字号；仍超长时允许段落内滚动，并可双击查看完整段落。
+关键词按原列表逐行翻译；竖排边注保留原样，不参与正文分栏。详细规则与验收见 [排版规范](docs/layout-alignment.md)。
+新增“AI 阅读助手”，复用翻译服务，可提问答疑、划词提问、解释术语或公式，并点击回答来源返回文献段落。
+请求只检索有界上下文，不默认发送整篇文献。操作、发送范围和验证边界见 [AI 阅读说明](docs/ai-reading.md)。
+
+**左右对照**时原文面板固定在窗口中，滚动或点击右侧译文不会移动左侧；点击译文仍会高亮对应原文。
+工具栏显示“原文固定”，左侧可手动滚动。**上下对照**仍可使用“联动”按段落同步滚动，也可关闭联动。
+
+参考文献仅在明确的“参考文献”或“References”等章节标题后跳过翻译，正文里的编号引用、年份、
+DOI 或完整引文不再单凭格式判为参考文献。进入附录等新章节后恢复正文分类。
+服务启动时会修复已有活动修订中、参考文献标题之前误标的正文块，保留块 ID、原件、译文和标注。
+修复只恢复翻译资格；缺失译文需点击“翻译全文”补译。后端与 worker 需重启才能启用新导入规则。
 
 The alignment is **block by block and nothing finer**, and that is not a shortcut being excused.
 The source pane is one page image whose height follows the page's aspect ratio; the target pane is
@@ -202,16 +227,13 @@ it does not pretend:
   export does not come from here.
 * Formulas, figures and tables are **never covered** — the classifier marks them and they stay
   verbatim.
-* Where the translation is longer than the space the original used, the panel **grows downward and
-  may cover the paragraph below**. The type is never shrunk to fit, because text shrunk until it
-  fits is text nobody can read, which is the failure this view exists to avoid — and it is not put
-  in a scroll box, because a scroll box around every paragraph stops the page reading as a page.
-  In this direction (English into Chinese) the translation is almost always shorter, so this is
-  rare. The panel's tooltip says so when it happens.
-* The panel's area is the union of the block's line boxes, which is the paragraph's own area in
-  almost every case but not by construction. Hovering a panel drops its background to 40% so the
-  original shows through, and you can always check whether it is covering something that is not
-  its own.
+* 两种覆盖模式共用同一套固定页框排版：沿当前页连续文本区域定位，不透明白底遮盖原文，
+  字号跟随原文磅值和页宽缩放，默认在原字号的 65%～100% 范围实测适配；译文限制在安全区域内。
+  顶部“译文字号”可手动调整，“显示原文／显示译文”可一键切换。选中段落后点“查看本段”，
+  或双击／按 Enter，可阅读完整原文和译文并修正译文。此处不实现 PDF Pro 的整页重排和文件导出。
+  参考：[沉浸式翻译 PDF 官方说明](https://immersivetranslate.com/zh-Hans/docs/pdf-helper/)。
+* 跨页坐标只取当前页，跨栏或远距离片段只取最大的连续区域作为译文阅读位置；其余原文片段沿实际
+  行框遮盖，避免整页外框吞掉其他段落。完整块内容始终可从“查看本段”读取。
 
 Every control — 上一页 / 下一页, the page label, the view selector, 联动, 重新翻译本块 and 翻译全文 —
 sits in a toolbar **above both panes**, not inside either one. That is not cosmetic: those controls
@@ -233,6 +255,9 @@ A block with no translation is left showing its original, marked so you can tell
 from "translated to something empty".
 
 ## Verify
+
+本轮完整验收、UI 设计依据、图形保留和实际运行服务结果见 [全量验收报告](docs/full-acceptance.md)。
+统一入口现包含 30 个检查入口，可用 `python scripts/verify_all.py --output var/full-acceptance/run` 保存逐项日志与机器报告。
 
 Every command below is runnable from the repository root and prints its own result.
 Nothing here depends on a service being started.
@@ -356,7 +381,7 @@ rejected 300 dpi, where it read 2055 MiB.
 than a description. `--ocr-dpi` used to default to a literal 300, which is the value the OCR
 adapter's own calibration rejected: at 300 dpi recognition is slower *and* slightly worse than at
 250. Running the harness with no arguments therefore rewrote this table — and the peak-memory
-figure, 1743 MiB becoming 2055 MiB — with numbers from a configuration that does not ship. It now
+figure, 1745 MiB becoming 2055 MiB — with numbers from a configuration that does not ship. It now
 defaults to `rr_adapters.ocr.OCR_RENDER_DPI`, so the calibration has one definition and the
 measurement cannot drift from it.
 
@@ -531,10 +556,28 @@ records most worth reading first:
 
 ## Known limitations
 
+### 使用体验修复（2026-10-11）
+
+导入文献后会自动跟踪解析任务，完成后显示正文、目录和页数；重新打开正在处理的文献也会继续跟踪。
+解析未完成时显示等待说明，不再请求尚不存在的页面。快速翻页、切换文献或目标语言时，旧请求不会覆盖新页面。
+切换目标语言也会同步更新双语 Markdown 的导出语言；标题译文会正常显示。文献库超过 100 篇时可点击“加载更多文献”。
+
+前端回归测试需要 Node.js，仅用于验证，不影响阅读器运行，也不引入构建步骤：
+
+```powershell
+node --test tests/frontend/reader.test.cjs
+python scripts/verify_frontend_contract.py
+# 可选：浏览器验收工具安装在项目测试目录，本机须已有 Microsoft Edge
+python -m pip install --target var/_browser_tools playwright==1.63.0
+python scripts/verify_browser_acceptance.py
+```
+
+检查结果、剩余功能缺口和验证边界见 [使用体验检查记录](docs/usability-audit.md)。
+
 Read [`docs/limitations.md`](docs/limitations.md) before relying on any figure
 here. It states, for each item, the bound and how it was measured — including the
 synthetic corpus, the unverified translation quality, the degraded DOCX path, the
-absence of browser automation, and the OCR cost.
+browser acceptance boundaries, and the OCR cost.
 
 ## Licence status
 
@@ -542,3 +585,16 @@ Undecided. The `pyproject.toml` records `Proprietary-until-decided` deliberately
 the dependency inventory shows one dependency (PyMuPDF) whose licence constrains
 distribution, so a licence cannot be chosen for this project without first deciding
 what to do about that. See [ADR 0003](docs/adr/0003-pymupdf-for-pdf.md).
+
+
+### 可选 GROBID 解析辅助
+
+GROBID 作为本地结构辅助接入，保留当前 PDF 画面与坐标。
+开启后仅使用原文支持的无歧义匹配修正章节、正文、摘要和图注；
+参考文献仍须位于显式标题之后才跳过翻译。服务不可用时告警并回退，不影响基础阅读。
+默认关闭，现有文献不会自动重解析。配置、CPU 部署及真实服务验收边界见
+[GROBID 辅助说明](docs/grobid-assist.md)。
+
+
+本机 GROBID 0.9.1 已完成源码部署和真实解析验收，并已为新文献启用辅助识别。
+已有文献不会自动重解析，译文与标注保留。启动及当前验收证据见 [部署说明](docs/grobid-assist.md)。

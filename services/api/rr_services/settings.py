@@ -47,6 +47,9 @@ class Settings:
     #: if a caller forgets to.
     max_translation_units: int = 5_000
 
+    grobid_url: str = ""
+    grobid_timeout_seconds: int = 45
+
     @property
     def database_url(self) -> str:
         return f"sqlite:///{(self.data_dir / 'reader.sqlite3').as_posix()}"
@@ -92,6 +95,8 @@ class Settings:
             max_archive_ratio=_float(ENV_MAX_ARCHIVE_RATIO, 200.0),
             lease_seconds=_int(ENV_LEASE_SECONDS, 120),
             max_translation_units=_int(ENV_MAX_TRANSLATION_UNITS, 5_000),
+            grobid_url=(env.get("RR_GROBID_URL") or "").strip(),
+            grobid_timeout_seconds=min(60, _int("RR_GROBID_TIMEOUT",45)),
         )
 
 

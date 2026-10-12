@@ -196,6 +196,7 @@ class BlockWire(BaseModel):
 
 
 class PageWire(BaseModel):
+    visual_regions: list[tuple[float, float, float, float]] = Field(default_factory=list)
     index: int = Field(ge=0, description="0-based internal page index")
     page_number: int = Field(ge=1, description="1-based page number shown in the UI")
     printed_label: str | None = None
@@ -255,6 +256,7 @@ class TranslationWire(BaseModel):
     created_at: datetime
     usage: dict[str, Any] = {}
     issues: list[IssueWire] = []
+    structure: dict[str, Any] | None = None
 
 
 class AssetWire(BaseModel):
@@ -438,7 +440,7 @@ class ReadingState(BaseModel):
     page_index: int = Field(default=0, ge=0)
     block_id: str | None = None
     view_mode: Literal[
-        "side_by_side", "source_only", "target_only", "stacked", "overlay"
+        "side_by_side", "source_only", "target_only", "stacked", "overlay", "overlay_side_by_side"
     ] = "side_by_side"
     zoom: float = Field(default=1.0, gt=0.0, le=8.0)
     link_scrolling: bool = True

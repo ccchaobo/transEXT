@@ -1,0 +1,17 @@
+{
+  "fixture": "自编算术平均数文献，未使用用户文献",
+  "checks": {
+    "actual_worker_parse": true,
+    "actual_worker_grobid": true,
+    "visual_regions_wire": true,
+    "comparison_state_persists": true,
+    "owned_fixture_removed": true
+  },
+  "model": "deepseek-v4.1-flash",
+  "grobid": {
+    "status": "ok",
+    "matched_blocks": 0,
+    "hints": 1
+  },
+  "passed": true
+}

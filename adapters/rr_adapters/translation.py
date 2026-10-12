@@ -36,7 +36,7 @@ from rr_contracts import ErrorCode
 
 #: Bumped whenever the prompt below changes, because it is part of the cache key: a
 #: translation produced under an older prompt must not be reused silently.
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2-structure"
 
 # Business error codes come from the shared contract instead of being invented here.
 # The contract owns them because it also maps each one to an HTTP status (``HTTP_STATUS``)
@@ -106,7 +106,9 @@ Rules:
 - Preserve citation markers ([1], [2,3]), DOIs, URLs, e-mail addresses, figure and table
   numbers, variable names, and units exactly as they appear. Never translate or reorder them.
 - Do not translate author names, affiliations, or the contents of a citation.
-- Keep the paragraph as one paragraph. Do not add or remove sentences.
+- Preserve the source's paragraph and list-item boundaries, list markers, numbering,
+  nesting and leading indentation. Do not flatten a list into one paragraph.
+- Join ordinary visual wrap lines within each item or paragraph. Do not add or remove sentences.
 - If a term appears in the glossary below, translate it exactly as the glossary says.
 {glossary_block}\
 """

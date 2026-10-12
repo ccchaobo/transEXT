@@ -1,0 +1,52 @@
+
+  [PASS] GET /health answers ok  -- HTTP 200
+  [PASS] GET / serves the reader shell  -- HTTP 200, 2871 bytes
+  [PASS] GET /styles.css is served  -- HTTP 200, 22592 bytes
+  [PASS] GET /js/app.js is served  -- HTTP 200, 68749 bytes
+  [PASS] GET /js/api.js is served  -- HTTP 200, 5050 bytes
+  [PASS] a path traversal is refused  -- HTTP 404
+  [PASS] a text PDF is accepted  -- HTTP 201
+  [PASS] import queues a parse job  -- job_id=job_222b59471cf24ccca885
+  [PASS] the worker process runs the job and exits  -- exit 0
+  [PASS] the parse succeeded  -- succeeded
+  [PASS] the document reports its pages and blocks  -- pages=2 blocks=57
+  [PASS] the document is readable and translatable  -- {"readable": true, "translatable": true, "has_outline": true, "translation_configured": false}
+  [PASS] page 1 has blocks in reading order  -- 21 blocks
+  [PASS] the title is read before the body  -- first block type=title
+  [PASS] every span box is inside the page  -- 101 spans
+  [PASS] every block carries spans  -- 21 blocks
+  [PASS] the page image is a PNG  -- HTTP 200, 324099 bytes
+  [PASS] the image agrees with the page's aspect ratio  -- image 993x1404 vs page 0.7071
+  [PASS] the thumbnail is served  -- HTTP 200
+  [PASS] a page that does not exist is 404  -- HTTP 404
+  [PASS] the outline is derived from headings  -- 14 entries
+  [PASS] the outline has more than one level  -- levels=[1, 2]
+  [PASS] the Markdown export is produced  -- HTTP 200, 13534 bytes
+  [PASS] the export states that it is reflowed, not a facsimile
+  [PASS] the export states the anchoring level
+  [PASS] translation without a provider is refused as not-configured  -- HTTP 409
+  [PASS] the refusal says no mock is produced
+  [PASS] a missing document is 404, not a missing API key  -- HTTP 404
+  [PASS] a state change from another origin is refused  -- HTTP 403
+  [PASS] a document whose parse failed can still be read  -- HTTP 200
+  [PASS] it says its parse failed rather than staying pending  -- failed
+  [PASS] the failure is coded as an unsupported format  -- unsupported_format
+  [PASS] a scanned document parses but has nothing to translate  -- status=succeeded readable=True translatable=False
+  [PASS] its warnings are visible without opening it  -- warning_count=9
+  [PASS] the page explains that OCR is required  -- text layer has only 0 characters images cover 100% of the page no text layer on this page; OCR is required
+  [PASS] the page reports that OCR was not applied
+  [PASS] a scanned page is still shown as an image  -- 729185 bytes
+  [PASS] the translation settings are readable  -- HTTP 200
+  [PASS] the panel reports the effective value and the stored one separately
+  [PASS] it names the fields that may be set
+  [PASS] nothing stored yet, and the environment is not overriding anything
+  [PASS] the check call refuses when there is no key to test  -- HTTP 409
+  [PASS] a reader can store a key, a model and an endpoint  -- HTTP 200
+  [PASS] the key is stored but never echoed by any endpoint  -- leaked via []
+  [PASS] health now reports translation as available
+  [PASS] the document view agrees that translation is configured
+  [PASS] the same settings are now usable, so the 409 is gone
+  [PASS] a mistyped field name is refused rather than silently dropped  -- HTTP 400
+  [PASS] clearing the panel settings restores the refusal  -- HTTP 200
+
+49/49 checks passed

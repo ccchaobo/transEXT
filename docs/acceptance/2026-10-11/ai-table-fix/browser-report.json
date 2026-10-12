@@ -1,0 +1,482 @@
+{
+  "browser_channel": "msedge",
+  "checks": [
+    {
+      "name": "空文献库不显示无效加载更多按钮",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "空文献库显示导入入口",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "导入入口可通过键盘打开文件选择",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "导入后显示解析等待状态",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "重开排队文献后继续等待",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "真实 worker 解析完成后自动显示正文和目录",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "桌面阅读区域受视口约束",
+      "status": "PASS",
+      "detail": {
+        "viewport": [
+          1440,
+          900
+        ],
+        "body": [
+          1440,
+          900
+        ],
+        "source": [
+          723,
+          843
+        ],
+        "target": [
+          723,
+          4487
+        ]
+      }
+    },
+    {
+      "name": "译文面板独立滚动",
+      "status": "PASS",
+      "detail": [
+        723,
+        4487
+      ]
+    },
+    {
+      "name": "末尾译文可滚动到可视区域",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "视图 overlay 切换控件始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖视图长译文保持覆盖并提示完整阅读入口",
+      "status": "PASS",
+      "detail": "overlay"
+    },
+    {
+      "name": "覆盖视图确实绘制了译文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖选中段落置于上层",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖视图一键显示原文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖视图一键恢复译文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖译文字号可调整",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "手动放大字号实际改变文字大小",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "视图 source_only 切换控件始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "视图 target_only 切换控件始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "视图 stacked 切换控件始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "视图 side_by_side 切换控件始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "没有遮挡的短译文可保留覆盖视图",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "新对照视图左侧保持原文右侧覆盖译文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "新对照视图保存后可重新打开",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "独立排版译文可切换为完整原文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "独立排版可恢复译文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "AI 快捷问题仅填入输入框，不自动发送",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "AI 问答界面显示回答与来源",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "原文划词可发送术语解释及选中上下文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "公式解释请求携带实际公式上下文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "AI 来源可跳转到对应页段落",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "下一页与页尾禁用状态",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "第一页禁用上一页",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "目标语言切换同步更新导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "实际下载双语 Markdown",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "点击译文同步选中原文位置",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "左右对照点击译文时原文位置不变",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "左右对照明确显示原文固定",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "左右对照滚动译文时原文滚动位置不变",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "左右对照原文面板悬浮位置不变",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "上下对照仍可点击译文定位原文",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "联动滚动到页尾不会回弹",
+      "status": "PASS",
+      "detail": {
+        "requested": 3611.333251953125,
+        "actual": 3611.333251953125
+      }
+    },
+    {
+      "name": "实际提交译文修正并刷新显示",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "翻译设置可打开且密钥留空",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "超长译文末尾仍在可视区域",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "新对照超长段落自然展开且没有内滚条",
+      "status": "PASS",
+      "detail": {
+        "height": 5670,
+        "scroll": 5670,
+        "overflow": "visible",
+        "position": "absolute",
+        "sheet": 7804,
+        "text": 5580
+      }
+    },
+    {
+      "name": "译文页面可以长于左侧原页",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "自然展开译文末尾可通过整侧滚动读到",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "超长译文不会自动退出覆盖",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "超长译文限制在原文高度内且背景不透明",
+      "status": "PASS",
+      "detail": {
+        "height": 189,
+        "scroll": 2871,
+        "sourceHeight": 188.7701247672277,
+        "background": "rgb(255, 255, 255)"
+      }
+    },
+    {
+      "name": "覆盖模式完整段落可读",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "完整段落关闭按钮始终可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "重新打开仍保留覆盖模式",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "覆盖视图翻页仍保留覆盖",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "1024px 视口没有横向溢出",
+      "status": "PASS",
+      "detail": 0
+    },
+    {
+      "name": "1024px 视口视图控件可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "1024px 视口可返回文献库并导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "768px 视口没有横向溢出",
+      "status": "PASS",
+      "detail": 0
+    },
+    {
+      "name": "768px 视口视图控件可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "768px 视口可返回文献库并导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "768px 视口实际使用侧栏导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "390px 视口没有横向溢出",
+      "status": "PASS",
+      "detail": 0
+    },
+    {
+      "name": "390px 视口视图控件可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "390px 视口可返回文献库并导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "390px 视口实际使用侧栏导出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "窄屏设置面板关闭按钮可达",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "窄屏 AI 助手没有横向溢出",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "窄屏 AI 输入可操作",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "窄屏 AI 发送按钮处于视口内",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "长模型名称不破坏窄屏布局",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "文献库有文件类型标识和中文状态",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "真实 PDF 同时检出栅格图片与矢量图形",
+      "status": "PASS",
+      "detail": [
+        [
+          0.09666666666666666,
+          0.6125,
+          0.43666666666666665,
+          0.7775
+        ],
+        [
+          0.5466666666666666,
+          0.335,
+          0.9033333333333333,
+          0.5275
+        ]
+      ]
+    },
+    {
+      "name": "原页分带覆盖从顶部到底部的全部画面",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "图片与矢量图不会被分页切开",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "右侧实际画面仍包含矢量图蓝色区域",
+      "status": "PASS",
+      "detail": {
+        "vector_blue": 27656,
+        "raster_red": 14181
+      }
+    },
+    {
+      "name": "右侧实际画面仍包含栅格图片红色区域",
+      "status": "PASS",
+      "detail": {
+        "vector_blue": 27656,
+        "raster_red": 14181
+      }
+    },
+    {
+      "name": "译文保持原来的左右栏位",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "浏览器无未捕获脚本错误",
+      "status": "PASS",
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "translation_fixture": "合成界面样例，不验证翻译质量",
+  "screenshots": [
+    "01-library.png",
+    "02-import-waiting.png",
+    "03-desktop-side-by-side.png",
+    "04-mode-overlay.png",
+    "04-mode-source_only.png",
+    "04-mode-target_only.png",
+    "04-mode-stacked.png",
+    "04-mode-side_by_side.png",
+    "04-mode-overlay-safe.png",
+    "09-overlay-comparison.png",
+    "10-ai-assistant.png",
+    "05-settings-desktop.png",
+    "06-long-translation.png",
+    "12-flow-long-comparison.png",
+    "06-overlay-full-paragraph.png",
+    "06-long-overlay.png",
+    "07-responsive-1024.png",
+    "07-responsive-menu-768.png",
+    "07-responsive-768.png",
+    "07-responsive-menu-390.png",
+    "07-responsive-390.png",
+    "08-settings-mobile.png",
+    "11-ai-mobile.png",
+    "13-library-populated.png",
+    "14-graphics-preserved.png"
+  ],
+  "browser_version": "131.0.2903.112",
+  "ai_ui_fixture": "AI 界面响应为模拟；真实文献检索和服务协议另由集成测试验证",
+  "passed": 78,
+  "failed": 0
+}

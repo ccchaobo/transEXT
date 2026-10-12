@@ -1,0 +1,35 @@
+{
+  "answer": "根据 [S1]，公式为：\n\n\\[\nS=\\frac{x+y}{2}\n\\]\n\n其含义是：\\(S\\) 是 \\(x\\) 与 \\(y\\) 的算术平均数，即把 \\(x\\) 和 \\(y\\) 相加后除以 2 [S1]。\n\n当 \\(x=2\\)、\\(y=4\\) 时：\n\n\\[\nS=\\frac{2+4}{2}=\\frac{6}{2}=3\n\\]\n\n因此，\\(S=3\\)。这一结果在 [S1] 中也直接给出：“For x=2 and y=4, S=3.” [S1]",
+  "model": "deepseek-v4.1-flash",
+  "scope": "document",
+  "revision_id": "live_fixture",
+  "sources": [
+    {
+      "id": "S1",
+      "block_id": "synthetic_formula",
+      "page_index": 0,
+      "page_number": 1,
+      "type": "formula",
+      "text": "In this synthetic example, S = (x + y) / 2 is the arithmetic mean of x and y. For x=2 and y=4, S=3."
+    }
+  ],
+  "citations": [
+    {
+      "id": "S1",
+      "block_id": "synthetic_formula",
+      "page_index": 0,
+      "page_number": 1,
+      "type": "formula",
+      "text": "In this synthetic example, S = (x + y) / 2 is the arithmetic mean of x and y. For x=2 and y=4, S=3."
+    }
+  ],
+  "warnings": [],
+  "usage": {
+    "prompt_tokens": 230,
+    "completion_tokens": 337,
+    "total_tokens": 567,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}
