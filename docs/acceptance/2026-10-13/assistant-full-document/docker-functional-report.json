@@ -1,0 +1,35 @@
+{
+  "fixture": "self-authored; no user documents or paid requests",
+  "checks": {
+    "api_health": true,
+    "frontend_served": true,
+    "cross_origin_refused": true,
+    "actual_worker_grobid": true,
+    "pdf_blocks": true,
+    "pdf_preview": true,
+    "docx_component_chinese_render": true,
+    "actual_ocr_component": true,
+    "unwired_formats_explicitly_reported": true,
+    "state_persists_after_recreate": true,
+    "original_persists_after_recreate": true
+  },
+  "documents": [
+    "doc_35ccdf8cef304f6bb8b9",
+    "doc_880f0b44bbc94db9af6a",
+    "doc_c4af51d8d1b349f19a42"
+  ],
+  "grobid": {
+    "status": "ok",
+    "matched_blocks": 2,
+    "hints": 3
+  },
+  "ocr_component": {
+    "text": "DOCKER OCR CHECK CONTROLLED SAMPLE 7Oae1f"
+  },
+  "known_limits": [
+    "DOCX/image adapters are callable in the image; the import worker remains PDF-only."
+  ],
+  "runtime": "{\"Command\":\"\\\"python -m uvicorn r…\\\"\",\"CreatedAt\":\"2026-10-13 23:17:02 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"bc99361657af\",\"Image\":\"research-reader:full-document-ui\",\"Labels\":\"com.docker.compose.config-hash=68aa64abe8123582407a10da7bb5976c8398fee7a76566f08a22e9b33cd929f5,com.docker.compose.container-number=1,com.docker.compose.depends_on=grobid:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project=research-reader-ui-qa,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,com.docker.compose.replace=api-1,com.docker.compose.image=sha256:a3147676c31ea6559440cf77f246c4bbc808e3736f44aa45989b664fdf98e4e0,com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\deploy\\\\docker.env.example,com.docker.compose.service=api,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8765/tcp=127.0.0.1:18876\",\"LocalVolumes\":\"1\",\"Mounts\":\"research-reade…\",\"Name\":\"research-reader-ui-qa-api-1\",\"Names\":\"research-reader-ui-qa-api-1\",\"Networks\":\"research-reader-ui-qa_parsing,research-reader-ui-qa_reader\",\"Ports\":\"127.0.0.1:18876-\\u003e8765/tcp\",\"Project\":\"research-reader-ui-qa\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":8765,\"PublishedPort\":18876,\"Protocol\":\"tcp\"}],\"RunningFor\":\"14 seconds ago\",\"Service\":\"api\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 12 seconds (healthy)\"}\n{\"Command\":\"\\\"/tini -s -- ./grobi…\\\"\",\"CreatedAt\":\"2026-10-13 21:49:18 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"cbf046892fe3\",\"Image\":\"grobid/grobid:0.9.1-crf@sha256:223957791ac2bbe48609dcc58a689b16b60baeae13a8734ef440ae6bfb38f4cd\",\"Labels\":\"com.docker.compose.config-hash=9160a0de17dd799ff5b64e1e7c0cf86eb9cc3ced9bfa697cb73c74648a58f6d7,com.docker.compose.container-number=1,com.docker.compose.project=research-reader-ui-qa,com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\.env.docker,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,desktop.docker.io/ports.scheme=v2,org.label-schema.url=https://github.com/kermitt2/grobid,org.label-schema.version=0.9.1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:582dcab95710c29c0d2fd18af3f420f848649fb7566341d2eec1a32d4306da97,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml,com.docker.compose.version=5.5.1,org.label-schema.description=Image with GROBID service,authors=The contributors,com.docker.compose.service=grobid,org.label-schema.name=GROBID,org.opencontainers.image.version=24.04\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"research-reader-ui-qa-grobid-1\",\"Names\":\"research-reader-ui-qa-grobid-1\",\"Networks\":\"research-reader-ui-qa_parsing\",\"Ports\":\"\",\"Project\":\"research-reader-ui-qa\",\"Publishers\":[],\"RunningFor\":\"About an hour ago\",\"Service\":\"grobid\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up About an hour (healthy)\"}\n{\"Command\":\"\\\"python -m rr_worker…\\\"\",\"CreatedAt\":\"2026-10-13 23:17:02 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"e3ecceaea965\",\"Image\":\"research-reader:full-document-ui\",\"Labels\":\"com.docker.compose.config-hash=8a31625e85eeae05481fc2221106def82f864ac5b21ce32694dc30085bf23235,com.docker.compose.depends_on=api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml,com.docker.compose.service=worker,com.docker.compose.version=5.5.1,com.docker.compose.container-number=1,com.docker.compose.image=sha256:a3147676c31ea6559440cf77f246c4bbc808e3736f44aa45989b664fdf98e4e0,com.docker.compose.project=research-reader-ui-qa,com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\deploy\\\\docker.env.example,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,com.docker.compose.replace=worker-1,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"1\",\"Mounts\":\"research-reade…\",\"Name\":\"research-reader-ui-qa-worker-1\",\"Names\":\"research-reader-ui-qa-worker-1\",\"Networks\":\"research-reader-ui-qa_parsing,research-reader-ui-qa_reader\",\"Ports\":\"8765/tcp\",\"Project\":\"research-reader-ui-qa\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8765,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"14 seconds ago\",\"Service\":\"worker\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 6 seconds (healthy)\"}\n",
+  "image_id": "[{\"ID\":\"sha256:582dcab95710c29c0d2fd18af3f420f848649fb7566341d2eec1a32d4306da97\",\"ContainerName\":\"research-reader-ui-qa-grobid-1\",\"Repository\":\"grobid/grobid\",\"Tag\":\"\",\"Platform\":\"linux/amd64\",\"Size\":1190051876,\"Created\":\"2026-08-04T09:23:10.392050205Z\"},{\"ID\":\"sha256:a3147676c31ea6559440cf77f246c4bbc808e3736f44aa45989b664fdf98e4e0\",\"ContainerName\":\"research-reader-ui-qa-worker-1\",\"Repository\":\"research-reader\",\"Tag\":\"full-document-ui\",\"Platform\":\"linux/amd64\",\"Size\":1070193021,\"Created\":\"2026-10-13T15:09:46.932529839Z\",\"LastTagTime\":\"2026-10-13T15:09:49.310238745Z\"},{\"ID\":\"sha256:a3147676c31ea6559440cf77f246c4bbc808e3736f44aa45989b664fdf98e4e0\",\"ContainerName\":\"research-reader-ui-qa-api-1\",\"Repository\":\"research-reader\",\"Tag\":\"full-document-ui\",\"Platform\":\"linux/amd64\",\"Size\":1070193021,\"Created\":\"2026-10-13T15:09:46.932529839Z\",\"LastTagTime\":\"2026-10-13T15:09:49.310238745Z\"}]\n\n",
+  "passed": true
+}

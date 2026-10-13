@@ -11,16 +11,16 @@ def test_assistant_refuses_without_configuration(client):
     assert reply.json()["detail"]["error_code"] == "translation_not_configured"
 
 
-def test_context_is_bounded_and_selected_block_has_priority(client):
+def test_context_is_complete_and_selected_block_does_not_limit_scope(client):
     doc = import_and_parse(client)
     block = client.get(f"/api/v1/documents/{doc}/pages/1").json()["blocks"][0]
     request = AssistantRequest(question="这个术语在本文中的含义", block_id=block["id"], kind="term")
     with client.app.state.database.session() as session:
         context = prepare_context(session, doc, request)
-    assert context["sources"][0]["block_id"] == block["id"]
-    assert len(context["sources"]) <= 8
-    assert sum(len(source["text"]) for source in context["sources"]) <= 18000
-    assert context["sources"][0]["page_number"] == 2
+    assert block["id"] in {source['block_id'] for source in context['sources']}
+    assert context['context_summary']['strategy']=='full_document'
+    assert context['context_summary']['complete'] and not context['context_summary']['excerpts']
+    assert {source['page_number'] for source in context['sources']}=={1,2}
 
 
 def test_foreign_block_is_rejected_before_service_call(client):
@@ -123,7 +123,7 @@ def test_ollama_budget_leaves_room_for_answer_with_bounded_thinking():
     assert sent[0]["reasoning_effort"]=="low"
 
 
-def test_summary_context_contains_body_instead_of_selected_title(client):
+def test_summary_context_contains_all_types_including_selected_title(client):
     from rr_storage import Block,Document
     from sqlalchemy import select
     doc=import_and_parse(client)
@@ -132,14 +132,14 @@ def test_summary_context_contains_body_instead_of_selected_title(client):
         rows=list(session.scalars(select(Block).where(Block.revision_id==current.active_revision_id)))
         selected=next(row for row in rows if row.type in {'title','heading'})
         context=prepare_context(session,doc,AssistantRequest(question='概括内容',block_id=selected.id,selected_text=selected.clean_text))
-    assert context['context_summary']['strategy']=='overview'
+    assert context['context_summary']['strategy']=='full_document'
     assert context['context_summary']['body_selected']>0
-    assert all(source['type'] not in {'heading','title'} for source in context['sources'])
-    assert len(context['sources'])<=8
-    assert sum(len(s['text']) for s in context['sources'])<=18000
+    assert selected.id in {source['block_id'] for source in context['sources']}
+    assert len(context['sources'])==len([row for row in rows if (row.clean_text or row.raw_text).strip() or row.table_data])
+    assert not any(source['truncated'] for source in context['sources'])
 
 
-def test_only_heading_document_is_refused_before_provider_request(client):
+def test_heading_only_parse_is_reported_as_complete_available_text(client):
     from rr_storage import Block,Document
     from sqlalchemy import select
     doc=import_and_parse(client)
@@ -151,9 +151,45 @@ def test_only_heading_document_is_refused_before_provider_request(client):
     calls=[]
     def provider(request):
         calls.append(request)
-        return httpx.Response(200,json={})
+        return httpx.Response(200,json={'choices':[{'message':{'content':'本次解析只提供标题类文字，缺少可确认的方法细节。'}}]})
     with httpx.Client(transport=httpx.MockTransport(provider)) as transport:
         client.app.state.assistant_client=transport
         reply=client.post(f'/api/v1/documents/{doc}/assistant',json={'question':'概括全文'})
-    assert reply.status_code==409 and reply.json()['detail']['error_code']=='no_body_context'
+    assert reply.status_code==200 and len(calls)==1
+    assert reply.json()['context_summary']['body_available']==0
+    assert reply.json()['context_summary']['complete']
+
+
+def test_full_document_guard_refuses_entire_request_without_provider_call(client,monkeypatch):
+    doc=import_and_parse(client)
+    monkeypatch.setattr('rr_services.assistant.MAX_DOCUMENT_CHARS',20)
+    client.put('/api/v1/settings/translation',json={'base_url':'https://example.invalid/v1','model':'fixture','api_key':'fixture'})
+    calls=[]
+    def provider(request):calls.append(request);return httpx.Response(200,json={})
+    with httpx.Client(transport=httpx.MockTransport(provider)) as transport:
+        client.app.state.assistant_client=transport
+        response=client.post(f'/api/v1/documents/{doc}/assistant',json={'question':'概括全文'})
+    assert response.status_code==413 and response.json()['detail']['error_code']=='full_document_too_large'
     assert not calls
+
+
+def test_readonly_context_endpoint_and_legacy_local_field_use_same_full_text(client):
+    doc=import_and_parse(client)
+    reply=client.get(f'/api/v1/documents/{doc}/assistant/context')
+    assert reply.status_code==200 and reply.json()['complete']
+    with client.app.state.database.session() as session:
+        context=prepare_context(session,doc,AssistantRequest(question='解释这段',context_scope='selection',page_index=1))
+    assert context['context_summary']['source_count']==reply.json()['source_count']
+    assert context['context_summary']['pages']==[1,2]
+
+
+def test_provider_context_limit_is_reported_without_excerpt_retry(client):
+    doc=import_and_parse(client)
+    with client.app.state.database.session() as session:context=prepare_context(session,doc,AssistantRequest(question='解释'))
+    config=OpenAITranslationConfig(base_url='https://example.invalid/v1',api_key='fixture',model='fixture')
+    calls=[]
+    def provider(request):calls.append(request);return httpx.Response(400,json={'error':{'code':'context_length_exceeded','message':'secret internal details'}})
+    import pytest
+    with httpx.Client(transport=httpx.MockTransport(provider)) as transport:
+        with pytest.raises(AssistantError) as error:answer_question(config,context,AssistantRequest(question='解释'),client=transport)
+    assert error.value.code=='assistant_context_limit' and 'secret' not in str(error.value) and len(calls)==1

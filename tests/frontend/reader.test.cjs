@@ -50,7 +50,7 @@ function harness() {
     setTimeout: fn => { timers.set(++timerId, fn); return timerId; },
     clearTimeout: id => timers.delete(id),
     api: { originalUrl: id => `/original/${id}`, exportUrl: (id, language) => `/export/${id}/${language}` },
-    ApiError: class extends Error {}, createSettingsPanel() {},
+    ApiError: class extends Error {}, createSettingsPanel() {}, initWorkspaceUI() {},
     createLibrary: options => ({load: async () => { context.libraryOptions=options; },dispose(){},activeCollection:()=>null}),
     createAssistantPanel: () => ({element: new Element(), toggle() {}, dispose() {}, setBlock() {}}),
   });

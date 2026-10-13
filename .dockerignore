@@ -20,6 +20,7 @@
 !deploy/container-health.py
 !deploy/archive.py
 !deploy/requirements.lock
+!deploy/build-dependencies.py
 **/__pycache__/
 **/*.pyc
 **/*.egg-info/

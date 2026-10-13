@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Tab 退出菜单且页面仍可继续操作",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "分类菜单支持方向键、End、Escape 与焦点恢复",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "右键打开分类菜单，重命名后保留分类及成员",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "删除分类先确认，Escape 取消；确认删除不删除文献",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "条目菜单作用于目标文献，点击外部关闭",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "视口右下角的右键菜单会翻转并限制在视口内",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "下拉控件保留原生选择事件与排序行为",
+      "passed": true,
+      "detail": {
+        "custom_picker_supported": false
+      }
+    },
+    {
+      "name": "深色外观刷新后保留",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "跟随系统实时响应，手动选择可覆盖系统",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1024px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1024px 菜单位于视口内且不被导航裁切",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "768px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "768px 菜单位于视口内且不被导航裁切",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "390px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "390px 菜单位于视口内且不被导航裁切",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "阅读视图切换正常，原件画布宽高比保持 600:800",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1024px 阅读器无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "768px 阅读器无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "390px 阅读器无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "深色界面中的覆盖译文仍为白纸黑字",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "减少动态效果设置禁用弹层动画",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "没有 Popover API 时固定定位菜单仍可用",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "分类与菜单操作保留所有测试原件和解析版本",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "UI 验收没有产生模型请求",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "浏览器无未捕获 JavaScript 错误",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "browser": "msedge",
+  "fixture": "self-authored isolated documents",
+  "paid_requests": 0
+}

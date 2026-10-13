@@ -2668,7 +2668,9 @@
               "selection"
             ],
             "title": "Context Scope",
-            "default": "auto"
+            "description": "兼容旧客户端；所有请求统一提供完整文献文本，该字段不再限制范围。",
+            "default": "document",
+            "deprecated": true
           },
           "history": {
             "items": {
@@ -3846,6 +3848,46 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/assistant/context": {
+      "get": {
+        "tags": [
+          "assistant"
+        ],
+        "summary": "Get Assistant Context",
+        "operationId": "get_assistant_context_api_v1_documents__document_id__assistant_context_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -6585,7 +6627,7 @@
     "implemented": [
       "the component schemas below, enforced by tests",
       "the error taxonomy and its HTTP status mapping",
-      "47 path objects, served by the FastAPI application",
+      "48 path objects, served by the FastAPI application",
       "import, parse, page images, outline, annotations, terms, reading state, jobs and the bilingual Markdown export"
     ],
     "not_yet_implemented": [

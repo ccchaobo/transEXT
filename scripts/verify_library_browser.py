@@ -17,7 +17,7 @@ from rr_worker import Worker
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'var/_browser_tools'))
 from playwright.sync_api import sync_playwright, expect
-OUT=ROOT/'docs/acceptance/2026-10-12/library-management'
+OUT=Path(os.environ.get('RR_ACCEPTANCE_OUTPUT',str(ROOT/'docs/acceptance/2026-10-12/library-management')))
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
             if key.startswith('RR_TRANSLATION_') or key=='RESEARCH_READER_DB_URL':env.pop(key)
         env.update(RR_DATA_DIR=str(data),RR_PORT=str(port),RR_ENV_FILE=str(data/'no-env-file'),RR_GROBID_URL='')
         log=(OUT/'server.log').open('w',encoding='utf-8')
-        server=subprocess.Popen([sys.executable,'-m','rr_api'],cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT)
+        server=subprocess.Popen([sys.executable,'-m','rr_api'],cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
         client=httpx.Client(trust_env=False,timeout=30)
         try:
             for _ in range(100):
@@ -103,7 +103,7 @@ def main():
                 page.get_by_label('选择当前已加载文献').check()
                 page.locator('.library-batch').get_by_role('button',name='加入分类',exact=True).click()
                 page.locator('.library-dialog').get_by_role('button',name='确定',exact=True).click()
-                page.get_by_role('button',name='脑影像研究').click()
+                page.locator('.library-nav-item').filter(has_text='脑影像研究').click()
                 expect(page.locator('.library-table tbody tr')).to_have_count(2)
                 check('批量加入分类，两篇原件仍在同一文献库')
                 page.get_by_label('选择当前已加载文献').check()
@@ -114,7 +114,7 @@ def main():
                 check('从分类移除保留文献')
                 page.get_by_label('选择当前已加载文献').check()
                 page.locator('.library-batch').get_by_role('button',name='标为已读',exact=True).click()
-                expect(page.locator('.library-table tbody tr td:last-child').first).to_have_text('已读')
+                expect(page.locator('.library-table tbody tr .read-status').first).to_have_text('已读')
                 page.get_by_role('button',name=__import__('re').compile('^已读')).click()
                 expect(page.locator('.library-table tbody tr')).to_have_count(2)
                 check('批量标为已读并按状态筛选')

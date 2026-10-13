@@ -78,6 +78,16 @@ def get_assistant_capabilities(request: Request):
     with _session(request) as session:return assistant_capabilities(resolve_assistant_config(session))
 
 
+@router.get('/documents/{document_id}/assistant/context',tags=['assistant'])
+def get_assistant_context(request: Request, document_id: str):
+    try:
+        with _session(request) as session:
+            context=prepare_context(session,document_id,AssistantRequest(question='全文资料'))
+        return {'title':context['title'],**context['context_summary']}
+    except AssistantError as error:
+        raise HTTPException(error.status,detail={'error_code':error.code,'message':error.message})
+
+
 @router.post('/documents/{document_id}/assistant/stream',tags=['assistant'])
 async def ask_assistant_stream(request: Request,document_id: str,payload: AssistantRequest):
     try:

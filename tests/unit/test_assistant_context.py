@@ -19,30 +19,43 @@ def paper():
     return rows
 
 
-def test_overview_ignores_stale_selected_title_and_contains_real_body_across_sections():
+def test_full_document_includes_titles_headings_and_all_body_across_sections():
     request=AssistantRequest(question='概括内容',block_id='b0',selected_text='A scientific research paper')
     chosen,mode,body=choose_rows(paper(),request,tokens(request.question),tokens)
-    assert mode=='overview'
-    assert all(row.type not in {'title','heading'} for row in chosen)
-    assert {row.section_path[0] for row in chosen}=={'Abstract','1 Introduction','4 Methods','5 Results','6 Conclusion'}
-    assert len(chosen)<=8
+    assert mode=='full_document'
+    assert chosen==paper() and len(chosen)>8
+    assert {row.section_path[0] for row in body}=={'Abstract','1 Introduction','4 Methods','5 Results','6 Conclusion'}
 
 
-def test_related_question_reserves_body_slots_even_when_all_headings_rank_first():
+def test_question_keywords_do_not_change_or_reorder_full_document():
     request=AssistantRequest(question='Technical Section',block_id='b0')
     chosen,_,_=choose_rows(paper(),request,tokens(request.question),tokens)
-    assert chosen[0].id=='b0'
-    assert sum(row.type in {'paragraph','abstract'} for row in chosen)>=2
+    assert chosen==paper()
 
 
-def test_local_summary_does_not_expand_to_other_pages_and_explicit_scope_wins():
+def test_legacy_local_scope_still_provides_every_page():
     request=AssistantRequest(question='概括这段内容',block_id='b22',page_index=3)
     chosen,mode,_=choose_rows(paper(),request,tokens(request.question),tokens)
-    assert mode=='selection' and chosen[0].id=='b22'
-    assert all(row.page_index==3 for row in chosen)
-    assert context_strategy(request.model_copy(update={'context_scope':'document'}))=='overview'
+    assert mode=='full_document' and chosen==paper()
+    assert context_strategy(request.model_copy(update={'context_scope':'selection'}))=='full_document'
 
 
-def test_selection_without_anchor_or_text_produces_no_candidates():
+def test_legacy_selection_without_anchor_still_provides_full_document():
     rows,mode,_=choose_rows(paper(),AssistantRequest(question='解释',context_scope='selection'),set(),tokens)
-    assert mode=='selection' and not rows
+    assert mode=='full_document' and rows==paper()
+
+
+def test_headers_references_long_blocks_and_structured_tables_are_not_filtered():
+    from rr_services.assistant_context import source_text
+    rows=[block(index,kind,'content '+kind) for index,kind in enumerate(['title','author','heading','paragraph','caption','formula','reference','header','footer','page_number'])]
+    rows.append(block(10,'paragraph','LONG '*4000+'END'))
+    table=block(11,'table','');table.table_data={'headers':['Method','MAE'],'rows':[['A',0.01]]};rows.append(table)
+    chosen,mode,_=choose_rows(rows,AssistantRequest(question='方法'),set(),tokens)
+    assert chosen==rows and source_text(chosen[-2]).endswith('END')
+    assert len(source_text(chosen[-2]))>18000 and 'MAE' in source_text(chosen[-1])
+
+
+def test_whitespace_only_clean_text_does_not_hide_readable_raw_text():
+    from rr_services.assistant_context import source_text
+    row=block(1,'paragraph','Readable original');row.clean_text=' \n'
+    assert source_text(row)=='Readable original'

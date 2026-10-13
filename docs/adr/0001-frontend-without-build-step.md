@@ -68,10 +68,10 @@ than presented as equivalent.
   reviewable file replacement (see ADR 0002).
 * Frontend code must be written for browsers that support ES modules with no
   transpilation. For a local tool on a current browser this is not a constraint.
-* There is no frontend test runner in this environment and no browser
-  automation. Frontend verification is therefore DOM-contract unit tests plus
-  documented manual steps. This is recorded in the limitations document; it is
-  not a claim of equivalent coverage.
+* Updated 2026-10-13: frontend checks now run with Node's built-in test runner
+  and real Playwright browsers against isolated PDF/library fixtures. Shared
+  menus are verified through keyboard, pointer, theme and responsive scenarios.
+  This does not verify real-model answer quality.
 
 ## Revisit if
 

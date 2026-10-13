@@ -21,6 +21,7 @@ import { fillStructuredText } from './text-layout.js';
 import { createSettingsPanel } from "./settings.js";
 import { createAssistantPanel } from "./assistant.js";
 import { createLibrary } from "./library.js";
+import { initWorkspaceUI } from "./ui.js";
 
 const state = {
   route: { name: "library" },
@@ -208,7 +209,7 @@ async function openReader(documentId, version = state.routeVersion) {
   main.appendChild(buildToolbar(doc, reader.dataset.mode));
   main.appendChild(buildPanes(doc, reader.dataset.mode));
   reader.appendChild(main);
-  state.assistant = createAssistantPanel({ documentId: doc.id, getPage: () => state.page,
+  state.assistant = createAssistantPanel({ documentId: doc.id, documentTitle: doc.title || doc.filename, getPage: () => state.page,
     onSource: async source => {
       const loaded = await loadPage(source.page_index);
       if (loaded) selectBlock(source.block_id, { scroll: true, scrollOther: true });
@@ -1371,6 +1372,7 @@ async function refreshTranslationStatus() {
 }
 
 async function boot() {
+  initWorkspaceUI();
   els.fileInput.closest?.(".file-button")?.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); els.fileInput.click(); }
   });

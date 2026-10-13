@@ -98,6 +98,7 @@ export const api = {
   askAssistant: (id, payload) => request(`${BASE}/documents/${id}/assistant`, { method: "POST", body: payload }),
   streamAssistant,
   assistantCapabilities: () => request(`${BASE}/assistant/capabilities`),
+  assistantContext: id => request(`${BASE}/documents/${id}/assistant/context`),
   health: () => request("/health"),
   translationConfiguration: () => request(`${BASE}/translation/configuration`),
 

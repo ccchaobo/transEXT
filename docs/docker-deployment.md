@@ -36,6 +36,12 @@ Windows 双击 `deploy.cmd`。也可以在 PowerShell 执行：
 
 首次进入“翻译设置”配置服务、模型和密钥。翻译与 AI 仍需要你自己的外部服务账户；镜像不包含密钥，测试不自动产生付费请求。网页可以无密钥导入、解析和阅读。访问宿主机上的 Ollama 时，Docker 内的 `localhost` 表示容器自身，应按 Docker 平台使用宿主机地址配置。
 
+## 构建缓存
+
+固定运行依赖与项目代码分层构建。普通一键启动不需要缓存镜像；首次安装依赖后，修改代码或 README 只需重新打包项目，不反复下载 OCR、PDF 等大型依赖。pip 使用独立构建缓存，运行镜像仍为原来的官方 Python 基础及非 root 用户。
+
+已有可信的本项目镜像时，可显式指定 `docker compose --env-file .env.docker build --build-arg DEPENDENCY_CACHE_IMAGE=research-reader:local api`。构建会核对 Python 可执行文件与目标基础镜像一致，并逐项核对 pyproject 和锁文件固定版本；缺包或版本不一致时重新安装依赖，Python 基础不一致时拒绝使用该缓存。随后仍按原 Compose 方案部署。不通过改版本或忽略下载哈希错误来绕过失败。
+
 单用户入口只发布本机端口。远程 Linux 服务器可通过 SSH 转发访问：`ssh -L 8765:127.0.0.1:8765 user@server`。公网或多人共享部署还需独立身份验证和 HTTPS，不属于当前单用户部署包。
 
 ## 数据与组件边界

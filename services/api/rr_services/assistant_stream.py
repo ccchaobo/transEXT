@@ -4,7 +4,7 @@ import json
 import re
 import time
 import httpx
-from .assistant import AssistantError,build_payload
+from .assistant import AssistantError,build_payload,provider_error
 
 
 class PublicChannels:
@@ -47,7 +47,11 @@ async def stream_answer(config,context,request,*,client=None):
         client=client or httpx.AsyncClient(timeout=httpx.Timeout(min(config.timeout_seconds,120),connect=15),follow_redirects=False)
         async with asyncio.timeout(min(config.timeout_seconds,120)):
             async with client.stream('POST',config.endpoint(),json=payload,headers={'Authorization':f'Bearer {config.api_key}','Content-Type':'application/json'}) as response:
-                if not response.is_success:raise AssistantError('assistant_provider_error',f'AI 服务返回 HTTP {response.status_code}，请检查配置或手动重试。')
+                if not response.is_success:
+                    await response.aread()
+                    try:error_data=response.json()
+                    except ValueError:error_data=None
+                    raise provider_error(response.status_code,error_data)
                 if 'text/event-stream' not in response.headers.get('content-type',''):
                     raise AssistantError('assistant_stream_unsupported','服务未返回流式回答，请检查模型和服务是否支持流式协议；未自动重复请求。')
                 data_lines=[];received=0

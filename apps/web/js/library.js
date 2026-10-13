@@ -1,5 +1,6 @@
 /* A file-backed research library: organisation never moves original files. */
 import { openZotero, openZoteroWrite } from './zotero.js';
+import { icon, createActionMenu, closeActionMenu, confirmAction } from './ui.js';
 const READ_LABELS={to_read:'未读',reading:'阅读中',read:'已读'};
 const TYPES={article:'期刊论文',book:'书籍',thesis:'学位论文',report:'报告',other:'其他'};
 const STAGES={pending:'待处理',running:'处理中',succeeded:'完成',partially_succeeded:'部分完成',failed:'失败',cancelled:'已取消',skipped:'跳过'};
@@ -32,7 +33,7 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
   const thead=node('thead');const header=node('tr');
   const allCell=node('th');const all=node('input');all.type='checkbox';all.setAttribute('aria-label','选择当前已加载文献');
   allCell.appendChild(all);header.appendChild(allCell);
-  for(const label of ['收藏','标题 / 文件','作者','年份','阅读状态'])header.appendChild(node('th',null,label));
+  for(const label of ['收藏','标题 / 文件','作者','年份','阅读状态','操作'])header.appendChild(node('th',null,label));
   thead.appendChild(header);const tbody=node('tbody');table.append(thead,tbody);tableWrap.appendChild(table);
   const empty=node('div','library-empty');empty.hidden=true;tableWrap.appendChild(empty);
   const more=button('加载更多',()=>load(true));more.id='library-more';
@@ -51,20 +52,29 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
   async function navigate(changes){if(!leave())return;Object.assign(state,changes);state.selected.clear();state.active=null;await load();}
   function nav(label,count,changes,selected){
     const b=button('',()=>navigate(changes));b.className=`library-nav-item${selected?' active':''}`;
+    b.appendChild(icon(changes.collection ? 'folder' : ({all:'library',unfiled:'folder',starred:'star',to_read:'clock',reading:'book',read:'check',trash:'trash'}[changes.view])));
+    if(selected)b.setAttribute('aria-current','page');
     b.append(node('span',null,label),node('span','library-count',String(count ?? 0)));return b;
   }
   function drawSidebar(){
     const overview=state.overview;if(!overview)return;
+    closeActionMenu(root);
     sidebar.replaceChildren(node('h2',null,'文献库'));
     for(const [view,label] of [['all','全部文献'],['unfiled','未分类'],['starred','我的收藏'],['to_read','未读'],['reading','阅读中'],['read','已读'],['trash','回收站']])
       sidebar.appendChild(nav(label,overview.counts[view],{view,collection:'',tag:''},state.view===view&&!state.collection));
-    const title=node('div','library-nav-heading');title.append(node('h2',null,'分类'),button('＋',()=>collectionDialog()));sidebar.appendChild(title);
-    for(const c of overview.collections)sidebar.appendChild(nav(c.name,c.count,{view:'all',collection:c.id,tag:''},state.collection===c.id));
-    if(state.collection){
-      const c=overview.collections.find(c=>c.id===state.collection);
-      if(c){const actions=node('div','library-collection-actions');actions.append(
-        button('重命名',()=>collectionDialog(c)),
-        button('删除分类',async()=>{if(confirm(`删除分类「${c.name}」？文献、译文和标注会保留。`)){await api.deleteCollection(c.id);await navigate({view:'all',collection:''});}}));sidebar.appendChild(actions);}
+    const title=node('div','library-nav-heading');const create=button('＋',()=>collectionDialog());create.setAttribute('aria-label','新建分类');create.title='新建分类';title.append(node('h2',null,'分类'),create);sidebar.appendChild(title);
+    for(const c of overview.collections){
+      const row=node('div',`library-collection-row${state.collection===c.id?' active':''}`);row.dataset.collectionId=c.id;
+      row.appendChild(nav(c.name,c.count,{view:'all',collection:c.id,tag:''},state.collection===c.id));
+      const menu=createActionMenu({label:`分类「${c.name}」的更多操作`,onError,items:[
+        {label:'重命名',icon:'edit',onSelect:()=>{if(leave())collectionDialog(c);}},
+        {separator:true},
+        {label:'删除分类',icon:'trash',danger:true,onSelect:async()=>{
+          if(!leave()||!await confirmAction({title:'删除分类',message:`删除「${c.name}」后，文献、译文和标注会保留，只移除分类关系。`,confirmLabel:'删除分类'}))return;
+          await api.deleteCollection(c.id);
+          if(state.collection===c.id)await navigate({view:'all',collection:''});else await load();
+        }},
+      ]});row.appendChild(menu.button);menu.bindContext(row);sidebar.appendChild(row);
     }
     sidebar.appendChild(node('h2',null,'标签'));
     const tags=node('div','library-tags');
@@ -108,13 +118,36 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
       const checkcell=node('td');const check=node('input');check.type='checkbox';check.checked=state.selected.has(item.id);check.setAttribute('aria-label',`选择 ${item.bibliography.title}`);
       check.addEventListener('click',event=>{if(event.shiftKey){for(let n=Math.min(index,state.lastIndex);n<=Math.max(index,state.lastIndex);n++){if(check.checked)state.selected.add(ids[n]);else state.selected.delete(ids[n]);}}else{if(check.checked)state.selected.add(item.id);else state.selected.delete(item.id);}state.lastIndex=index;drawRows();});checkcell.appendChild(check);tr.appendChild(checkcell);
       const starcell=node('td');const star=button(item.bibliography.starred?'★':'☆',()=>perform(item.bibliography.starred?'unstar':'star',[item.id]));star.className='library-star';star.title=item.bibliography.starred?'取消收藏':'收藏';star.disabled=!!item.deleted_at;star.setAttribute('aria-label',star.title);starcell.appendChild(star);tr.appendChild(starcell);
-      const titlecell=node('td','library-title-cell');titlecell.append(node('strong',null,item.bibliography.title || item.filename),node('span','library-file',item.filename));titlecell.title=`${item.bibliography.title}\n${item.filename}`;tr.appendChild(titlecell);
+      const titlecell=node('td','library-title-cell');const copy=node('div','library-title-copy');copy.append(node('strong',null,item.bibliography.title || item.filename),node('span','library-file',item.filename));const titlewrap=node('div','library-title-wrap');titlewrap.append(icon('file'),copy);titlecell.appendChild(titlewrap);titlecell.title=`${item.bibliography.title}\n${item.filename}`;tr.appendChild(titlecell);
       const authors=node('td',null,item.bibliography.authors.join('；') || '—');authors.title=item.bibliography.authors.join('；');tr.appendChild(authors);
-      tr.append(node('td',null,String(item.bibliography.year || '—')),node('td',null,READ_LABELS[item.bibliography.read_status]));tbody.appendChild(tr);
+      const readcell=node('td');readcell.appendChild(node('span',`read-status read-status-${item.bibliography.read_status}`,READ_LABELS[item.bibliography.read_status]));
+      tr.append(node('td',null,String(item.bibliography.year || '—')),readcell);
+      const actioncell=node('td','library-row-actions');const menu=createActionMenu({label:`文献「${item.bibliography.title || item.filename}」的更多操作`,onError,items:()=>itemActions(item)});
+      actioncell.appendChild(menu.button);tr.appendChild(actioncell);menu.bindContext(tr);tbody.appendChild(tr);
     }
     empty.hidden=state.items.length>0;empty.textContent=state.view==='trash'?'回收站为空。移入回收站的文献可在这里恢复。':state.q||state.collection||state.tag?'没有匹配的文献。可调整筛选或导入新文献。':'文献库为空。点击“导入文献”添加 PDF，支持多选和拖放。';
     more.hidden=state.items.length>=state.total;
     drawBatchbar();
+  }
+
+  function itemActions(item){
+    if(item.deleted_at)return [
+      {label:'恢复文献',icon:'arrow',onSelect:()=>perform('restore',[item.id])},
+      {separator:true},
+      {label:'永久删除',icon:'trash',danger:true,onSelect:()=>perform('permanent_delete',[item.id])},
+    ];
+    return [
+      {label:'打开阅读',icon:'book',onSelect:()=>{if(leave())location.hash=`#/doc/${item.id}`;}},
+      {label:'打开原件',icon:'file',href:item.original_url,newTab:true},
+      {separator:true},
+      {label:item.bibliography.starred?'取消收藏':'收藏',icon:'star',onSelect:()=>perform(item.bibliography.starred?'unstar':'star',[item.id])},
+      {label:'加入分类',icon:'folder',onSelect:()=>{if(leave())chooseCollection([item.id]);}},
+      {label:'添加标签',icon:'tag',onSelect:()=>{if(leave())tagsDialog([item.id]);}},
+      {label:'标为已读',icon:'check',onSelect:()=>perform('mark_read',[item.id])},
+      ...(state.collection?[{label:'从此分类移除',icon:'folder',onSelect:()=>perform('remove_collection',[item.id],{collection_id:state.collection})}]:[]),
+      {separator:true},
+      {label:'移入回收站',icon:'trash',danger:true,onSelect:()=>perform('trash',[item.id])},
+    ];
   }
 
   function drawBatchbar(){
@@ -129,7 +162,7 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
   }
   async function perform(action,ids,extra={}){
     if(!leave())return;
-    if(action==='permanent_delete'&&!confirm(`永久删除所选 ${ids.length} 篇文献？原件、译文和标注将被删除，无法恢复。`))return;
+    if(action==='permanent_delete'&&!await confirmAction({title:'永久删除文献',message:`永久删除所选 ${ids.length} 篇文献？原件、译文和标注将被删除，无法恢复。`,confirmLabel:'永久删除'}))return;
     root.dataset.mutating='true';
     try{
       for(let start=0;start<ids.length;start+=200)
@@ -183,7 +216,7 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
     if(!memberships.length)collectionTitle.appendChild(node('span','library-muted','先在左侧创建分类。'));form.appendChild(collectionTitle);
     field('abstract','摘要',meta.abstract,'textarea');field('notes','笔记',meta.notes,'textarea');
     const save=node('button','button primary','保存信息');save.type='submit';save.id='library-save';save.disabled=true;
-    const message=node('span','library-save-message');form.append(save,message);
+    const message=node('span','library-save-message');const savebar=node('div','library-savebar');savebar.append(save,message);form.appendChild(savebar);
     form.addEventListener('input',()=>{state.dirty=true;save.disabled=false;message.textContent='未保存';});
     form.addEventListener('submit',async event=>{
       event.preventDefault();save.disabled=true;
@@ -221,5 +254,5 @@ export function createLibrary({container,api,onError,onImport,isCurrent=()=>true
   root.addEventListener('dragover',event=>{if(event.dataTransfer?.types.includes('Files')){event.preventDefault();root.classList.add('is-drop-target');}});
   root.addEventListener('dragleave',event=>{if(!root.contains(event.relatedTarget))root.classList.remove('is-drop-target');});
   root.addEventListener('drop',event=>{event.preventDefault();root.classList.remove('is-drop-target');if(!leave())return;const input=document.getElementById('file-input');if(event.dataTransfer?.files.length){input.files=event.dataTransfer.files;input.dispatchEvent(new Event('change'));}});
-  return {load,activeCollection:()=>state.collection || null,dispose(){state.disposed=true;clearTimeout(searchTimer);clearTimeout(refreshTimer);root.querySelectorAll('dialog').forEach(d=>d.remove());},state};
+  return {load,activeCollection:()=>state.collection || null,dispose(){state.disposed=true;closeActionMenu(root);clearTimeout(searchTimer);clearTimeout(refreshTimer);root.querySelectorAll('dialog').forEach(d=>d.remove());},state};
 }

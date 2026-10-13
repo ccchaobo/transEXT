@@ -1,0 +1,99 @@
+INFO:     Started server process [33932]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:42945 (Press CTRL+C to quit)
+INFO:     127.0.0.1:42968 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33498 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33498 - "GET /styles.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33908 - "GET /ui.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:27444 - "GET /library.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35357 - "GET /js/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35357 - "GET /js/api.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:27444 - "GET /js/text-layout.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33908 - "GET /js/settings.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33498 - "GET /js/assistant.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56745 - "GET /js/library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46861 - "GET /js/ui.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46861 - "GET /js/zotero.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46861 - "GET /api/v1/translation/configuration HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56745 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:46861 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56745 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "POST /api/v1/documents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59075 - "POST /api/v1/documents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:59075 - "GET /ui.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:59075 - "GET /api/v1/translation/configuration HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "POST /api/v1/library/collections HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100&collection_id=col_8d20cb127ace48a38103 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "PATCH /api/v1/library/items/doc_99deb9e838794ca8ba18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42968 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/original HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42968 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100&q=%E5%BC%A0%E4%B8%89 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100&q=%E6%B2%A1%E6%9C%89%E5%8C%B9%E9%85%8D%E7%9A%84%E8%AF%8D HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100&collection_id=col_8d20cb127ace48a38103 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100&collection_id=col_8d20cb127ace48a38103 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=read&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=read&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=starred&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=starred&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=trash&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "POST /api/v1/library/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=trash&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42968 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42968 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/original HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/reading-state HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/outline HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/annotations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/assistant/capabilities HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/pages/0?target_language=zh HTTP/1.1" 200 OK
+INFO:     127.0.0.1:21333 - "GET /api/v1/jobs?document_id=doc_99deb9e838794ca8ba18 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/documents/doc_99deb9e838794ca8ba18/pages/0/preview.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "PUT /api/v1/documents/doc_99deb9e838794ca8ba18/reading-state HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:59075 - "GET /ui.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:59075 - "GET /api/v1/translation/configuration HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=0&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39330 - "GET /api/v1/library/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59075 - "GET /api/v1/library/items?view=all&sort=added_desc&offset=100&limit=100 HTTP/1.1" 200 OK

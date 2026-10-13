@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>科研文献对照阅读器</title>
+<script>
+try {
+  const choice = localStorage.getItem('rr.appearance');
+  document.documentElement.dataset.theme = choice === 'light' || choice === 'dark' ? choice
+    : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+} catch { document.documentElement.dataset.theme = 'light'; }
+</script>
 <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/ui.css">
   <link rel="stylesheet" href="/library.css">
@@ -17,6 +24,7 @@
   <nav class="topbar-actions">
     <span id="translation-badge" class="badge badge-unknown" title="翻译服务状态">翻译：检查中</span>
     <button id="settings-button" class="button" type="button" title="配置翻译服务">翻译设置</button>
+    <button id="appearance-button" class="button icon-button" type="button" aria-label="选择外观" title="选择外观">◐</button>
     <label class="field">
       目标语言
       <select id="target-language">

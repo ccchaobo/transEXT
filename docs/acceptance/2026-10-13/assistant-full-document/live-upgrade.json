@@ -1,0 +1,45 @@
+{
+  "same_document_state": true,
+  "frontend_sources_match": true,
+  "complete_text_contexts": true,
+  "contexts": [
+    {
+      "strategy": "full_document",
+      "source_count": 265,
+      "body_available": 191,
+      "body_selected": 191,
+      "pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "chars": 47249,
+      "excerpts": false,
+      "complete": true,
+      "textual_only": true,
+      "document_pages": 10,
+      "types": {
+        "title": 2,
+        "author": 2,
+        "abstract": 1,
+        "heading": 15,
+        "paragraph": 186,
+        "footnote": 4,
+        "caption": 10,
+        "list_item": 4,
+        "formula": 23,
+        "reference": 7,
+        "page_number": 10,
+        "header": 1
+      }
+    }
+  ],
+  "paid_requests": 0
+}

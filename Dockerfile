@@ -1,15 +1,26 @@
 ARG PYTHON_IMAGE=python:3.11-slim-bookworm@sha256:0a310eeecf4e1f5a0743f9a6520c90c88d089c903ca5fd283f501e3a805f5f89
-FROM ${PYTHON_IMAGE} AS builder
+ARG DEPENDENCY_CACHE_IMAGE=${PYTHON_IMAGE}
+FROM ${PYTHON_IMAGE} AS python-base
+
+FROM ${DEPENDENCY_CACHE_IMAGE} AS builder
+USER root
 WORKDIR /build
-COPY pyproject.toml README.md ./
+COPY --from=python-base /usr/local/bin /tmp/reader-python-base
+COPY pyproject.toml ./
 COPY deploy/requirements.lock ./requirements.lock
+COPY deploy/build-dependencies.py ./
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ ! -x /opt/venv/bin/python ]; then python -m venv /opt/venv; fi \
+    && if /opt/venv/bin/python build-dependencies.py; then true; \
+       else /opt/venv/bin/pip install -c requirements.lock -r /tmp/reader-runtime-requirements.txt; fi
+COPY README.md ./
 COPY packages ./packages
 COPY services ./services
 COPY adapters ./adapters
 COPY benchmarks/rr_m0 ./benchmarks/rr_m0
-RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -c requirements.lock '.[ocr]'
+RUN --mount=type=cache,target=/root/.cache/pip /opt/venv/bin/pip install --no-deps -c requirements.lock '.[ocr]'
 
-FROM ${PYTHON_IMAGE} AS runtime
+FROM python-base AS runtime
 ARG APT_MIRROR=
 RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|http://deb.debian.org/debian|${APT_MIRROR}|g" /etc/apt/sources.list.d/debian.sources; fi \
     && apt-get update \

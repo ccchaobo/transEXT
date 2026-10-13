@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "name": "全文状态接口报告完整解析文本，超过八个来源块",
+      "passed": true
+    },
+    {
+      "name": "选中标题仍发送完整文献，不再出现范围切换控件",
+      "passed": true
+    },
+    {
+      "name": "回答排版包含标题、强调、嵌套列表、表格和代码，原始 HTML 不执行",
+      "passed": true
+    },
+    {
+      "name": "复制保留原回答文字与 Markdown，不操作系统剪贴板",
+      "passed": true
+    },
+    {
+      "name": "来源默认折叠，展开后可核对原文",
+      "passed": true
+    },
+    {
+      "name": "预设「概括本文的研究问题」只填文本，清除旧关注点，不自动计费",
+      "passed": true
+    },
+    {
+      "name": "预设「概括本文的研究问题」使用完整文献",
+      "passed": true
+    },
+    {
+      "name": "预设「解释本文的方法」只填文本，清除旧关注点，不自动计费",
+      "passed": true
+    },
+    {
+      "name": "预设「解释本文的方法」使用完整文献",
+      "passed": true
+    },
+    {
+      "name": "预设「总结主要结论与局限」只填文本，清除旧关注点，不自动计费",
+      "passed": true
+    },
+    {
+      "name": "预设「总结主要结论与局限」使用完整文献",
+      "passed": true
+    },
+    {
+      "name": "回答方式设置不改变全文范围",
+      "passed": true
+    },
+    {
+      "name": "1024px 文献聊天无整页横向溢出",
+      "passed": true
+    },
+    {
+      "name": "768px 文献聊天无整页横向溢出",
+      "passed": true
+    },
+    {
+      "name": "390px 文献聊天无整页横向溢出",
+      "passed": true
+    },
+    {
+      "name": "新对话清空当前聊天并保留文献接入状态",
+      "passed": true
+    },
+    {
+      "name": "模型拒绝全文长度时明确报告，不改发节选或重试",
+      "passed": true
+    },
+    {
+      "name": "停止流式输出保留已收到内容，不重复请求",
+      "passed": true
+    },
+    {
+      "name": "后端仍返回局部资料时禁止发送，不把八段伪装成全文",
+      "passed": true
+    },
+    {
+      "name": "每次实际模型请求都包含全部可读文字，含标题、参考文献和页脚",
+      "passed": true
+    },
+    {
+      "name": "浏览器无未捕获脚本错误",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "provider": {
+    "calls": 7,
+    "body_payloads": 7,
+    "full_payloads": 7,
+    "streams_closed": 1
+  },
+  "coverage": {
+    "title": "context-fixture.pdf",
+    "strategy": "full_document",
+    "source_count": 20,
+    "body_available": 10,
+    "body_selected": 10,
+    "pages": [
+      1,
+      2,
+      3
+    ],
+    "chars": 995,
+    "excerpts": false,
+    "complete": true,
+    "textual_only": true,
+    "document_pages": 3,
+    "types": {
+      "title": 1,
+      "heading": 5,
+      "paragraph": 10,
+      "reference": 1,
+      "footer": 3
+    }
+  },
+  "paid_requests": 0,
+  "fixture": "self-authored full document; no user text"
+}

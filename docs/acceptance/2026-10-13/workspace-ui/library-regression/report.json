@@ -1,0 +1,132 @@
+{
+  "checks": [
+    {
+      "name": "空库显示管理界面与导入入口",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "批量导入后停留在文献库",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "重开文献库仍显示两篇原记录",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "详情可编辑标题、作者、年份、来源、DOI、标签和笔记",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "笔记作为文本保存",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "中文作者检索",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "批量添加标签",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "批量加入分类，两篇原件仍在同一文献库",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "从分类移除保留文献",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "批量标为已读并按状态筛选",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "批量收藏并筛选",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "移入回收站后显示可恢复记录",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "恢复原文档和解析修订",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "恢复后原始文件指纹一致",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "双击条目进入已有对照阅读器",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "阅读后返回管理界面",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "超过 100 篇可继续加载完整列表",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1440px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1440px 分类和文献详情可访问",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1024px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "1024px 分类和文献详情可访问",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "768px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "768px 分类和文献详情可访问",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "390px 文献库无整页横向溢出",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "390px 分类和文献详情可访问",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "scope": "隔离数据库和真实生成的测试 PDF；分页样例未解析；没有修改用户文献或调用外部翻译服务"
+}
