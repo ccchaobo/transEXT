@@ -84,3 +84,29 @@ def test_sse_route_and_capability_payload(client):
         capabilities=client.get('/api/v1/assistant/capabilities').json()
         assert capabilities['effort_supported'] and capabilities['raw_chain_of_thought'] is False
     finally:asyncio.run(c.aclose())
+
+
+def test_summary_stream_contains_body_and_reports_actual_coverage(client):
+    from rr_storage import Block,Document
+    from sqlalchemy import select
+    doc=import_and_parse(client)
+    client.put('/api/v1/settings/translation',json={'base_url':'https://example.invalid/v1','api_key':'fixture-only','model':'qa-fixture'})
+    with client.app.state.database.session() as session:
+        paper=session.get(Document,doc)
+        selected=next(b for b in session.scalars(select(Block).where(Block.revision_id==paper.active_revision_id)) if b.type in {'title','heading'})
+        selected_id=selected.id
+    sent=[]
+    def provider(request):
+        payload=json.loads(request.content);sent.append(payload)
+        assert 'paragraph' in payload['messages'][-1]['content'] or 'abstract' in payload['messages'][-1]['content']
+        assert '不是完整全文' in payload['messages'][0]['content']
+        return httpx.Response(200,headers={'Content-Type':'text/event-stream'},text=frames({'choices':[{'delta':{'content':'根据正文概括 [S1]。'},'finish_reason':'stop'}]}))
+    upstream=httpx.AsyncClient(transport=httpx.MockTransport(provider));client.app.state.assistant_async_client=upstream
+    try:
+        response=client.post(f'/api/v1/documents/{doc}/assistant/stream',json={'question':'概括内容','block_id':selected_id,'include_summary':False})
+        assert response.status_code==200
+        events=[json.loads(line.removeprefix('data: ')) for line in response.text.splitlines() if line.startswith('data: ')]
+        metadata=next(event for event in events if 'context_summary' in event)
+        assert metadata['context_summary']['strategy']=='overview' and metadata['context_summary']['body_selected']>0
+        assert len(sent)==1
+    finally:asyncio.run(upstream.aclose())

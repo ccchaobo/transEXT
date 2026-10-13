@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "name": "selected title does not limit an automatic document summary",
+      "passed": true
+    },
+    {
+      "name": "explicit selected-content mode reaches the service and is displayed",
+      "passed": true
+    },
+    {
+      "name": "scope controls and coverage do not overflow the mobile viewport",
+      "passed": true
+    },
+    {
+      "name": "both provider payloads contain actual source body",
+      "passed": true,
+      "counts": {
+        "calls": 2,
+        "body_payloads": 2
+      }
+    }
+  ],
+  "passed": true,
+  "upstream": "controlled fixture",
+  "paid_requests": 0
+}

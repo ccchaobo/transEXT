@@ -40,6 +40,7 @@ async def stream_answer(config,context,request,*,client=None):
     owned=client is None
     usage={};finish=None;terminated=False;reasoning_observed=False;first_answer=None;phase='connecting'
     yield 'meta',{'model':config.model,'scope':request.scope,'revision_id':context['revision_id'],'sources':context['sources'],
+        'context_summary':context.get('context_summary',{}),
         'reasoning_effort':request.reasoning_effort,'effort_sent':'reasoning_effort' in payload}
     yield 'phase',{'phase':phase,'elapsed_ms':0}
     try:
@@ -87,6 +88,7 @@ async def stream_answer(config,context,request,*,client=None):
         if finish=='length' or not (terminated or finish):warnings.append('回答可能未完整结束，请核对内容后手动重试。')
         yield 'done',{'answer':channels.answer.strip(),'summary':channels.summary.strip(),'model':config.model,'scope':request.scope,
             'revision_id':context['revision_id'],'sources':context['sources'],'citations':[supplied[k] for k in referenced if k in supplied],
+            'context_summary':context.get('context_summary',{}),
             'warnings':warnings,'usage':usage,'reasoning_effort':request.reasoning_effort,
             'metrics':{'elapsed_ms':int((time.monotonic()-started)*1000),'first_answer_ms':int(first_answer*1000) if first_answer is not None else None,
                 'reasoning_observed':reasoning_observed,'answer_chars':len(channels.answer)}}

@@ -121,3 +121,39 @@ def test_ollama_budget_leaves_room_for_answer_with_bounded_thinking():
         answer_question(cfg,{"title":"sample","sources":[],"revision_id":"r"},AssistantRequest(question="解释"),client=client)
     assert sent[0]["max_tokens"]==8192
     assert sent[0]["reasoning_effort"]=="low"
+
+
+def test_summary_context_contains_body_instead_of_selected_title(client):
+    from rr_storage import Block,Document
+    from sqlalchemy import select
+    doc=import_and_parse(client)
+    with client.app.state.database.session() as session:
+        current=session.get(Document,doc)
+        rows=list(session.scalars(select(Block).where(Block.revision_id==current.active_revision_id)))
+        selected=next(row for row in rows if row.type in {'title','heading'})
+        context=prepare_context(session,doc,AssistantRequest(question='概括内容',block_id=selected.id,selected_text=selected.clean_text))
+    assert context['context_summary']['strategy']=='overview'
+    assert context['context_summary']['body_selected']>0
+    assert all(source['type'] not in {'heading','title'} for source in context['sources'])
+    assert len(context['sources'])<=8
+    assert sum(len(s['text']) for s in context['sources'])<=18000
+
+
+def test_only_heading_document_is_refused_before_provider_request(client):
+    from rr_storage import Block,Document
+    from sqlalchemy import select
+    doc=import_and_parse(client)
+    client.put('/api/v1/settings/translation',json={'base_url':'https://example.invalid/v1','model':'qa-fixture','api_key':'fixture-only'})
+    with client.app.state.database.session() as session:
+        current=session.get(Document,doc)
+        for row in session.scalars(select(Block).where(Block.revision_id==current.active_revision_id)):
+            row.type='heading'
+    calls=[]
+    def provider(request):
+        calls.append(request)
+        return httpx.Response(200,json={})
+    with httpx.Client(transport=httpx.MockTransport(provider)) as transport:
+        client.app.state.assistant_client=transport
+        reply=client.post(f'/api/v1/documents/{doc}/assistant',json={'question':'概括全文'})
+    assert reply.status_code==409 and reply.json()['detail']['error_code']=='no_body_context'
+    assert not calls

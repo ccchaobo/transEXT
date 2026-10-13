@@ -2660,6 +2660,16 @@
             "title": "Scope",
             "default": "document"
           },
+          "context_scope": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "document",
+              "selection"
+            ],
+            "title": "Context Scope",
+            "default": "auto"
+          },
           "history": {
             "items": {
               "$ref": "#/components/schemas/AssistantMessage"

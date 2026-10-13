@@ -23,6 +23,8 @@ evidence rather than a status claim.
 
 2026-10-13 修复已有中文在覆盖视图漏显：正文中的数学符号不再导致整段排除，译文框避开相邻独立公式；没有足够安全空间时提供完整译文卡。真实 CodecLM 的 18 页、3 种视图逐段核对译文完整性与图表/公式保护。前端全部 31 项测试通过，详见 [覆盖完整性验收](docs/acceptance/2026-10-13/overlay-coverage/README.md)。
 
+2026-10-13 修复 AI 概括上下文：整体概括优先跨页正文，所选标题不再占据全文概括优先级；新增独立取文范围和实际正文覆盖提示，只有标题的解析结果会在调用模型前拒绝。后端 755 项、前端 31 项及浏览器范围/正文发送回归通过，见 [上下文验收](docs/acceptance/2026-10-13/assistant-context/README.md)。
+
 2026-10-12 新增本地文献管理与 Zotero 联动：多文件导入、分类、标签、书目信息和笔记编辑、搜索排序、批量操作、回收站恢复与确认后的永久删除。Zotero 0.1.1 连接组件已在本机加载，可检索本机书目、导出 BibTeX/RIS/APA、网页与 DOI 预览、选 PDF 进入对照阅读，并提供关联与写回入口。真实 Zotero 写入及云同步未作为已完成验收；最新用户不需要 Word 插入验收。
 
 本轮验证为 719 项后端、19 项阅读器前端、6 项连接组件测试；隔离文献管理 Chrome 验收与真实 Zotero 目录浏览器验收通过。真实 BrLP 文献 21 页排版再次通过，原件指纹一致。规范和证据见 [文献管理](docs/library-management.md)、[Zotero 联动](docs/zotero-integration.md)、[排版对齐](docs/layout-alignment.md)。

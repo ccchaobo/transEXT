@@ -46,6 +46,16 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
     option.value = value;
     scope.appendChild(option);
   }
+  const contextScope=node('select');contextScope.id='assistant-context-scope';contextScope.setAttribute('aria-label','取文范围');
+  for(const [value,label] of [['auto','范围：自动判断'],['document','范围：整篇文献'],['selection','范围：所选内容']]){
+    const option=node('option',null,label);option.value=value;contextScope.appendChild(option);
+  }
+  contextScope.value='auto';
+  function coverageText(value){
+    if(!value)return '';
+    const names={overview:'全文概括',document:'全文检索',selection:'所选内容',related:'相关内容检索'};
+    return `${names[value.strategy] || '文献检索'} · 已提供 ${value.body_selected} 段正文 · 覆盖 ${value.pages?.length || 0} 页（原文节选）`;
+  }
   const effort=node('select');effort.id='assistant-effort';effort.setAttribute('aria-label','思考强度');
   const effortNames={auto:'模型默认',low:'低',medium:'中',high:'高'};
   for(const value of ['auto','low','medium','high']){const option=node('option',null,`思考强度：${effortNames[value]}`);option.value=value;effort.appendChild(option);}
@@ -72,6 +82,7 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
       answer.appendChild(button);
     }
     answer.appendChild(node("p", "assistant-context", `模型：${result.model} · ${result.scope === "document" ? "文献依据" : "允许通用解释"}`));
+    if(result.context_summary?.strategy)answer.appendChild(node('p','assistant-context assistant-coverage',coverageText(result.context_summary)));
     if(result.metrics){const reasoning=result.usage?.completion_tokens_details?.reasoning_tokens;
       answer.appendChild(node('p','assistant-context',`用时 ${(result.metrics.elapsed_ms/1000).toFixed(1)}s · 请求强度：${effortNames[result.reasoning_effort] || '模型默认'}${Number.isFinite(reasoning)?` · 思考用量：${reasoning} tokens`:''}`));}
     log.appendChild(answer);
@@ -112,6 +123,7 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
     const phase=node('span','assistant-phase','连接模型');const timer=node('span','assistant-elapsed','0.0s');
     const strength=node('span','assistant-strength',`请求强度：${effortNames[effort.value]}`);strength.dataset.effort=effort.value;
     progress.append(phase,timer,strength);streaming.appendChild(progress);
+    const coverage=node('p','assistant-context assistant-coverage','正在提取本次回答依据…');streaming.appendChild(coverage);
     const summary=addSummary(streaming,'');summary.hidden=true;
     const liveText=node('p','assistant-answer-text','');streaming.appendChild(liveText);log.appendChild(streaming);
     let answerText='',summaryText='',metadata=null;const started=performance.now();
@@ -122,11 +134,12 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
       const page = getPage();
       const result = await api.streamAssistant(documentId, { question, kind, selected_text: selected,
         block_id: blockId, page_index: page?.page.index || 0, scope: scope.value,
+        context_scope:contextScope.value,
         reasoning_effort:effort.value,include_summary:true,
         history: history.filter(entry=>!entry.result.incomplete).slice(-4).flatMap(entry => [{ role: "user", content: entry.question },
           { role: "assistant", content: entry.result.answer.slice(0, 6000) }]) },{signal:controller.signal,onEvent:(kind,value)=>{
             if(!alive)return;
-            if(kind==='meta'){metadata=value;waiting.remove();}
+            if(kind==='meta'){metadata=value;waiting.remove();coverage.textContent=coverageText(value.context_summary) || '已提取本次来源。';}
             if(kind==='phase')phase.textContent=({connecting:'连接模型',thinking:'模型思考中',summarizing:'生成依据摘要',answering:'回答输出中'})[value.phase] || '处理中';
             if(kind==='summary'){summaryText+=value.text;summary.hidden=false;summary.querySelector('p').textContent=summaryText;}
             if(kind==='delta'){answerText+=value.text;liveText.textContent=answerText;}
@@ -169,6 +182,7 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
   panel.appendChild(textarea);
   const foot = node("div", "assistant-actions");
   foot.appendChild(scope);
+  foot.appendChild(contextScope);
   foot.appendChild(effort);
   const send = node("button", "button primary", "发送问题");
   send.id = "assistant-send";

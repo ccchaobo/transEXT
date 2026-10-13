@@ -1,0 +1,49 @@
+{
+  "pages": 10,
+  "block_types": {
+    "title": 2,
+    "author": 2,
+    "abstract": 1,
+    "heading": 15,
+    "paragraph": 186,
+    "footnote": 4,
+    "caption": 10,
+    "list_item": 4,
+    "formula": 23,
+    "reference": 7,
+    "page_number": 10,
+    "header": 1
+  },
+  "old_source_types": [
+    "title",
+    "title",
+    "abstract",
+    "paragraph",
+    "caption",
+    "paragraph",
+    "paragraph",
+    "list_item"
+  ],
+  "new_strategy": "overview",
+  "new_source_types": [
+    "abstract",
+    "paragraph",
+    "paragraph",
+    "list_item",
+    "paragraph",
+    "paragraph",
+    "paragraph",
+    "paragraph"
+  ],
+  "new_pages": [
+    1,
+    1,
+    8,
+    10,
+    4,
+    3,
+    6,
+    1
+  ],
+  "body_available": 105
+}
