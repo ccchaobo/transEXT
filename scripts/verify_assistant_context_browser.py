@@ -108,9 +108,31 @@ def main():
                 page.wait_for_timeout(150)
                 checks.append({'name':'scope controls and coverage do not overflow the mobile viewport','passed':page.evaluate('document.documentElement.scrollWidth<=innerWidth+2')})
                 page.screenshot(path=str(OUT/'mobile-context-controls.png'))
+                page.set_viewport_size({'width':1440,'height':1000})
+                for prompt,strategy in [('概括本文的研究问题','全文概括'),('解释本文的方法','全文检索'),('总结主要结论与局限','全文概括')]:
+                    page.reload()
+                    expect(page.locator('#footer-note')).to_contain_text('内部页索引 0 ·')
+                    page.locator(f'#source-body .source-text-line[data-block-id="{title["id"]}"]').first.click()
+                    page.locator('#assistant-toggle').click()
+                    page.locator('#assistant-context-scope').select_option('selection')
+                    previous=client.get(url+'/__qa/context-status').json()['calls']
+                    page.get_by_role('button',name=prompt,exact=True).click()
+                    expect(page.locator('#assistant-context-scope')).to_have_value('document')
+                    expect(page.locator('#assistant-question')).to_have_value(prompt)
+                    expect(page.locator('#assistant-panel > .assistant-context').first).to_contain_text('不使用之前的选区')
+                    assert client.get(url+'/__qa/context-status').json()['calls']==previous,'preset must not automatically call the model'
+                    with page.expect_request(lambda request: request.method=='POST' and '/assistant/stream' in request.url) as pending:
+                        page.locator('#assistant-send').click()
+                    request=pending.value.post_data_json
+                    assert request['context_scope']=='document' and not request['selected_text'] and request['block_id'] is None
+                    expect(page.locator('.assistant-answer-text').last).to_contain_text('受控验收')
+                    expect(page.locator('.assistant-streaming')).to_have_count(0)
+                    expect(page.locator('.assistant-coverage').last).to_contain_text(strategy)
+                    checks.append({'name':f'preset {prompt} clears a selected title, uses document context and waits for send','passed':True})
+                    if strategy=='全文检索':page.screenshot(path=str(OUT/'method-preset-with-selected-title.png'))
                 browser.close()
             state=client.get(url+'/__qa/context-status').json()
-            checks.append({'name':'both provider payloads contain actual source body','passed':state['calls']==state['body_payloads']==2,'counts':state})
+            checks.append({'name':'all five provider payloads contain actual source body','passed':state['calls']==state['body_payloads']==5,'counts':state})
         finally:
             server.terminate();server.wait(timeout=15);log.close();client.close()
     report={'checks':checks,'passed':all(check['passed'] for check in checks),'upstream':'controlled fixture','paid_requests':0}

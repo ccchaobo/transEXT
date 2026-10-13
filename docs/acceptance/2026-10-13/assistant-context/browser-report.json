@@ -13,11 +13,23 @@
       "passed": true
     },
     {
-      "name": "both provider payloads contain actual source body",
+      "name": "preset \u6982\u62ec\u672c\u6587\u7684\u7814\u7a76\u95ee\u9898 clears a selected title, uses document context and waits for send",
+      "passed": true
+    },
+    {
+      "name": "preset \u89e3\u91ca\u672c\u6587\u7684\u65b9\u6cd5 clears a selected title, uses document context and waits for send",
+      "passed": true
+    },
+    {
+      "name": "preset \u603b\u7ed3\u4e3b\u8981\u7ed3\u8bba\u4e0e\u5c40\u9650 clears a selected title, uses document context and waits for send",
+      "passed": true
+    },
+    {
+      "name": "all five provider payloads contain actual source body",
       "passed": true,
       "counts": {
-        "calls": 2,
-        "body_payloads": 2
+        "calls": 5,
+        "body_payloads": 5
       }
     }
   ],

@@ -99,7 +99,14 @@ export function createAssistantPanel({ documentId, getPage, onSource }) {
     for (const prompt of ["概括本文的研究问题", "解释本文的方法", "总结主要结论与局限"]) {
       const suggestion = node("button", "button assistant-suggestion", prompt);
       suggestion.type = "button";
-      suggestion.addEventListener("click", () => { textarea.value = prompt; textarea.focus(); });
+      suggestion.addEventListener("click", () => {
+        contextScope.value = "document";
+        selected = "";
+        blockId = null;
+        context.textContent = "已选择整篇文献取文，快捷问题不使用之前的选区。";
+        textarea.value = prompt;
+        textarea.focus();
+      });
       welcome.appendChild(suggestion);
     }
     log.appendChild(welcome);

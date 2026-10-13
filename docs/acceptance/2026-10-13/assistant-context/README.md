@@ -18,10 +18,12 @@
 
 后端全套 755 项、前端全套 31 项通过；OpenAPI 64 schema、47 path 检查通过。
 
-受控浏览器使用自编 3 页 PDF 和 mock 上游流，真实验证标题被选中后仍按全文概括取正文、显式所选范围、meta/结果覆盖信息、390px 布局及实际模型请求正文。两个请求都携带正文，无外部 AI 请求。见 [浏览器记录](browser-report.json)、[桌面截图](overview-with-selected-title.png)、[窄屏截图](mobile-context-controls.png)。
+受控浏览器使用自编 3 页 PDF 和 mock 上游流，真实验证标题被选中后仍按全文概括取正文、显式所选范围、meta/结果覆盖信息、390px 布局及实际模型请求正文。用户补充触发入口为预设按钮后，又覆盖三个全文预设：先点击标题并设置“所选内容”，点击任一预设都会切换为整篇文献、清除旧选区，只填文本；点击发送才产生请求。逐一检查实际请求的 `context_scope=document`、空 `selected_text`、空 `block_id` 及正文来源。五个请求都携带正文，无外部 AI 请求；本轮前端 31 项和浏览器 7 项检查通过。见 [浏览器记录](browser-report.json)、[桌面截图](overview-with-selected-title.png)、[方法预设截图](method-preset-with-selected-title.png)、[窄屏截图](mobile-context-controls.png)。
 
 这些检查验证应用取文和发送链路，不等同于真实付费模型每次概括质量的保证。长文仍是有界节选；具体实验数据或结论未被选中时，应提示缺失方面，不能声称读完全部正文。
 
 ## 当前 Docker 更新
 
 升级前已为正在使用的文献库生成本机一致性备份。构建独立修复镜像后，更新原项目 API/worker，继续挂载原数据卷，GROBID 保持运行。三服务健康；在安装后的容器内只读执行真实概括取文，取得 8 个正文来源、3442 字符，覆盖第 1、3、4、6、8、10 页。原解析修订、原件 SHA-256 与页数保持一致，新 API schema 和网页范围控件已上线。见 [升级检查](live-upgrade.json)。这些核对没有触发外部 AI 请求。
+
+预设按钮补充修复也已更新至当前 Docker API/worker。上线后的助手脚本与本轮浏览器验收源码逐字节一致，三服务健康；原文献的标识、解析修订、原件指纹及页数与升级前一致。见 [预设上线检查](preset-live-upgrade.json)。本轮仅改前端入口与验收、文档，未改后端取文策略。
