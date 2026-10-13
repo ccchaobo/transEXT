@@ -40,6 +40,7 @@ __all__ = [
 #: wins; ``scripts/choose_font.py`` verifies these on a given machine.
 CANDIDATE_FONTS: tuple[tuple[str, str], ...] = (
     ("NotoSansSC-VF.ttf", "PdfCJK"),
+    ("wqy-zenhei.ttc", "PdfCJK"),
     ("simhei.ttf", "PdfCJK"),
     ("Deng.ttf", "PdfCJK"),
     ("ARIALUNI.TTF", "PdfCJK"),
@@ -49,6 +50,7 @@ CANDIDATE_FONTS: tuple[tuple[str, str], ...] = (
 FONT_DIRS = (
     Path("C:/Windows/Fonts"),
     Path("/usr/share/fonts"),
+    Path("/usr/share/fonts/truetype/wqy"),
     Path("/Library/Fonts"),
     Path.home() / "AppData/Local/Microsoft/Windows/Fonts",
 )

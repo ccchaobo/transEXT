@@ -30,6 +30,13 @@ def test_only_explicit_local_endpoint_is_allowed(url):
     with pytest.raises(ValueError):local_endpoint(url)
 
 
+def test_compose_service_requires_exact_explicit_admin_allowlist():
+    with pytest.raises(ValueError):local_endpoint('http://grobid:8070')
+    assert local_endpoint('http://grobid:8070',('grobid',))=='http://grobid:8070/api/processFulltextDocument'
+    for url in ['http://grobid.evil:8070','https://grobid:8070','http://u:p@grobid:8070','http://grobid:8070/else']:
+        with pytest.raises(ValueError):local_endpoint(url,('grobid',))
+
+
 def test_multipart_disables_external_consolidation_and_does_not_retry(tmp_path):
     pdf=tmp_path/"sample.pdf";pdf.write_bytes(b"%PDF sample")
     captured=[]

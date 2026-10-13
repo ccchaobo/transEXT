@@ -122,7 +122,8 @@ class ParseService:
             # 网络等待不持有 SQLite 写锁；活动修订仍然保持原值。
             session.commit()
             try:
-                auxiliary = GrobidClient(self.settings.grobid_url, self.settings.grobid_timeout_seconds).analyse(source)
+                auxiliary = GrobidClient(self.settings.grobid_url, self.settings.grobid_timeout_seconds,
+                                        allowed_hosts=self.settings.grobid_allowed_hosts).analyse(source)
                 grobid_types = apply_structure(layout, auxiliary)
                 outcome.stats["grobid"] = {"status":"ok","matched_blocks":len(grobid_types),"hints":len(auxiliary.hints)}
             except (OSError, ValueError, httpx.HTTPError) as error:

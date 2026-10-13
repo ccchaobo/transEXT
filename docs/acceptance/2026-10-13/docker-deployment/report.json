@@ -1,0 +1,35 @@
+{
+  "fixture": "self-authored; no user documents or paid requests",
+  "checks": {
+    "api_health": true,
+    "frontend_served": true,
+    "cross_origin_refused": true,
+    "actual_worker_grobid": true,
+    "pdf_blocks": true,
+    "pdf_preview": true,
+    "docx_component_chinese_render": true,
+    "actual_ocr_component": true,
+    "unwired_formats_explicitly_reported": true,
+    "state_persists_after_recreate": true,
+    "original_persists_after_recreate": true
+  },
+  "documents": [
+    "doc_9a4b564240834639aefa",
+    "doc_b690a03b1d804faea11e",
+    "doc_a9a6c5474b8c424e9c38"
+  ],
+  "grobid": {
+    "status": "ok",
+    "matched_blocks": 2,
+    "hints": 3
+  },
+  "ocr_component": {
+    "text": "DOCKER OCR CHECK CONTROLLED SAMPLE cffc77"
+  },
+  "known_limits": [
+    "DOCX/image adapters are callable in the image; the import worker remains PDF-only."
+  ],
+  "runtime": "{\"Command\":\"\\\"python -m uvicorn r…\\\"\",\"CreatedAt\":\"2026-10-13 10:48:35 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"00eb1d06b1e1\",\"Image\":\"research-reader:local\",\"Labels\":\"com.docker.compose.config-hash=0edbeb04ad1d2a4fbf5bf9f356a2358169cce62980561597e3f66608fa2e50fa,com.docker.compose.project=research-reader-deploy-test,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,com.docker.compose.service=api,com.docker.compose.version=5.5.1,desktop.docker.io/ports/8765/tcp=127.0.0.1:8876,com.docker.compose.container-number=1,com.docker.compose.depends_on=grobid:service_healthy:false,com.docker.compose.image=sha256:419aa69c03f6e3a45b6df627258503a134010b083d922b785a7d62d3566fdac9,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml,com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\deploy\\\\docker.env.example,com.docker.compose.replace=api-1,desktop.docker.io/ports.scheme=v2\",\"LocalVolumes\":\"1\",\"Mounts\":\"research-reade…\",\"Name\":\"research-reader-deploy-test-api-1\",\"Names\":\"research-reader-deploy-test-api-1\",\"Networks\":\"research-reader-deploy-test_parsing,research-reader-deploy-test_reader\",\"Ports\":\"127.0.0.1:8876-\\u003e8765/tcp\",\"Project\":\"research-reader-deploy-test\",\"Publishers\":[{\"URL\":\"127.0.0.1\",\"TargetPort\":8765,\"PublishedPort\":8876,\"Protocol\":\"tcp\"}],\"RunningFor\":\"15 seconds ago\",\"Service\":\"api\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 12 seconds (healthy)\"}\n{\"Command\":\"\\\"/tini -s -- ./grobi…\\\"\",\"CreatedAt\":\"2026-10-13 10:17:40 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"39300817264c\",\"Image\":\"grobid/grobid:0.9.1-crf@sha256:223957791ac2bbe48609dcc58a689b16b60baeae13a8734ef440ae6bfb38f4cd\",\"Labels\":\"com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,org.label-schema.url=https://github.com/kermitt2/grobid,com.docker.compose.config-hash=9160a0de17dd799ff5b64e1e7c0cf86eb9cc3ced9bfa697cb73c74648a58f6d7,com.docker.compose.depends_on=,com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\.env.docker,org.label-schema.name=GROBID,authors=The contributors,com.docker.compose.oneoff=False,org.label-schema.version=0.9.1,com.docker.compose.container-number=1,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,org.label-schema.description=Image with GROBID service,org.opencontainers.image.version=24.04,com.docker.compose.image=sha256:582dcab95710c29c0d2fd18af3f420f848649fb7566341d2eec1a32d4306da97,com.docker.compose.project=research-reader-deploy-test,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml,com.docker.compose.service=grobid\",\"LocalVolumes\":\"0\",\"Mounts\":\"\",\"Name\":\"research-reader-deploy-test-grobid-1\",\"Names\":\"research-reader-deploy-test-grobid-1\",\"Networks\":\"research-reader-deploy-test_parsing\",\"Ports\":\"\",\"Project\":\"research-reader-deploy-test\",\"Publishers\":[],\"RunningFor\":\"31 minutes ago\",\"Service\":\"grobid\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 12 minutes (healthy)\"}\n{\"Command\":\"\\\"python -m rr_worker…\\\"\",\"CreatedAt\":\"2026-10-13 10:48:36 +0800 CST\",\"Engine\":\"\",\"ExitCode\":0,\"Health\":\"healthy\",\"ID\":\"6fe0b17f24ee\",\"Image\":\"research-reader:local\",\"Labels\":\"com.docker.compose.project.environment_file=D:\\\\transEXT\\\\research-reader\\\\deploy\\\\docker.env.example,com.docker.compose.container-number=1,com.docker.compose.image=sha256:419aa69c03f6e3a45b6df627258503a134010b083d922b785a7d62d3566fdac9,com.docker.compose.project=research-reader-deploy-test,com.docker.compose.project.working_dir=D:\\\\transEXT\\\\research-reader,com.docker.compose.replace=worker-1,com.docker.compose.service=worker,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,com.docker.compose.config-hash=c21f0356e6b58910467f7da8824aea1d42f0fb6687c5da1dfcd12d0171c62ad7,com.docker.compose.depends_on=api:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=D:\\\\transEXT\\\\research-reader\\\\compose.yaml\",\"LocalVolumes\":\"1\",\"Mounts\":\"research-reade…\",\"Name\":\"research-reader-deploy-test-worker-1\",\"Names\":\"research-reader-deploy-test-worker-1\",\"Networks\":\"research-reader-deploy-test_parsing,research-reader-deploy-test_reader\",\"Ports\":\"8765/tcp\",\"Project\":\"research-reader-deploy-test\",\"Publishers\":[{\"URL\":\"\",\"TargetPort\":8765,\"PublishedPort\":0,\"Protocol\":\"tcp\"}],\"RunningFor\":\"14 seconds ago\",\"Service\":\"worker\",\"Size\":\"0B\",\"State\":\"running\",\"Status\":\"Up 6 seconds (healthy)\"}\n",
+  "image_id": "[{\"ID\":\"sha256:419aa69c03f6e3a45b6df627258503a134010b083d922b785a7d62d3566fdac9\",\"ContainerName\":\"research-reader-deploy-test-worker-1\",\"Repository\":\"research-reader\",\"Tag\":\"local\",\"Platform\":\"linux/amd64\",\"Size\":1070003663,\"Created\":\"2026-10-13T02:35:45.085536827Z\",\"LastTagTime\":\"2026-10-13T02:35:47.55554392Z\"},{\"ID\":\"sha256:582dcab95710c29c0d2fd18af3f420f848649fb7566341d2eec1a32d4306da97\",\"ContainerName\":\"research-reader-deploy-test-grobid-1\",\"Repository\":\"grobid/grobid\",\"Tag\":\"\",\"Platform\":\"linux/amd64\",\"Size\":1190051876,\"Created\":\"2026-08-04T09:23:10.392050205Z\"},{\"ID\":\"sha256:419aa69c03f6e3a45b6df627258503a134010b083d922b785a7d62d3566fdac9\",\"ContainerName\":\"research-reader-deploy-test-api-1\",\"Repository\":\"research-reader\",\"Tag\":\"local\",\"Platform\":\"linux/amd64\",\"Size\":1070003663,\"Created\":\"2026-10-13T02:35:45.085536827Z\",\"LastTagTime\":\"2026-10-13T02:35:47.55554392Z\"}]\n\n",
+  "passed": true
+}

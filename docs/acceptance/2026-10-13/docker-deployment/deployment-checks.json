@@ -1,0 +1,16 @@
+{
+  "one_click_powershell": true,
+  "all_services_healthy": true,
+  "backup_created": true,
+  "backup_sha256": "9b8cf5f87ccfd2c34a3c10f7f9bf7e0aa2206119ada1ab0fd20b448087b3079a",
+  "restore_empty_volume": true,
+  "restored_documents": 11,
+  "reader_uid_can_write": true,
+  "bash_syntax": true,
+  "backend_tests": 748,
+  "frontend_tests": 31,
+  "image_id": "sha256:f9b2b8e84e1f4d0fb5211db3d127d4b81654d0a1146f916a18e10d04deb1c828",
+  "image_bytes": 1070003663,
+  "source_bundle_requires_network": true,
+  "ci_result": "pending_push"
+}

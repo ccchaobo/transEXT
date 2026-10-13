@@ -49,6 +49,8 @@ class Settings:
 
     grobid_url: str = ""
     grobid_timeout_seconds: int = 45
+    # Explicit deployment trust boundary; empty keeps loopback-only behaviour.
+    grobid_allowed_hosts: tuple[str, ...] = ()
 
     @property
     def database_url(self) -> str:
@@ -97,6 +99,7 @@ class Settings:
             max_translation_units=_int(ENV_MAX_TRANSLATION_UNITS, 5_000),
             grobid_url=(env.get("RR_GROBID_URL") or "").strip(),
             grobid_timeout_seconds=min(60, _int("RR_GROBID_TIMEOUT",45)),
+            grobid_allowed_hosts=tuple(host.strip().lower() for host in (env.get("RR_GROBID_ALLOWED_HOSTS") or "").split(",") if host.strip()),
         )
 
 

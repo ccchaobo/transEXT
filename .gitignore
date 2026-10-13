@@ -41,3 +41,7 @@ benchmarks/corpus/anomalies/
 .idea/
 Thumbs.db
 desktop.ini
+
+# Deployment backups contain private documents and settings.
+backups/
+release/

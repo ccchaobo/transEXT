@@ -1,0 +1,36 @@
+name: Docker deployment
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install fixture tools
+        run: python -m pip install httpx==0.28.1 reportlab==4.5.1 Pillow==11.1.0 python-docx==1.2.0
+      - name: Deploy all components
+        run: bash deploy.sh
+      - name: Verify actual GROBID, OCR and persistence
+        run: python scripts/verify_docker_deployment.py
+      - name: Package deployment sources
+        run: python scripts/package_docker_release.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: research-reader-docker
+          path: release/research-reader-docker.zip*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Collect diagnostics
+        if: failure()
+        run: docker compose --env-file .env.docker logs --tail=150
+      - name: Stop isolated deployment
+        if: always()
+        run: docker compose --env-file .env.docker down

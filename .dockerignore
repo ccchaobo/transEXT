@@ -1,0 +1,25 @@
+# Allowlist: user documents, credentials, Git history and test outputs never
+# enter the Docker build context.
+**
+!Dockerfile
+!pyproject.toml
+!README.md
+!packages/
+!packages/**
+!services/
+!services/**
+!adapters/
+!adapters/**
+!benchmarks/
+!benchmarks/rr_m0/
+!benchmarks/rr_m0/**
+!apps/
+!apps/web/
+!apps/web/**
+!deploy/
+!deploy/container-health.py
+!deploy/archive.py
+!deploy/requirements.lock
+**/__pycache__/
+**/*.pyc
+**/*.egg-info/

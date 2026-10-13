@@ -1,0 +1,11 @@
+{
+  "event": "Docker/WSL failed during Compose startup",
+  "code": "0xc00000fd",
+  "reset_performed": false,
+  "images_built_before_failure": true,
+  "faulting_process": "wslservice.exe",
+  "wsl_version": "2.7.14",
+  "cold_restart_recovered": true,
+  "root_cause_confirmed": false,
+  "destructive_reset": false
+}

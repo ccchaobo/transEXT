@@ -1,5 +1,13 @@
 # Research Reader
 
+## Docker 一键部署
+
+已提供完整 Compose 部署：网页/API、独立 worker、官方 CPU GROBID 0.9.1、OCR 模型、中文字体和持久化文献库。只需已启动的 Docker（Linux 容器模式）及 Compose v2.20 以上，无需本机 Python/Node。
+
+Linux/macOS：`bash deploy.sh`。Windows：双击 `deploy.cmd`，或执行 `.\deploy.ps1`。完成后访问 `http://127.0.0.1:8765`，在网页“翻译设置”填写服务配置。首次需要联网下载镜像和依赖。
+
+备份、更新、恢复、远程访问及 Zotero 桌面联动边界见 [部署说明](docs/docker-deployment.md)。GitHub Actions 会自动验收并生成可下载的部署 ZIP。
+
 A local-first bilingual reader for research literature. It imports a paper, parses
 its structure, translates it paragraph by paragraph, and shows the source and the
 translation side by side with the correspondence between them preserved in both

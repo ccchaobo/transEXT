@@ -24,14 +24,15 @@ class GrobidResult:
     hints: list[StructureHint] = field(default_factory=list)
 
 
-def local_endpoint(url: str) -> str:
+def local_endpoint(url: str, allowed_hosts: tuple[str, ...] = ()) -> str:
     parsed = urlparse(url)
     try:
         local = parsed.hostname == "localhost" or ipaddress.ip_address(parsed.hostname or "").is_loopback
     except ValueError:
         local = False
-    if parsed.scheme != "http" or not local or parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("GROBID 地址必须是本机 HTTP 回环地址，例如 http://127.0.0.1:8070")
+    explicitly_trusted = parsed.hostname in allowed_hosts
+    if parsed.scheme != "http" or not (local or explicitly_trusted) or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ValueError("GROBID 地址必须是本机 HTTP 回环地址或管理员显式允许的内部服务名")
     if parsed.path.rstrip("/") not in {"", "/api"}:
         raise ValueError("GROBID 地址只接受服务根路径或 /api")
     if parsed.port is not None and not 1 <= parsed.port <= 65535:
@@ -84,8 +85,8 @@ def parse_tei(data: bytes) -> GrobidResult:
 
 
 class GrobidClient:
-    def __init__(self,url: str,timeout: float=45,client=None):
-        self.endpoint=local_endpoint(url)
+    def __init__(self,url: str,timeout: float=45,client=None,*,allowed_hosts: tuple[str, ...] = ()):
+        self.endpoint=local_endpoint(url,allowed_hosts)
         self.timeout=timeout
         self.client=client
 

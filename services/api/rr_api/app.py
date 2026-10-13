@@ -35,7 +35,7 @@ VERSION = "0.1.0"
 
 #: Where the vendored frontend lives.  Served by this process; there is no build step and no
 #: second server, so a page refresh is enough to pick up a change.
-WEB_ROOT = Path(__file__).resolve().parents[3] / "apps" / "web"
+WEB_ROOT = Path(os.environ.get("RR_WEB_ROOT") or Path(__file__).resolve().parents[3] / "apps" / "web")
 
 
 def create_app(
