@@ -12,5 +12,10 @@
   "image_id": "sha256:f9b2b8e84e1f4d0fb5211db3d127d4b81654d0a1146f916a18e10d04deb1c828",
   "image_bytes": 1070003663,
   "source_bundle_requires_network": true,
-  "ci_result": "pending_push"
+  "ci_result": "success",
+  "ci_verified_source_commit": "278b095698f7494c3fbb7fa82ac4e84dcf7fd7e2",
+  "ci_run_url": "https://github.com/ccchaobo/transEXT/actions/runs/38340204166",
+  "artifact_id": 11785728271,
+  "artifact_name": "research-reader-docker",
+  "artifact_expired": false
 }

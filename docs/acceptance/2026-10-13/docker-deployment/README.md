@@ -22,7 +22,9 @@
 
 正式导入 worker 目前只支持 PDF。OCR 和 DOCX 转换器作为镜像组件实际可调用，但未接入导入任务；本次部署没有扩大产品功能范围，也没有将“组件可用”报告为端到端导入成功。Zotero 桌面和 Word 不在容器中，远程服务器联动尚未实现。
 
-当前验收覆盖本机 Docker Linux/amd64。GitHub Actions 的 Linux 验收随提交触发，其执行结果须单独检查，不能以本机通过替代 CI 已通过。实际本机 Windows 双击脚本内部命令已验收，没有声称 macOS、ARM 或公网多人部署通过。
+当前验收覆盖本机 Docker Linux/amd64。GitHub Actions 对源代码提交 `278b095698f7494c3fbb7fa82ac4e84dcf7fd7e2` 的独立 Linux 部署验收也已成功，并产出未过期的 `research-reader-docker` ZIP（artifact 11785728271，795314 bytes）。[云端流程与下载产物](https://github.com/ccchaobo/transEXT/actions/runs/38340204166)。该结果独立于本机测试；本次文档补录不改变被验收的运行代码。
+
+实际本机 Windows 双击脚本内部命令已验收，没有声称 macOS、ARM 或公网多人部署通过。
 
 ## 宿主机 WSL 故障
 
