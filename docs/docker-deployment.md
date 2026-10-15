@@ -54,7 +54,7 @@ API/worker 以 UID 10001 运行，根文件系统只读，可写临时文件在 
 
 正式后台导入任务当前只接入 PDF。OCR 模型和 DOCX 内置转换器已随镜像安装并分别做真实组件调用，但仍未接入导入任务；上传 DOCX/图片会明确记录 `unsupported_format`，扫描 PDF 仍需后续接入 OCR 流程。该既有缺口见 `docs/limitations.md` 第 26 项，不能把模型可加载说成端到端导入可用。DOCX 组件保持内置转换和保真告警，未新增 LibreOffice 排版保证。
 
-Zotero 桌面及连接组件在用户电脑上单独安装；此服务器包包含联动代码，但不会把桌面 Zotero 或 Word 装进容器。当前本机回环联动不能直接跨服务器使用，不应把服务器部署说成 Zotero 桌面联动已经验收。
+Zotero 桌面及连接组件在用户电脑上单独安装；不会把 Zotero 或 Word 装进容器。同机 Windows/macOS Docker Desktop 默认通过 `RR_ZOTERO_HOST=host.docker.internal` 连接 Zotero；宿主机需安装连接组件 0.2.0（支持 Zotero 9/10），并执行 `python scripts/pair_zotero_docker.py --profile <实际 Zotero profile>` 将已有配对同步到当前容器数据卷。更换 Compose 项目时用 `--container <API 容器名>` 指定。配对工具核对同一实例，密钥不进入参数、文件或终端输出。附件通过受鉴权的分块接口传输，Windows 文件路径不会交给 Linux 容器读取，也不需要挂载 Zotero 数据目录。2026-10-15 已实测 Zotero 10.0.6 的目录读取和 PDF 下载；用户库的测试写入、云同步和 Word 不在此次真实验收范围。远程服务器和 Linux Docker 桌面回环转发尚未支持，不能把服务器部署说成跨设备 Zotero 联动已经可用。详细步骤见 [Zotero 联动规范](zotero-integration.md)。
 
 ## 日常操作与备份
 

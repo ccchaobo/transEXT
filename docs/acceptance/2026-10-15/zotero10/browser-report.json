@@ -1,0 +1,78 @@
+{
+  "checks": [
+    {
+      "name": "真实 Zotero 书目在浏览器可见",
+      "passed": true,
+      "total": 59
+    },
+    {
+      "name": "1440px Zotero 窗口不超出屏幕，详情可访问",
+      "passed": true,
+      "geometry": {
+        "dialog": {
+          "w": 1200,
+          "h": 820,
+          "sw": 1198,
+          "cw": 1198
+        },
+        "info": {
+          "w": 483,
+          "h": 612
+        }
+      }
+    },
+    {
+      "name": "768px Zotero 窗口不超出屏幕，详情可访问",
+      "passed": true,
+      "geometry": {
+        "dialog": {
+          "w": 732,
+          "h": 820,
+          "sw": 730,
+          "cw": 730
+        },
+        "info": {
+          "w": 286,
+          "h": 612
+        }
+      }
+    },
+    {
+      "name": "390px Zotero 窗口不超出屏幕，详情可访问",
+      "passed": true,
+      "geometry": {
+        "dialog": {
+          "w": 354,
+          "h": 776.46875,
+          "sw": 352,
+          "cw": 352
+        },
+        "info": {
+          "w": 326,
+          "h": 290
+        }
+      }
+    },
+    {
+      "name": "Zotero 富文本标题不显示 HTML 标签",
+      "passed": true
+    },
+    {
+      "name": "真实目录搜索可用",
+      "passed": true
+    },
+    {
+      "name": "浏览器下载真实 RIS 导出",
+      "passed": true
+    },
+    {
+      "name": "写回前明确展示目标库和可选 PDF 复制",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "native_library_modified": false,
+  "zotero_version": "10.0.6",
+  "bridge_version": "0.2.0"
+}

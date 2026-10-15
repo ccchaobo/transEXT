@@ -953,3 +953,5 @@ message, the harness reported `DID NOT FAIL`, and the truth was both wrong and w
 本地分类、标签、回收站、元信息、笔记、搜索与批量操作已通过隔离数据库和 Chrome 验收。Zotero 组件已在真实本机加载，目录读取、抓取预览及格式导出已验收。未在用户真实 Zotero 库制造测试条目或执行更新/合并/删除，因此写入、附件上传与合并的自动检查属于隔离边界测试，不代表已完成真实库写入验收。
 
 本地分类、阅读状态、译文及标注不自动同步为 Zotero 数据；删除本地文献不删除 Zotero 条目。云同步和 Word 引用仍由原生应用负责，流程结束不等于云端一致或引用成功。最新用户取消 Word 插入验收。组件暂为手动发行，自动升级关闭。详见 [Zotero 集成规范](zotero-integration.md)。
+
+2026-10-15：组件 0.2.0 已恢复 Zotero 10.0.6 联动，兼容范围为 Zotero 9.0 至 10.0.*。同机 Docker Desktop 已验收配对、真实目录、RIS 导出和跨系统 PDF 下载，不再依赖 Windows/Linux 共享路径。分块上传的完整性、取消和附件复用由隔离测试验证，仍未对用户库执行测试写入。远程服务器和 Linux Docker 的桌面回环转发尚未支持，手动组件升级与独立 Docker 数据卷配对仍是部署步骤。

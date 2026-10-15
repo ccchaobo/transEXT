@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-15",
+  "zotero_version": "10.0.6",
+  "bridge_version": "0.2.0",
+  "connected": true,
+  "authorized": true,
+  "can_write": true,
+  "pdf_transfer": "chunks-v1",
+  "records": 130,
+  "bibliographic_items": 59,
+  "pdf_attachments": 33,
+  "pdf_read": {"bytes": 668275, "pages": 17, "checksum_matches": true, "cross_os": true},
+  "native_library_modified": false,
+  "paid_model_calls": 0,
+  "backend_tests_passed": 767,
+  "frontend_tests_passed": 38,
+  "browser_checks_passed": 8,
+  "image": "sha256:df336c3304e902a77987f214bd5a5e3bc665e2a4da6bca8505167c1ecd214dbd"
+}

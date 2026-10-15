@@ -1,18 +1,36 @@
 # Zotero 本机联动规范
 
-2026-10-12。用户选择对接现有 Zotero，并已批准自定义组件的长期安装、配对密钥存储及内部 API 权限。组件已在本机 Zotero 9.0.6 加载，版本 0.1.1；系统应用标识仍显示旧的 9.0.5，不据此判断运行版本。最新用户指示不需要 Word 插入验收。
+2026-10-15 更新。用户选择对接现有 Zotero，并已批准自定义组件的长期安装、配对密钥存储及内部 API 权限。组件 0.2.0 已在 Zotero 10.0.6 加载并恢复 Docker 阅读器联动；系统应用标识可能仍显示旧的 9.0.5，应以运行接口返回的版本为准。用户不需要 Word 插入验收。
 
 ## 工程选择
 
 方案一是在阅读器重建网页识别、CSL 引用与云同步，开发与维护成本高，并容易使两套书目互相覆盖。方案二是以 Zotero 为书目管理端，阅读器负责不可变原件副本、翻译与阅读状态。按用户选择采用方案二。
 
-Zotero 9 的标准本机 API 用于只读查询和格式导出；写入使用可审查的本机组件及 Zotero 原生对象 API。没有直接读取或修改 Zotero SQLite 文件。阅读器只绑定回环地址，同源规则仍生效。
+Zotero 9/10 的标准本机 API 用于只读查询和格式导出；写入继续使用可审查的本机组件及 Zotero 原生对象 API。Zotero 10 新增标准写入接口，但本次不迁移已有配对和事务流程，避免仅为恢复连接而引入另一套授权和身份模型。没有直接读取或修改 Zotero SQLite 文件。Zotero 的 HTTP 服务仍只监听回环；阅读器的监听范围由部署配置决定，同源规则仍生效。阅读器当前没有登录验证，其可访问者也可使用已经配对的联动能力，部署时需据此选择监听范围。
 
 ## 权限与安装
 
 组件只注册 Zotero 自带 HTTP 服务下的 `/research-reader/*` 接口。非公开状态接口校验配对密钥；状态接口仅返回连接标志，不返回密钥。配对密钥存储于阅读器秘密设置和 Zotero `extensions.zotero.researchReader.token`，不发送给浏览器。
 
 初次配对需先保存并正常退出 Zotero。执行 `python scripts/install_zotero_bridge.py --profile <已确认的 profile>` 后，在 Zotero 插件管理器选择版本化 XPI。复制文件和配对成功仅表示准备完成，必须检查组件状态接口授权成功才能宣布连接可用。正式安装后的组件可通过插件管理器禁用或卸载。
+
+### Zotero 10 升级与 Docker 配对
+
+0.1.1 将 `strict_max_version` 限定为 `9.0.*`，所以 Zotero 10 会禁用旧组件。0.2.0 将兼容范围改为 9.0 至 10.0.*，并按官方 Zotero 10 变更清单核对接口。组件不依赖被移除的单分类选择 getter、旧全文搜索表或 CookieSandbox。
+
+已有用户运行 `python scripts/install_zotero_bridge.py --package-only` 生成新版 XPI，在 Zotero“工具 → 插件 → 从文件安装”选择该文件即可；升级不重置已有配对，也不改书目。`--package-only` 不修改正在运行的 Zotero profile。
+
+原生阅读器默认访问 `127.0.0.1:23119`；Compose 默认设置 `RR_ZOTERO_HOST=host.docker.internal`，用于同机 Windows/macOS Docker Desktop。目标仅允许 `127.0.0.1`、`localhost`、`[::1]` 和 `host.docker.internal`，不能配置任意远端 URL。发送固定本机 Host 和 `Zotero-Allowed-Request` 请求头，禁用代理环境变量和重定向；不关闭 Zotero 的新版安全检查，也不向外发布 23119 端口。
+
+Docker 有独立的数据卷，原生阅读器的配对不会自动复制。Zotero 和组件运行后，执行：
+
+```powershell
+python scripts/pair_zotero_docker.py --profile '实际 Zotero profile 目录'
+```
+
+默认目标为 `research-reader-api-1`，其他 Compose 项目用 `--container <API 容器名>` 指定。工具复用 profile 中已授权的密钥，核对宿主机与容器访问的是同一 Zotero 实例后，才写入阅读器秘密设置。密钥通过进程标准输入传递，不打印、不写临时文件、不进入命令行。更换数据卷需重新执行此步骤；更换 Zotero profile/实例需先核对现有书目关联。
+
+本次支持同机 Docker Desktop，不把远程 Docker 服务器、Linux 宿主机的回环转发或跨设备访问视为已支持。Zotero 不在宿主机运行时，服务器阅读器仍可正常独立使用。
 
 当前为本地手动发行，组件自动升级已设为 Off。Zotero 9 要求声明 HTTPS 更新地址，清单保留本机 HTTPS 地址，但本项目没有运行该更新服务。不要声称有自动更新功能，也不要降低 Zotero 的全局更新安全检查。
 
@@ -34,6 +52,8 @@ TODO：只有部署可验证的 HTTPS 更新渠道和版本化安装包后，才
 ## 双向流程与冲突
 
 从 Zotero 导入：先同步目录，再选 PDF 附件；阅读器复制文件并按文件指纹复用，建立书目关联。Zotero 原件不变，没有本机副本时明确提示先下载。
+
+0.2.0 通过鉴权分块传输 PDF 内容，解决 Windows 附件路径在 Linux 容器不可读的问题，无需挂载 Zotero 数据目录。每块最多 256 KiB；下载核对源文件大小、修改时间和完整内容 MD5，读取器大小限制与组件 200 MiB 上限取较小值。上传绑定目标父条目、校验可编辑及附件权限，暂存完成并通过文件头/长度/MD5 检查后才调用 Zotero 导入；相同内容复用，失败取消会话，未完成上传不生成附件。旧组件仍支持同系统路径方式；Docker 附件传输必须用 0.2.0。
 
 从阅读器导入：详情中选择“Zotero 关联与写回”。优先关联已有书目，明确确认是同一文献后采用其书目信息；否则新增到选择的可编辑文献库，可勾选同时复制 PDF。已有同 DOI 条目优先复用，提示先关联，避免新增或覆写。相同 PDF 附件通过内容校验复用。
 
@@ -61,9 +81,12 @@ Word 与 Zotero 云同步入口仍可使用原生流程，但本次用户明确�
 
 证据：[真实连接报告](acceptance/2026-10-12/zotero-integration/live-report.json)、[浏览器报告](acceptance/2026-10-12/zotero-integration/browser-report.json)。
 
+2026-10-15 升级验收：本机 Zotero 10.0.6、组件 0.2.0、Docker 阅读器状态 `connected/authorized/can_write=true`；实际读取 130 条记录和 33 个 PDF 附件。从容器读取一份 17 页、668275 字节的已下载 PDF，完整校验值一致。此项不新增阅读器文献，也不修改 Zotero 原件。新上传接口的写入、复用、取消与校验由隔离测试验证，未对用户真实库执行测试写入；`can_write=true` 只证明鉴权，不证明云同步或 Word 插入完成。
+
 ## 官方依据
 
 - [Zotero 本机 API](https://www.zotero.org/support/dev/web_api/v3/local_api)
+- [Zotero 10 开发者升级说明](https://www.zotero.org/support/dev/zotero_10_for_developers)
 - [Zotero 插件清单与生命周期](https://www.zotero.org/support/dev/zotero_7_for_developers)
 - [Zotero JavaScript API](https://www.zotero.org/support/dev/client_coding/javascript_api)
 - [分类与标签](https://www.zotero.org/support/collections_and_tags)

@@ -1,10 +1,13 @@
 """Zotero catalogue and a same-machine, explicitly paired write bridge."""
+import base64
+from contextlib import contextmanager
 import hashlib
 import ipaddress
 import json
 from pathlib import Path
 import re
 import socket
+from tempfile import TemporaryFile
 from urllib.parse import unquote,urlparse
 
 import httpx
@@ -20,7 +23,7 @@ from rr_services import DocumentService
 from .library import metadata,item_wire
 
 router=APIRouter(prefix='/api/v1/zotero',tags=['zotero'])
-BASE='http://127.0.0.1:23119'
+CHUNK_BYTES=256*1024
 SHARED=['title','authors','year','publication','doi','url','item_type','abstract']
 
 
@@ -109,17 +112,19 @@ def token(request):
 
 def call(request,path,data=None,bridge=True,params=None,raw=False):
     override=getattr(request.app.state,'zotero_transport',None)
-    headers={'Zotero-API-Version':'3'}
+    headers={'Zotero-API-Version':'3','Zotero-Allowed-Request':'1',
+             'Host':'127.0.0.1:23119','User-Agent':'ResearchReader/0.2'}
+    base=f'http://{request.app.state.settings.zotero_host}:23119'
     if bridge:
         key=token(request)
         if key:headers['X-Research-Reader-Key']=key
     try:
-        with httpx.Client(trust_env=False,timeout=90,transport=override) as client:
-            response=client.request('POST' if bridge else 'GET',BASE+('/research-reader' if bridge else '/api')+path,
+        with httpx.Client(trust_env=False,timeout=90,transport=override,follow_redirects=False) as client:
+            response=client.request('POST' if bridge else 'GET',base+('/research-reader' if bridge else '/api')+path,
                                     json=data or {} if bridge else None,params=params,headers=headers)
     except httpx.HTTPError:
         raise HTTPException(503,detail={'message':'无法连接 Zotero，请先启动 Zotero。','error_code':'ZOTERO_UNAVAILABLE'})
-    if response.status_code>=400:
+    if not response.is_success:
         try:message=response.json().get('error') or response.text[:300]
         except ValueError:message=response.text[:300]
         if response.status_code==404 and bridge:message='Zotero 连接组件尚未加载，请确认组件已安装并重启 Zotero。'
@@ -130,14 +135,16 @@ def call(request,path,data=None,bridge=True,params=None,raw=False):
 def status_data(request):
     try:
         result=call(request,'/status')
-        result.update(connected=True,bridge_installed=True,can_write=bool(token(request) and result.get('authorized')))
+        authorized=bool(token(request) and result.get('authorized'))
+        result.update(connected=True,bridge_installed=True,can_write=authorized)
+        if not authorized:result['message']='Zotero 组件已加载，但阅读器与 Zotero 配对不匹配，请重新配对当前数据卷。'
         return result
     except HTTPException:
         try:
             call(request,'/',bridge=False,raw=True)
             return {'connected':True,'bridge_installed':False,'can_write':False,'instance':'readonly-local',
                     'libraries':[{'id':0,'name':'Zotero 个人文献库（只读）','editable':False}],'user_library_id':0,
-                    'message':'可读取 Zotero 文献；写回、原生引用与同步需启用已审查的连接组件。'}
+                    'message':'Zotero 已启动；连接组件未加载或与当前版本不兼容。可只读浏览，完整联动需升级并启用连接组件。'}
         except HTTPException:return {'connected':False,'bridge_installed':False,'can_write':False,'libraries':[],'message':'请先启动 Zotero。'}
 
 
@@ -155,6 +162,62 @@ def inventory(request,library_id):
         start+=len(rows)
         if len(rows)<100:break
     return {'instance':'readonly-local','library_id':0,'items':items,'collections':call(request,'/users/0/collections',bridge=False)}
+
+
+@contextmanager
+def pdf_source(request,state,library_id,key):
+    """Copy authenticated PDF chunks across OS boundaries; never mount Zotero storage."""
+    value=call(request,'/file',{'library_id':library_id,'key':key})
+    if state.get('pdf_transfer')!='chunks-v1':
+        path=Path(value['path'])
+        if str(path).startswith('\\\\') or not path.is_file():
+            raise HTTPException(409,detail={'message':'请升级 Zotero 连接组件到 0.2.0，以支持 Docker 附件传输。'})
+        with path.open('rb') as stream:yield path.name,stream
+        return
+    size=value.get('size');checksum=value.get('md5','')
+    if not isinstance(size,int) or not 5<=size<=min(request.app.state.settings.max_file_bytes,200*1024*1024):
+        raise HTTPException(413,detail={'message':'Zotero PDF 超过文件大小上限或为空。'})
+    if not re.fullmatch('[a-f0-9]{32}',checksum):
+        raise HTTPException(409,detail={'message':'Zotero PDF 缺少完整性校验信息。'})
+    filename=str(value.get('filename') or 'attachment.pdf').replace('\\','/').rsplit('/',1)[-1]
+    with TemporaryFile() as stream:
+        offset=0;digest=hashlib.md5(usedforsecurity=False)
+        while offset<size:
+            chunk=call(request,'/file-chunk',{'library_id':library_id,'key':key,'offset':offset,'size':size,'mtime':value['mtime']})
+            try:
+                encoded=chunk['base64']
+                if len(encoded)>((CHUNK_BYTES+2)//3)*4:raise ValueError()
+                raw=base64.b64decode(encoded,validate=True)
+                if chunk['offset']!=offset or not 0<len(raw)<=min(CHUNK_BYTES,size-offset):raise ValueError()
+            except (ValueError,TypeError,KeyError):
+                raise HTTPException(409,detail={'message':'Zotero PDF 分块校验失败，未导入。'})
+            stream.write(raw);digest.update(raw);offset+=len(raw)
+        if digest.hexdigest()!=checksum:
+            raise HTTPException(409,detail={'message':'Zotero PDF 在传输中发生变化，未导入，请重试。'})
+        stream.seek(0)
+        yield filename,stream
+
+
+def attach_pdf(request,state,library_id,key,path):
+    if state.get('pdf_transfer')!='chunks-v1':
+        return call(request,'/attach',{'library_id':library_id,'key':key,'path':str(path)})
+    size=path.stat().st_size
+    if size>200*1024*1024:raise HTTPException(413,detail={'message':'PDF 超过 Zotero 传输的 200 MB 上限。'})
+    with path.open('rb') as stream:
+        digest=hashlib.file_digest(stream,lambda:hashlib.md5(usedforsecurity=False)).hexdigest();stream.seek(0)
+        upload=call(request,'/attachment-upload',{'action':'begin','library_id':library_id,'key':key,'size':size,'md5':digest})['upload']
+        try:
+            offset=0
+            while raw:=stream.read(CHUNK_BYTES):
+                result=call(request,'/attachment-upload',{'action':'append','upload':upload,'offset':offset,'base64':base64.b64encode(raw).decode('ascii')})
+                offset+=len(raw)
+                if result.get('offset')!=offset:raise HTTPException(409,detail={'message':'Zotero PDF 传输位置不匹配，未导入。'})
+            result=call(request,'/attachment-upload',{'action':'finish','upload':upload});upload=None
+            return result
+        finally:
+            if upload:
+                try:call(request,'/attachment-upload',{'action':'cancel','upload':upload})
+                except HTTPException:pass
 
 
 def apply_shared(session,doc,values,tags=None):
@@ -228,21 +291,25 @@ def list_items(request: Request,library_id: int=0,q: str='',offset: int=Query(0,
 def import_pdf(request: Request,body: ImportAttachment):
     state=status_data(request)
     if state.get('bridge_installed'):
-        value=call(request,'/file',{'library_id':body.library_id,'key':body.key});path=Path(value['path']);instance=state['instance'];lib_id=body.library_id
+        instance=state['instance'];lib_id=body.library_id
     else:
         url=call(request,f'/users/0/items/{body.key}/file/view/url',bridge=False,raw=True).strip();parsed=urlparse(url)
         if parsed.scheme!='file' or parsed.netloc not in {'','localhost'}:raise HTTPException(409,detail={'message':'附件尚未下载到本机，请先在 Zotero 打开 PDF。'})
         value=unquote(parsed.path)
         if re.match(r'^/[A-Za-z]:',value):value=value[1:]
         path=Path(value);instance='readonly-local';lib_id=0
-    if str(path).startswith('\\\\') or not path.is_file():raise HTTPException(409,detail={'message':'此 PDF 没有可读取的本机副本'})
+        if str(path).startswith('\\\\') or not path.is_file():raise HTTPException(409,detail={'message':'此 PDF 没有可读取的本机副本；Docker 导入需启用新版连接组件。'})
     with request.app.state.database.session() as session:
         attachment=session.get(ZoteroRecord,(instance,lib_id,body.key))
         if not attachment or attachment.data.get('contentType')!='application/pdf':raise HTTPException(409,detail={'message':'请先同步并选择 PDF 附件'})
         parent=session.get(ZoteroRecord,(instance,lib_id,attachment.parent_key)) if attachment.parent_key else attachment
         if not parent:raise HTTPException(409,detail={'message':'附件的书目条目不存在，请重新同步'})
-        with path.open('rb') as stream:
-            result=DocumentService(request.app.state.settings,request.app.state.workspace,request.app.state.queue).import_file(session,filename=path.name,stream=stream)
+        service=DocumentService(request.app.state.settings,request.app.state.workspace,request.app.state.queue)
+        if state.get('bridge_installed'):
+            with pdf_source(request,state,lib_id,body.key) as (filename,stream):
+                result=service.import_file(session,filename=filename,stream=stream)
+        else:
+            with path.open('rb') as stream:result=service.import_file(session,filename=path.name,stream=stream)
         doc=result.document;binding=session.get(ZoteroBinding,doc.id)
         if binding and (binding.instance,binding.library_id,binding.item_key)!=(instance,lib_id,parent.item_key):
             raise HTTPException(409,detail={'message':'同一 PDF 已关联另一条 Zotero 文献，请先核对重复条目'})
@@ -338,7 +405,7 @@ def push(request: Request,body: PushRequest):
         pdf_path=request.app.state.workspace.resolve(doc.source_path) if body.include_pdf else None
     attachment=None
     if pdf_path:
-        attachment=call(request,'/attach',{'library_id':target_library,'key':document_key,'path':str(pdf_path)})
+        attachment=attach_pdf(request,state,target_library,document_key,pdf_path)
     pull(request,target_library)
     return {'key':document_key,'saved':True,'pdf_uploaded':bool(attachment)}
 

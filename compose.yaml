@@ -19,6 +19,8 @@ x-reader: &reader
     RR_GROBID_URL: http://grobid:8070
     RR_GROBID_ALLOWED_HOSTS: grobid
     RR_GROBID_TIMEOUT: "60"
+    # Docker Desktop reaches the paired Zotero on this same host, never a remote server.
+    RR_ZOTERO_HOST: ${RR_ZOTERO_HOST:-host.docker.internal}
   security_opt: [no-new-privileges:true]
   cap_drop: [ALL]
   logging:

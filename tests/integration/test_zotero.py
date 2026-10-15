@@ -1,5 +1,7 @@
 """Native boundary tests with an isolated reader DB; never change the user's Zotero."""
 import copy
+import base64
+import hashlib
 import json
 from pathlib import Path
 
@@ -16,20 +18,36 @@ from rr_storage import set_setting
 @pytest.fixture
 def linked(tmp_path):
     app=create_app(Settings(data_dir=tmp_path/'data'),serve_frontend=False)
-    native={'instance':'test-local','items':{},'calls':[],'bridge':True,'authorized':True,'new':0}
+    native={'instance':'test-local','items':{},'calls':[],'bridge':True,'authorized':True,'new':0,'transfer':False,'wire':[]}
     def transport(request):
         path=request.url.path;body=json.loads(request.content) if request.content else {}
+        native['wire'].append(request)
         native['calls'].append((path,body))
         if path=='/research-reader/status':
             if not native['bridge']:return httpx.Response(404)
             return httpx.Response(200,json={'instance':native['instance'],'authorized':native['authorized'],'paired':True,
+                'pdf_transfer':'chunks-v1' if native['transfer'] else None,
                 'user_library_id':1,'libraries':[{'id':1,'name':'Tests','editable':True},{'id':4,'name':'Group','editable':True,'group_id':42}]})
         if path=='/api/':return httpx.Response(200,text='ok')
         if path.startswith('/research-reader/'):
             assert request.headers.get('X-Research-Reader-Key')=='test-token'
         if path=='/research-reader/inventory':return httpx.Response(200,json={'instance':native['instance'],'library_id':body['library_id'],
             'items':[{'key':key,'data':value,'fingerprint':sha(value),'deleted':value.get('deleted',False)} for key,value in native['items'].items()],'collections':[]})
-        if path=='/research-reader/file':return httpx.Response(200,json={'path':str(native['pdf'])})
+        if path=='/research-reader/file':
+            raw=native['pdf'].read_bytes()
+            return httpx.Response(200,json={'path':r'C:\Unreachable\source.pdf' if native['transfer'] else str(native['pdf']),
+                'filename':'source.pdf','size':len(raw),'mtime':1,'md5':hashlib.md5(raw).hexdigest()})
+        if path=='/research-reader/file-chunk':
+            raw=native['pdf'].read_bytes()[body['offset']:body['offset']+256*1024]
+            return httpx.Response(200,json={'offset':body['offset'],'base64':base64.b64encode(raw if not native.get('corrupt') else b'changed').decode()})
+        if path=='/research-reader/attachment-upload':
+            if body['action']=='begin':native['upload']=bytearray();return httpx.Response(200,json={'upload':'opaque'})
+            if body['action']=='append':
+                assert body['offset']==len(native['upload']);native['upload'].extend(base64.b64decode(body['base64']))
+                if native.get('upload_fails'):return httpx.Response(400,json={'error':'test failure'})
+                return httpx.Response(200,json={'offset':len(native['upload'])})
+            if body['action']=='finish':return httpx.Response(200,json={'key':'PDF00001'})
+            return httpx.Response(200,json={'cancelled':True})
         if path=='/research-reader/update':
             data=native['items'][body['key']]
             if body['expected_fingerprint']!=sha(data):return httpx.Response(409,json={'error':'changed'})
@@ -67,6 +85,45 @@ def test_authenticated_status_and_readonly_fallback(linked):
     result=client.get('/api/v1/zotero/status').json()
     assert result['connected'] and not result['can_write'] and not result['bridge_installed']
     assert 'test-token' not in json.dumps(result)
+
+
+def test_zotero10_docker_target_headers_and_pairing_diagnostic(linked):
+    from dataclasses import replace
+    client,native=linked
+    client.app.state.settings=replace(client.app.state.settings,zotero_host='host.docker.internal')
+    assert client.get('/api/v1/zotero/status').json()['can_write']
+    wire=native['wire'][-1]
+    assert wire.url.host=='host.docker.internal'
+    assert wire.headers['host']=='127.0.0.1:23119'
+    assert wire.headers['zotero-allowed-request']=='1'
+    native['authorized']=False
+    result=client.get('/api/v1/zotero/status').json()
+    assert '配对' in result['message'] and not result['can_write']
+    with pytest.raises(ValueError):Settings.from_env({'RR_ZOTERO_HOST':'example.com'})
+    with pytest.raises(ValueError):Settings(data_dir=Path('unused'),zotero_host='127.0.0.1@evil.example')
+
+
+def test_cross_os_pdf_transfer_checks_bytes_and_uploads_without_host_paths(linked):
+    client,native=linked;native['transfer']=True
+    # More than one chunk, while retaining a valid PDF (trailing PDF comments).
+    with native['pdf'].open('ab') as stream:stream.write(b'\n% '+b'x'*300000+b'\n')
+    identifier=imported(client)
+    assert client.get(f'/api/v1/documents/{identifier}/original').content==native['pdf'].read_bytes()
+    assert sum(path=='/research-reader/file-chunk' for path,body in native['calls'])==2
+    response=client.post('/api/v1/zotero/push',json={'document_id':identifier,'confirm':True,'include_pdf':True})
+    assert response.status_code==200,response.text
+    assert bytes(native['upload'])==native['pdf'].read_bytes()
+    assert not any(path=='/research-reader/attach' for path,body in native['calls'])
+
+
+def test_corrupted_download_is_rejected_and_failed_upload_is_cancelled(linked):
+    client,native=linked;native.update(transfer=True,corrupt=True)
+    client.post('/api/v1/zotero/pull',json={'library_id':1})
+    assert client.post('/api/v1/zotero/import-pdf',json={'library_id':1,'key':'PDF00001'}).status_code==409
+    assert client.get('/api/v1/documents').json()['items']==[]
+    native['corrupt']=False;identifier=imported(client);native['upload_fails']=True
+    assert client.post('/api/v1/zotero/push',json={'document_id':identifier,'confirm':True,'include_pdf':True}).status_code==503
+    assert native['calls'][-1][1]['action']=='cancel'
 
 
 def test_pdf_copy_cache_and_changed_fields_preserve_native_details(linked):

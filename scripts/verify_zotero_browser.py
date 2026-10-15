@@ -1,27 +1,34 @@
 """Read-only live Zotero/browser acceptance. No native records are created or edited."""
 import json
+import os
 from pathlib import Path
 import sys
+import urllib.request
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'var/_browser_tools'))
 from playwright.sync_api import sync_playwright,expect
 
-OUT=ROOT/'docs/acceptance/2026-10-12/zotero-integration'
+OUT=Path(os.environ.get('RR_ZOTERO_ACCEPTANCE_OUTPUT',str(ROOT/'var/zotero-browser')))
+BASE=os.environ.get('RR_ZOTERO_ACCEPTANCE_URL','http://127.0.0.1:8765').rstrip('/')
 
 
 def main():
     OUT.mkdir(parents=True,exist_ok=True);checks=[];errors=[]
+    with urllib.request.urlopen(BASE+'/api/v1/zotero/status',timeout=10) as response:status=json.load(response)
+    assert status.get('can_write'),status.get('message','Zotero pairing unavailable')
     with sync_playwright() as p:
         browser=p.chromium.launch(channel='chrome',headless=True)
         page=browser.new_page(viewport={'width':1440,'height':1000},locale='zh-CN')
         page.on('pageerror',lambda e:errors.append(str(e)))
-        page.goto('http://127.0.0.1:8765/#/')
+        page.goto(BASE+'/#/')
         page.get_by_role('button',name='Zotero 文献库',exact=True).click()
         dialog=page.get_by_role('dialog',name='Zotero 文献库',exact=True)
-        expect(dialog.locator('.zotero-row')).to_have_count(58)
-        checks.append({'name':'真实 Zotero 58 条书目在浏览器可见','passed':True})
-        expect(dialog.locator('.zotero-message')).to_contain_text('126')
+        expect(dialog).not_to_have_attribute('aria-busy','true',timeout=30000)
+        with urllib.request.urlopen(BASE+f'/api/v1/zotero/items?library_id={status["user_library_id"]}&limit=100',timeout=10) as response:catalog=json.load(response)
+        expect(dialog.locator('.zotero-row')).to_have_count(min(catalog['total'],100))
+        checks.append({'name':'真实 Zotero 书目在浏览器可见','passed':catalog['total']>0,'total':catalog['total']})
+        expect(dialog.locator('.zotero-message')).to_contain_text('已同步本机目录')
         for width,height in [(1440,1000),(768,1024),(390,844)]:
             page.set_viewport_size({'width':width,'height':height});page.wait_for_timeout(120)
             size=dialog.evaluate('(d)=>({w:d.getBoundingClientRect().width,h:d.getBoundingClientRect().height,sw:d.scrollWidth,cw:d.clientWidth})')
@@ -47,7 +54,8 @@ def main():
         page.screenshot(path=str(OUT/'write-preview.png'))
         write.get_by_role('button',name='关闭',exact=True).click()
         browser.close()
-    report={'checks':checks,'errors':errors,'passed':all(c['passed'] for c in checks) and not errors,'native_library_modified':False}
+    report={'checks':checks,'errors':errors,'passed':all(c['passed'] for c in checks) and not errors,
+        'native_library_modified':False,'zotero_version':status.get('zotero_version'),'bridge_version':status.get('bridge_version')}
     (OUT/'browser-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps(report,ensure_ascii=True))
     if not report['passed']:raise SystemExit(1)

@@ -51,6 +51,12 @@ class Settings:
     grobid_timeout_seconds: int = 45
     # Explicit deployment trust boundary; empty keeps loopback-only behaviour.
     grobid_allowed_hosts: tuple[str, ...] = ()
+    # Fixed local targets only; never send the bridge key to a configurable URL.
+    zotero_host: str = "127.0.0.1"
+
+    def __post_init__(self):
+        if self.zotero_host not in {"127.0.0.1", "localhost", "[::1]", "host.docker.internal"}:
+            raise ValueError("RR_ZOTERO_HOST must be a loopback host or host.docker.internal")
 
     @property
     def database_url(self) -> str:
@@ -100,6 +106,7 @@ class Settings:
             grobid_url=(env.get("RR_GROBID_URL") or "").strip(),
             grobid_timeout_seconds=min(60, _int("RR_GROBID_TIMEOUT",45)),
             grobid_allowed_hosts=tuple(host.strip().lower() for host in (env.get("RR_GROBID_ALLOWED_HOSTS") or "").split(",") if host.strip()),
+            zotero_host=(env.get("RR_ZOTERO_HOST") or "127.0.0.1").strip().lower(),
         )
 
 

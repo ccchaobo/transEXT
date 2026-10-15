@@ -1,9 +1,37 @@
-/* Zotero 9 bridge. All changes use the public Zotero JS API, never its SQLite file.
+/* Zotero 9/10 bridge. All changes use the Zotero JS API, never its SQLite file.
    The companion installer pairs a secret with the same-machine reader backend.
    No token is sent to browser JS, and no endpoint binds a new public server. */
 const RR_PREFIX='/research-reader';
 const RR_ROUTES=[];
 const RR_TASKS=new Map();
+const RR_UPLOADS=new Map();
+const RR_CHUNK=256*1024,RR_MAX_PDF=200*1024*1024,RR_UPLOAD_TTL=10*60*1000;
+
+async function pdfFile(id,key){
+  const item=selectedItem(id,key);
+  if(item.deleted||!item.isAttachment()||item.attachmentContentType!=='application/pdf')throw new Error('请选择可读取的 PDF 附件');
+  const path=await item.getFilePathAsync();
+  if(!path||!await IOUtils.exists(path))throw new Error('PDF 附件尚未下载到本机，请先在 Zotero 打开附件');
+  const stat=await IOUtils.stat(path);
+  if(stat.size>RR_MAX_PDF)throw new Error('PDF 超过 200 MB 传输上限');
+  return {item,path,stat};
+}
+async function attachPDF(parent,path){
+  if(parent.deleted||parent.isAttachment()||parent.isNote()||!parent.library.editable||!parent.library.filesEditable)throw new Error('此条目不可保存附件');
+  const md5=await Zotero.Utilities.Internal.md5Async(path);
+  for(const id of parent.getAttachments()){
+    const item=Zotero.Items.get(id),existing=await item.getFilePathAsync();
+    if(!item.deleted&&item.attachmentContentType==='application/pdf'&&existing&&await Zotero.Utilities.Internal.md5Async(existing)===md5)return {...row(item),reused:true};
+  }
+  return row(await Zotero.Attachments.importFromFile({file:path,parentItemID:parent.id,libraryID:parent.libraryID}));
+}
+async function discardUpload(id){
+  const upload=RR_UPLOADS.get(id);RR_UPLOADS.delete(id);
+  if(upload)await IOUtils.remove(upload.path,{ignoreAbsent:true});
+}
+async function pruneUploads(){
+  for(const [id,value] of RR_UPLOADS)if(!value.busy&&value.expires<Date.now())await discardUpload(id);
+}
 
 function canonical(value){
   if(Array.isArray(value))return value.map(canonical);
@@ -55,7 +83,8 @@ function conflict(){const e=new Error('文献信息已变化，请重新同步�
 async function allItems(id){return Zotero.Items.getAll(lib(id).libraryID,false,true);}
 
 async function startup(){
-  register('/status',async()=>({bridge_version:'0.1.1',zotero_version:Zotero.version,instance:instance(),
+  await Zotero.initializationPromise;
+  register('/status',async()=>({bridge_version:'0.2.0',pdf_transfer:'chunks-v1',zotero_version:Zotero.version,instance:instance(),
     libraries:Zotero.Libraries.getAll().filter(l=>l.libraryType!=='feed').map(l=>({id:l.libraryID,name:l.name,type:l.libraryType,editable:l.editable,group_id:l.groupID || null})),
     user_library_id:Zotero.Libraries.userLibraryID,cloud_configured:!!Zotero.Users.getCurrentUserID(),
     paired:!!Zotero.Prefs.get('researchReader.token')}),true);
@@ -67,11 +96,48 @@ async function startup(){
       collections:collections.map(c=>({key:c.key,name:c.name,parent_key:c.parentKey || null}))};
   });
   register('/file',async data=>{
-    const item=selectedItem(data.library_id,data.key);
-    if(!item.isAttachment()||item.attachmentContentType!=='application/pdf')throw new Error('请选择 PDF 附件');
-    const path=await item.getFilePathAsync();
-    if(!path||!await IOUtils.exists(path))throw new Error('PDF 附件尚未下载到本机，请先在 Zotero 打开附件');
-    return {path,item:row(item)};
+    const {item,path,stat}=await pdfFile(data.library_id,data.key);
+    return {path,item:row(item),filename:PathUtils.filename(path),size:stat.size,mtime:stat.lastModified,
+      md5:await Zotero.Utilities.Internal.md5Async(path)};
+  });
+  register('/file-chunk',async data=>{
+    const {path,stat}=await pdfFile(data.library_id,data.key);
+    if(stat.size!==data.size||stat.lastModified!==data.mtime)conflict();
+    if(!Number.isSafeInteger(data.offset)||data.offset<0||data.offset>=stat.size)throw new Error('PDF 分块位置无效');
+    const bytes=await IOUtils.read(path,{offset:data.offset,maxBytes:RR_CHUNK});
+    return {offset:data.offset,base64:btoa(Array.from(bytes,b=>String.fromCharCode(b)).join(''))};
+  });
+  register('/attachment-upload',async data=>{
+    await pruneUploads();
+    if(data.action==='begin'){
+      const parent=selectedItem(data.library_id,data.key);
+      if(parent.deleted||parent.isAttachment()||parent.isNote()||!parent.library.editable||!parent.library.filesEditable)throw new Error('此条目不可保存附件');
+      if(!Number.isSafeInteger(data.size)||data.size<5||data.size>RR_MAX_PDF||!/^[a-f0-9]{32}$/.test(data.md5||''))throw new Error('PDF 传输信息无效');
+      if(RR_UPLOADS.size>=2)throw new Error('已有 PDF 正在传输，请稍后重试');
+      const id=Services.uuid.generateUUID().toString();
+      const path=PathUtils.join(Zotero.getTempDirectory().path,'reader-'+id+'.pdf');
+      await IOUtils.write(path,new Uint8Array());
+      RR_UPLOADS.set(id,{path,key:parent.key,library_id:parent.libraryID,size:data.size,md5:data.md5,offset:0,expires:Date.now()+RR_UPLOAD_TTL,busy:false});
+      return {upload:id};
+    }
+    const upload=RR_UPLOADS.get(data.upload);
+    if(!upload||upload.busy)throw new Error('PDF 传输已过期或正在处理中');
+    upload.busy=true;
+    try{
+      if(data.action==='cancel'){await discardUpload(data.upload);return {cancelled:true};}
+      if(data.action==='append'){
+        if(data.offset!==upload.offset||typeof data.base64!=='string'||data.base64.length>Math.ceil(RR_CHUNK/3)*4)throw new Error('PDF 分块信息无效');
+        const bytes=Uint8Array.from(atob(data.base64),c=>c.charCodeAt(0));
+        if(!bytes.length||bytes.length>RR_CHUNK||upload.offset+bytes.length>upload.size)throw new Error('PDF 分块大小无效');
+        if(!upload.offset&&String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')throw new Error('文件不是 PDF');
+        await IOUtils.write(upload.path,bytes,{mode:'append'});
+        upload.offset+=bytes.length;upload.expires=Date.now()+RR_UPLOAD_TTL;return {offset:upload.offset};
+      }
+      if(data.action!=='finish')throw new Error('PDF 传输操作无效');
+      if(upload.offset!==upload.size||await Zotero.Utilities.Internal.md5Async(upload.path)!==upload.md5)throw new Error('PDF 完整性校验失败，未导入');
+      const parent=selectedItem(upload.library_id,upload.key);
+      try{return await attachPDF(parent,upload.path);}finally{await discardUpload(data.upload);}
+    }finally{upload.busy=false;}
   });
   register('/update',async data=>{
     const library=lib(data.library_id);
@@ -112,15 +178,8 @@ async function startup(){
   });
   register('/attach',async data=>{
     const parent=selectedItem(data.library_id,data.key);
-    if(!parent.library.editable||!parent.library.filesEditable)throw new Error('此文献库不可保存附件');
     if(typeof data.path!=='string'||!data.path.toLowerCase().endsWith('.pdf')||!await IOUtils.exists(data.path))throw new Error('PDF 文件不存在');
-    const md5=await Zotero.Utilities.Internal.md5Async(data.path);
-    for(const id of parent.getAttachments()){
-      const item=Zotero.Items.get(id),path=await item.getFilePathAsync();
-      if(item.attachmentContentType==='application/pdf'&&path&&await Zotero.Utilities.Internal.md5Async(path)===md5)return {...row(item),reused:true};
-    }
-    const attachment=await Zotero.Attachments.importFromFile({file:data.path,parentItemID:parent.id,libraryID:parent.libraryID});
-    return row(attachment);
+    return attachPDF(parent,data.path);
   });
   register('/capture',async data=>{
     let translate;
@@ -180,6 +239,6 @@ async function startup(){
   });
   register('/task',async data=>RR_TASKS.get(data.task) || {status:'unknown',message:'此操作状态不可用，可能已重启 Zotero，请在 Zotero 或 Word 核对。'});
 }
-function shutdown(){for(const path of RR_ROUTES)delete Zotero.Server.Endpoints[path];RR_ROUTES.length=0;RR_TASKS.clear();}
+async function shutdown(){for(const path of RR_ROUTES)delete Zotero.Server.Endpoints[path];RR_ROUTES.length=0;RR_TASKS.clear();for(const id of [...RR_UPLOADS.keys()])await discardUpload(id);}
 function install(){}
 function uninstall(){}

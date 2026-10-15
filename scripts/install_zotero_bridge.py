@@ -18,14 +18,10 @@ ID='research-reader-bridge@local.research-reader'
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--profile',type=Path,required=True);args=p.parse_args()
-    profile=args.profile.resolve();prefs=profile/'prefs.js'
-    if not prefs.is_file():raise ValueError('Zotero profile prefs.js missing')
-    # Native installation can occur with Zotero open; pairing prefs cannot.
-    if (profile/'parent.lock').exists():
-        try:
-            with (profile/'parent.lock').open('r+b'):pass
-        except OSError:raise RuntimeError('请先保存并正常退出 Zotero，再运行配对安装脚本。')
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--profile',type=Path)
+    p.add_argument('--package-only',action='store_true',help='Build an upgrade XPI without touching profiles or pairing keys')
+    args=p.parse_args()
     code=ROOT/'plugins/zotero-reader-bridge'
     manifest=json.loads((code/'manifest.json').read_text(encoding='utf-8'))
     assert manifest['applications']['zotero']['id']==ID
@@ -33,6 +29,17 @@ def main():
     archive=output/('research-reader-bridge-'+manifest['version']+'.xpi')
     with ZipFile(archive,'w') as z:
         for name in ['manifest.json','bootstrap.js']:z.write(code/name,name)
+    if args.package_only:
+        print(json.dumps({'archive':str(archive),'version':manifest['version'],'pairing_changed':False,'library_modified':False},ensure_ascii=False))
+        return
+    if args.profile is None:p.error('--profile is required for initial pairing; use --package-only to upgrade')
+    profile=args.profile.resolve();prefs=profile/'prefs.js'
+    if not prefs.is_file():raise ValueError('Zotero profile prefs.js missing')
+    # Native installation can occur with Zotero open; pairing prefs cannot.
+    if (profile/'parent.lock').exists():
+        try:
+            with (profile/'parent.lock').open('r+b'):pass
+        except OSError:raise RuntimeError('请先保存并正常退出 Zotero，再运行配对安装脚本。')
     runtime=open_runtime()
     with runtime.database.session() as session:
         token=get_setting(session,'zotero.bridge_token') or secrets.token_hex(32)

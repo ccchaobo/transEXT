@@ -27,7 +27,7 @@ evidence rather than a status claim.
 
 2026-10-13 按最新要求改为完整文献聊天：每次使用全部解析文字，包括标题、正文、参考文献、页眉页脚及表格结构；移除八块节选和范围切换。助手改为文献接入卡、对话区和底部输入框，设置与新对话收进菜单，支持安全 Markdown 排版、复制、引用和流式停止。超出容量明确报错，不自动截取局部内容。见 [AI 阅读](docs/ai-reading.md)、[全文验收](docs/acceptance/2026-10-13/assistant-full-document/README.md)。
 
-2026-10-12 新增本地文献管理与 Zotero 联动：多文件导入、分类、标签、书目信息和笔记编辑、搜索排序、批量操作、回收站恢复与确认后的永久删除。Zotero 0.1.1 连接组件已在本机加载，可检索本机书目、导出 BibTeX/RIS/APA、网页与 DOI 预览、选 PDF 进入对照阅读，并提供关联与写回入口。真实 Zotero 写入及云同步未作为已完成验收；最新用户不需要 Word 插入验收。
+2026-10-12 新增本地文献管理与 Zotero 联动：多文件导入、分类、标签、书目信息和笔记编辑、搜索排序、批量操作、回收站恢复与确认后的永久删除。2026-10-15 连接组件升级到 0.2.0，修复 Zotero 10 升级后的自动禁用与 Docker 本机连接问题；支持 Zotero 9/10、目录检索、BibTeX/RIS/APA 导出、抓取预览和跨系统 PDF 内容传输。已有用户安装新版组件后，Docker 数据卷可用 `scripts/pair_zotero_docker.py` 复用原配对。真实 Zotero 写入及云同步未作为已完成验收；用户不需要 Word 插入验收。升级验收见 [记录](docs/acceptance/2026-10-15/zotero10/README.md)。
 
 本轮验证为 719 项后端、19 项阅读器前端、6 项连接组件测试；隔离文献管理 Chrome 验收与真实 Zotero 目录浏览器验收通过。真实 BrLP 文献 21 页排版再次通过，原件指纹一致。规范和证据见 [文献管理](docs/library-management.md)、[Zotero 联动](docs/zotero-integration.md)、[排版对齐](docs/layout-alignment.md)。
 
